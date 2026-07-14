@@ -18,7 +18,7 @@ import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
 import {
   Trash2, Search, Download, ShoppingCart, DollarSign,
-  CheckCircle2, Clock, ExternalLink,
+  CheckCircle2, Clock, ExternalLink, X,
 } from "lucide-react";
 
 const searchSchema = z.object({
@@ -90,6 +90,12 @@ function Page() {
     navigate({ search: (p: SP) => ({ ...p, page: n }) });
   const setPageSize = (n: number) =>
     navigate({ search: (p: SP) => ({ ...p, pageSize: n, page: 0 }) });
+  const hasFilters = filter !== "all" || debouncedSearch !== "" || search !== "";
+  const resetFilters = () => {
+    setSearch("");
+    setDebouncedSearch("");
+    navigate({ search: () => ({ status: "all", q: "", page: 0, pageSize }) });
+  };
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "orders", filter, debouncedSearch, page, pageSize],
@@ -236,6 +242,11 @@ function Page() {
             <SelectItem value="cancelled">Cancelado</SelectItem>
           </SelectContent>
         </Select>
+        {hasFilters && (
+          <Button variant="ghost" onClick={resetFilters} className="gap-2">
+            <X className="h-4 w-4" /> Limpar filtros
+          </Button>
+        )}
         <Button variant="outline" onClick={exportCsv} className="gap-2">
           <Download className="h-4 w-4" /> Exportar CSV
         </Button>
