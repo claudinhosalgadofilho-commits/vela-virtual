@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Flame } from "lucide-react";
+import logoAsset from "@/assets/vela-virtual-logo.jpeg.asset.json";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -7,15 +7,22 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-border/60 bg-secondary/40">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-4 md:px-8">
         <div className="md:col-span-2">
-          <Link to="/" className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 ring-1 ring-primary/20">
-              <Flame className="h-4 w-4 text-gold" strokeWidth={1.8} />
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src={logoAsset.url}
+              alt="Vela Virtual Santa Luzia"
+              className="h-10 w-10 rounded-full object-cover ring-1 ring-gold/30"
+            />
+            <span className="font-serif text-lg text-foreground">
+              Vela Virtual <span className="text-gold">Santa Luzia</span>
             </span>
-            <span className="font-serif text-xl text-foreground">Velas de Luz</span>
           </Link>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Uma plataforma dedicada às homenagens digitais. Acenda uma vela virtual
-            e mantenha viva a memória de quem você ama.
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground italic">
+            Acenda uma luz. Eternize uma memória.
+          </p>
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Preste sua homenagem acendendo uma vela virtual e deixe uma mensagem
+            de conforto à família.
           </p>
         </div>
 
@@ -39,7 +46,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border/60">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground md:flex-row md:px-8">
-          <p>© {year} Velas de Luz. Todos os direitos reservados.</p>
+          <p>© {year} Vela Virtual Santa Luzia. Todos os direitos reservados.</p>
           <p className="italic">Feito com respeito e cuidado.</p>
         </div>
       </div>

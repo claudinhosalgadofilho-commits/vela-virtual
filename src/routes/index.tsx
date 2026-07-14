@@ -10,10 +10,10 @@ import { formatBRL } from "@/lib/format";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Velas de Luz — Homenagens Digitais Eternas" },
-      { name: "description", content: "Acenda uma vela virtual para homenagear quem você ama. Uma chama de memória, esperança e paz que atravessa distâncias." },
-      { property: "og:title", content: "Velas de Luz — Acenda uma vela virtual" },
-      { property: "og:description", content: "Uma chama de memória e paz para quem você ama." },
+      { title: "Vela Virtual Santa Luzia — Acenda uma luz, eternize uma memória" },
+      { name: "description", content: "Preste sua homenagem acendendo uma vela virtual e deixe uma mensagem de conforto à família. Uma chama que permanece acesa por 9 dias." },
+      { property: "og:title", content: "Vela Virtual Santa Luzia" },
+      { property: "og:description", content: "Acenda uma luz. Eternize uma memória." },
     ],
   }),
   component: HomePage,
@@ -44,16 +44,16 @@ function HomePage() {
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 md:grid-cols-2 md:items-center md:gap-16 md:px-8 md:py-24">
           <div>
             <p className="mb-4 text-xs uppercase tracking-[0.28em] text-gold">
-              Homenagem digital
+              Vela Virtual Santa Luzia
             </p>
             <h1 className="font-serif text-5xl leading-[1.05] text-foreground md:text-6xl lg:text-7xl">
-              Uma chama<br />
-              <span className="italic text-primary">eterna</span> de memória.
+              Acenda uma luz.<br />
+              <span className="italic text-primary">Eternize</span> uma memória.
             </h1>
             <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
-              Acenda uma vela virtual e mantenha viva a lembrança de quem partiu.
-              Uma homenagem discreta, respeitosa e para sempre acessível — em
-              qualquer lugar do mundo.
+              Preste sua homenagem acendendo uma vela virtual e deixe uma
+              mensagem de conforto à família. Uma chama que permanece acesa
+              por 9 dias, acessível de qualquer lugar.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button asChild size="lg" className="rounded-full bg-primary px-7 hover:bg-primary/90">
@@ -63,7 +63,7 @@ function HomePage() {
                 </Link>
               </Button>
               <Button asChild variant="ghost" size="lg" className="rounded-full">
-                <Link to="/como-funciona">Conheça a plataforma</Link>
+                <Link to="/como-funciona">Como funciona</Link>
               </Button>
             </div>
           </div>
@@ -81,7 +81,7 @@ function HomePage() {
             Um gesto simples, uma memória eterna.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Três razões para escolher a Velas de Luz.
+            Uma homenagem digital feita com respeito e cuidado.
           </p>
         </div>
 
@@ -166,10 +166,11 @@ function HomePage() {
           <h2 className="text-center font-serif text-4xl text-foreground">Perguntas frequentes</h2>
           <dl className="mt-12 space-y-6">
             {[
-              { q: "Por quanto tempo a vela fica acesa?", a: "Depende do modelo escolhido: 7, 15 ou 30 dias. O tempo restante é exibido na página da homenagem." },
+              { q: "Por quanto tempo a vela fica acesa?", a: "A vela permanece acesa por 9 dias. Durante este período, a homenagem fica acessível a qualquer momento; após esse tempo, a chama se apaga simbolicamente." },
+              { q: "Quanto custa acender uma vela?", a: "Uma única vela por apenas R$ 1,99 — um gesto simples e acessível para eternizar uma memória." },
               { q: "Como funciona o pagamento?", a: "Aceitamos PIX e cartão de crédito. Assim que o pagamento é aprovado, a homenagem é criada automaticamente." },
-              { q: "Posso compartilhar a homenagem?", a: "Sim. Cada homenagem possui um link único que pode ser enviado por WhatsApp, redes sociais ou email." },
-              { q: "O que acontece quando a vela apaga?", a: "A página permanece disponível para memória, mas a chama deixa de arder simbolicamente." },
+              { q: "Posso compartilhar a homenagem?", a: "Sim. Cada homenagem possui um link único que pode ser compartilhado por WhatsApp com toda a família." },
+              { q: "O que acontece quando a vela apaga?", a: "Após os 9 dias, a chama se apaga simbolicamente, encerrando o ciclo da homenagem." },
             ].map((it) => (
               <div key={it.q} className="rounded-xl bg-card p-6 border border-border/60">
                 <dt className="font-serif text-lg text-foreground">{it.q}</dt>
