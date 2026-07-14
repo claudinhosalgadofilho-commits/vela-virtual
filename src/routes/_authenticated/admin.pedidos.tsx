@@ -18,7 +18,7 @@ import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
 import {
   Trash2, Search, Download, ShoppingCart, DollarSign,
-  CheckCircle2, Clock, ExternalLink,
+  CheckCircle2, Clock, ExternalLink, X,
 } from "lucide-react";
 
 const searchSchema = z.object({
