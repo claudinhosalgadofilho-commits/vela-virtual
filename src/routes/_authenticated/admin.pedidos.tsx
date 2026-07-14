@@ -95,12 +95,28 @@ function Page() {
     }
   }, [debouncedSearch, urlQ, navigate]);
 
+  // Ao montar, se a URL não trouxer pageSize explícito, aplica o valor persistido.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("pageSize")) return;
+    const stored = getStoredPageSize();
+    if (stored !== pageSize) {
+      navigate({ search: (p: SP) => ({ ...p, pageSize: stored, page: 0 }), replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const setFilter = (v: string) =>
     navigate({ search: (p: SP) => ({ ...p, status: v, page: 0 }) });
   const setPage = (n: number) =>
     navigate({ search: (p: SP) => ({ ...p, page: n }) });
-  const setPageSize = (n: number) =>
+  const setPageSize = (n: number) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(n));
+    }
     navigate({ search: (p: SP) => ({ ...p, pageSize: n, page: 0 }) });
+  };
   const hasFilters = filter !== "all" || debouncedSearch !== "" || search !== "";
   const resetFilters = () => {
     setSearch("");
