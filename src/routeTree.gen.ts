@@ -9,38 +9,215 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VelasRouteImport } from './routes/velas'
+import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VelasSlugRouteImport } from './routes/velas.$slug'
+import { Route as HomenagemIdRouteImport } from './routes/homenagem.$id'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminVelasRouteImport } from './routes/_authenticated/admin.velas'
+import { Route as AuthenticatedAdminPedidosRouteImport } from './routes/_authenticated/admin.pedidos'
+import { Route as AuthenticatedAdminHomenagensRouteImport } from './routes/_authenticated/admin.homenagens'
+import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin.configuracoes'
 
+const VelasRoute = VelasRouteImport.update({
+  id: '/velas',
+  path: '/velas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
+  id: '/como-funciona',
+  path: '/como-funciona',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VelasSlugRoute = VelasSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => VelasRoute,
+} as any)
+const HomenagemIdRoute = HomenagemIdRouteImport.update({
+  id: '/homenagem/$id',
+  path: '/homenagem/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminVelasRoute = AuthenticatedAdminVelasRouteImport.update({
+  id: '/velas',
+  path: '/velas',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminPedidosRoute =
+  AuthenticatedAdminPedidosRouteImport.update({
+    id: '/pedidos',
+    path: '/pedidos',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminHomenagensRoute =
+  AuthenticatedAdminHomenagensRouteImport.update({
+    id: '/homenagens',
+    path: '/homenagens',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminConfiguracoesRoute =
+  AuthenticatedAdminConfiguracoesRouteImport.update({
+    id: '/configuracoes',
+    path: '/configuracoes',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/velas': typeof VelasRouteWithChildren
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/homenagem/$id': typeof HomenagemIdRoute
+  '/velas/$slug': typeof VelasSlugRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
+  '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/admin/velas': typeof AuthenticatedAdminVelasRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/velas': typeof VelasRouteWithChildren
+  '/homenagem/$id': typeof HomenagemIdRoute
+  '/velas/$slug': typeof VelasSlugRoute
+  '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
+  '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/admin/velas': typeof AuthenticatedAdminVelasRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/velas': typeof VelasRouteWithChildren
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/homenagem/$id': typeof HomenagemIdRoute
+  '/velas/$slug': typeof VelasSlugRoute
+  '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
+  '/_authenticated/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
+  '/_authenticated/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/_authenticated/admin/velas': typeof AuthenticatedAdminVelasRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/como-funciona'
+    | '/velas'
+    | '/admin'
+    | '/homenagem/$id'
+    | '/velas/$slug'
+    | '/admin/configuracoes'
+    | '/admin/homenagens'
+    | '/admin/pedidos'
+    | '/admin/velas'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/como-funciona'
+    | '/velas'
+    | '/homenagem/$id'
+    | '/velas/$slug'
+    | '/admin/configuracoes'
+    | '/admin/homenagens'
+    | '/admin/pedidos'
+    | '/admin/velas'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/como-funciona'
+    | '/velas'
+    | '/_authenticated/admin'
+    | '/homenagem/$id'
+    | '/velas/$slug'
+    | '/_authenticated/admin/configuracoes'
+    | '/_authenticated/admin/homenagens'
+    | '/_authenticated/admin/pedidos'
+    | '/_authenticated/admin/velas'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ComoFuncionaRoute: typeof ComoFuncionaRoute
+  VelasRoute: typeof VelasRouteWithChildren
+  HomenagemIdRoute: typeof HomenagemIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/velas': {
+      id: '/velas'
+      path: '/velas'
+      fullPath: '/velas'
+      preLoaderRoute: typeof VelasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/como-funciona': {
+      id: '/como-funciona'
+      path: '/como-funciona'
+      fullPath: '/como-funciona'
+      preLoaderRoute: typeof ComoFuncionaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +225,112 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/velas/$slug': {
+      id: '/velas/$slug'
+      path: '/$slug'
+      fullPath: '/velas/$slug'
+      preLoaderRoute: typeof VelasSlugRouteImport
+      parentRoute: typeof VelasRoute
+    }
+    '/homenagem/$id': {
+      id: '/homenagem/$id'
+      path: '/homenagem/$id'
+      fullPath: '/homenagem/$id'
+      preLoaderRoute: typeof HomenagemIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/velas': {
+      id: '/_authenticated/admin/velas'
+      path: '/velas'
+      fullPath: '/admin/velas'
+      preLoaderRoute: typeof AuthenticatedAdminVelasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/pedidos': {
+      id: '/_authenticated/admin/pedidos'
+      path: '/pedidos'
+      fullPath: '/admin/pedidos'
+      preLoaderRoute: typeof AuthenticatedAdminPedidosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/homenagens': {
+      id: '/_authenticated/admin/homenagens'
+      path: '/homenagens'
+      fullPath: '/admin/homenagens'
+      preLoaderRoute: typeof AuthenticatedAdminHomenagensRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/configuracoes': {
+      id: '/_authenticated/admin/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/admin/configuracoes'
+      preLoaderRoute: typeof AuthenticatedAdminConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
+  AuthenticatedAdminHomenagensRoute: typeof AuthenticatedAdminHomenagensRoute
+  AuthenticatedAdminPedidosRoute: typeof AuthenticatedAdminPedidosRoute
+  AuthenticatedAdminVelasRoute: typeof AuthenticatedAdminVelasRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
+  AuthenticatedAdminHomenagensRoute: AuthenticatedAdminHomenagensRoute,
+  AuthenticatedAdminPedidosRoute: AuthenticatedAdminPedidosRoute,
+  AuthenticatedAdminVelasRoute: AuthenticatedAdminVelasRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface VelasRouteChildren {
+  VelasSlugRoute: typeof VelasSlugRoute
+}
+
+const VelasRouteChildren: VelasRouteChildren = {
+  VelasSlugRoute: VelasSlugRoute,
+}
+
+const VelasRouteWithChildren = VelasRoute._addFileChildren(VelasRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ComoFuncionaRoute: ComoFuncionaRoute,
+  VelasRoute: VelasRouteWithChildren,
+  HomenagemIdRoute: HomenagemIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
