@@ -65,17 +65,29 @@ type OrderRow = {
 
 function Page() {
   const qc = useQueryClient();
-  const [filter, setFilter] = useState<Status | "all">("all");
-  const [search, setSearch] = useState("");
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { status: filter, q: urlQ, page, pageSize } = Route.useSearch();
   const [selected, setSelected] = useState<OrderRow | null>(null);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [search, setSearch] = useState(urlQ);
+  const [debouncedSearch, setDebouncedSearch] = useState(urlQ);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
     return () => clearTimeout(t);
   }, [search]);
+
+  useEffect(() => {
+    if (debouncedSearch !== urlQ) {
+      navigate({ search: (p) => ({ ...p, q: debouncedSearch, page: 0 }), replace: true });
+    }
+  }, [debouncedSearch, urlQ, navigate]);
+
+  const setFilter = (v: string) =>
+    navigate({ search: (p) => ({ ...p, status: v, page: 0 }) });
+  const setPage = (n: number) =>
+    navigate({ search: (p) => ({ ...p, page: n }) });
+  const setPageSize = (n: number) =>
+    navigate({ search: (p) => ({ ...p, pageSize: n, page: 0 }) });
 
   useEffect(() => { setPage(0); }, [filter, debouncedSearch, pageSize]);
 
