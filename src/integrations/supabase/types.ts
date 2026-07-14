@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          id: number
+          mp_access_token: string | null
+          mp_public_key: string | null
+          mp_webhook_secret: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          mp_access_token?: string | null
+          mp_public_key?: string | null
+          mp_webhook_secret?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          mp_access_token?: string | null
+          mp_public_key?: string | null
+          mp_webhook_secret?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       candles: {
         Row: {
           active: boolean
@@ -69,7 +93,12 @@ export type Database = {
           customer_phone: string | null
           external_payment_id: string | null
           id: string
+          mp_payment_id: string | null
+          mp_preference_id: string | null
+          paid_at: string | null
           payment_method: string
+          pix_qr_base64: string | null
+          pix_qr_code: string | null
           status: Database["public"]["Enums"]["order_status"]
           tribute_message: string | null
           tribute_name: string
@@ -85,7 +114,12 @@ export type Database = {
           customer_phone?: string | null
           external_payment_id?: string | null
           id?: string
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          paid_at?: string | null
           payment_method?: string
+          pix_qr_base64?: string | null
+          pix_qr_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           tribute_message?: string | null
           tribute_name: string
@@ -101,7 +135,12 @@ export type Database = {
           customer_phone?: string | null
           external_payment_id?: string | null
           id?: string
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          paid_at?: string | null
           payment_method?: string
+          pix_qr_base64?: string | null
+          pix_qr_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           tribute_message?: string | null
           tribute_name?: string
