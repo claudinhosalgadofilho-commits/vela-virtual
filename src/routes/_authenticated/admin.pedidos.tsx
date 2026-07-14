@@ -58,30 +58,43 @@ function Page() {
   const [filter, setFilter] = useState<Status | "all">("all");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<OrderRow | null>(null);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin", "orders", filter],
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => { setPage(0); }, [filter, debouncedSearch, pageSize]);
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["admin", "orders", filter, debouncedSearch, page, pageSize],
     queryFn: async () => {
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
       let q = supabase
         .from("orders")
-        .select("*, candle:candles(name, slug)")
-        .order("created_at", { ascending: false });
+        .select("*, candle:candles(name, slug)", { count: "exact" })
+        .order("created_at", { ascending: false })
+        .range(from, to);
       if (filter !== "all") q = q.eq("status", filter);
-      const { data, error } = await q;
+      if (debouncedSearch) {
+        const s = debouncedSearch.replace(/[%,()]/g, "");
+        q = q.or(
+          `customer_name.ilike.%${s}%,customer_email.ilike.%${s}%,tribute_name.ilike.%${s}%`
+        );
+      }
+      const { data, error, count } = await q;
       if (error) throw error;
-      return (data ?? []) as unknown as OrderRow[];
+      return { rows: (data ?? []) as unknown as OrderRow[], count: count ?? 0 };
     },
   });
 
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    const t = search.trim().toLowerCase();
-    if (!t) return data;
-    return data.filter((o) =>
-      [o.customer_name, o.customer_email, o.tribute_name, o.candle?.name ?? ""]
-        .some((v) => v.toLowerCase().includes(t))
-    );
-  }, [data, search]);
+  const rows = data?.rows ?? [];
+  const totalCount = data?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   const kpis = useMemo(() => {
     const list = data ?? [];
