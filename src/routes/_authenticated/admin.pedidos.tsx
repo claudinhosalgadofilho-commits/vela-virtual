@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -58,43 +58,61 @@ function Page() {
   const [filter, setFilter] = useState<Status | "all">("all");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<OrderRow | null>(null);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin", "orders", filter],
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => { setPage(0); }, [filter, debouncedSearch, pageSize]);
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["admin", "orders", filter, debouncedSearch, page, pageSize],
     queryFn: async () => {
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
       let q = supabase
         .from("orders")
-        .select("*, candle:candles(name, slug)")
-        .order("created_at", { ascending: false });
+        .select("*, candle:candles(name, slug)", { count: "exact" })
+        .order("created_at", { ascending: false })
+        .range(from, to);
       if (filter !== "all") q = q.eq("status", filter);
-      const { data, error } = await q;
+      if (debouncedSearch) {
+        const s = debouncedSearch.replace(/[%,()]/g, "");
+        q = q.or(
+          `customer_name.ilike.%${s}%,customer_email.ilike.%${s}%,tribute_name.ilike.%${s}%`
+        );
+      }
+      const { data, error, count } = await q;
       if (error) throw error;
-      return (data ?? []) as unknown as OrderRow[];
+      return { rows: (data ?? []) as unknown as OrderRow[], count: count ?? 0 };
     },
   });
 
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    const t = search.trim().toLowerCase();
-    if (!t) return data;
-    return data.filter((o) =>
-      [o.customer_name, o.customer_email, o.tribute_name, o.candle?.name ?? ""]
-        .some((v) => v.toLowerCase().includes(t))
-    );
-  }, [data, search]);
+  const rows = data?.rows ?? [];
+  const totalCount = data?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
-  const kpis = useMemo(() => {
-    const list = data ?? [];
-    const paid = list.filter((o) => o.status === "paid");
-    const pending = list.filter((o) => o.status === "pending");
-    const revenue = paid.reduce((sum, o) => sum + o.amount_cents, 0);
-    return {
-      total: list.length,
-      paidCount: paid.length,
-      pendingCount: pending.length,
-      revenue,
-    };
-  }, [data]);
+  const { data: kpis } = useQuery({
+    queryKey: ["admin", "orders", "kpis"],
+    queryFn: async () => {
+      const [total, paid, pending, revenue] = await Promise.all([
+        supabase.from("orders").select("id", { count: "exact", head: true }),
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "paid"),
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("orders").select("amount_cents").eq("status", "paid"),
+      ]);
+      return {
+        total: total.count ?? 0,
+        paidCount: paid.count ?? 0,
+        pendingCount: pending.count ?? 0,
+        revenue: (revenue.data ?? []).reduce((s, r) => s + (r.amount_cents ?? 0), 0),
+      };
+    },
+  });
 
   async function updateStatus(id: string, status: Status) {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
@@ -113,13 +131,29 @@ function Page() {
     setSelected(null);
   }
 
-  function exportCsv() {
-    if (!filtered.length) return toast.error("Nada para exportar");
+  async function exportCsv() {
+    // Exporta TODOS os registros que batem com filtro/busca, não só a página atual
+    let q = supabase
+      .from("orders")
+      .select("*, candle:candles(name, slug)")
+      .order("created_at", { ascending: false })
+      .limit(10000);
+    if (filter !== "all") q = q.eq("status", filter);
+    if (debouncedSearch) {
+      const s = debouncedSearch.replace(/[%,()]/g, "");
+      q = q.or(
+        `customer_name.ilike.%${s}%,customer_email.ilike.%${s}%,tribute_name.ilike.%${s}%`
+      );
+    }
+    const { data: all, error } = await q;
+    if (error) return toast.error(error.message);
+    const list = (all ?? []) as unknown as OrderRow[];
+    if (!list.length) return toast.error("Nada para exportar");
     const header = [
       "Data", "Cliente", "Email", "Telefone", "Homenageado",
       "Vela", "Valor (BRL)", "Pagamento", "Status", "ID Externo", "ID",
     ];
-    const rows = filtered.map((o) => [
+    const csvRows = list.map((o) => [
       new Date(o.created_at).toLocaleString("pt-BR"),
       o.customer_name,
       o.customer_email,
@@ -132,7 +166,7 @@ function Page() {
       o.external_payment_id ?? "",
       o.id,
     ]);
-    const csv = [header, ...rows]
+    const csv = [header, ...csvRows]
       .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";"))
       .join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -142,7 +176,7 @@ function Page() {
     a.download = `pedidos-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`${filtered.length} pedido(s) exportado(s)`);
+    toast.success(`${list.length} pedido(s) exportado(s)`);
   }
 
   return (
@@ -154,10 +188,10 @@ function Page() {
 
       {/* KPIs */}
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard icon={ShoppingCart} label="Total de pedidos" value={String(kpis.total)} />
-        <KpiCard icon={DollarSign} label="Receita (pagos)" value={formatBRL(kpis.revenue)} accent />
-        <KpiCard icon={CheckCircle2} label="Pagos" value={String(kpis.paidCount)} />
-        <KpiCard icon={Clock} label="Pendentes" value={String(kpis.pendingCount)} />
+        <KpiCard icon={ShoppingCart} label="Total de pedidos" value={String(kpis?.total ?? 0)} />
+        <KpiCard icon={DollarSign} label="Receita (pagos)" value={formatBRL(kpis?.revenue ?? 0)} accent />
+        <KpiCard icon={CheckCircle2} label="Pagos" value={String(kpis?.paidCount ?? 0)} />
+        <KpiCard icon={Clock} label="Pendentes" value={String(kpis?.pendingCount ?? 0)} />
       </div>
 
       {/* Toolbar */}
@@ -206,12 +240,12 @@ function Page() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filtered.length === 0 && (
+              {rows.length === 0 && (
                 <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">
                   {search ? "Nenhum pedido encontrado para a busca." : "Nenhum pedido."}
                 </td></tr>
               )}
-              {filtered.map((o) => (
+              {rows.map((o) => (
                 <tr
                   key={o.id}
                   onClick={() => setSelected(o)}
@@ -251,6 +285,32 @@ function Page() {
             </tbody>
           </table>
         )}
+      </div>
+
+      {/* Paginação */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
+        <div className="text-muted-foreground">
+          {totalCount === 0
+            ? "0 resultados"
+            : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, totalCount)} de ${totalCount}`}
+          {isFetching && <span className="ml-2 opacity-60">carregando…</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground">Por página</span>
+          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+            <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10, 20, 50, 100].map((n) => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(0)}>«</Button>
+          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>‹</Button>
+          <span className="px-2 tabular-nums">{page + 1} / {totalPages}</span>
+          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage((p) => p + 1)}>›</Button>
+          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage(totalPages - 1)}>»</Button>
+        </div>
       </div>
 
       {/* Drawer detalhes */}
