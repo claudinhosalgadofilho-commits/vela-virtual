@@ -308,8 +308,15 @@ function Page() {
 
       <PaymentDialog
         open={!!pending}
-        onOpenChange={(o) => !o && !processing && setPending(null)}
-        values={pending}
+        onOpenChange={(o) => {
+          if (processing) return;
+          if (!o) {
+            setPending(null);
+            setSession(null);
+          }
+        }}
+        session={session}
+        method={pending?.payment_method ?? "pix"}
         amountCents={candle.price_cents}
         processing={processing}
         onConfirm={confirmPayment}
@@ -323,26 +330,22 @@ function Page() {
 function PaymentDialog({
   open,
   onOpenChange,
-  values,
+  session,
+  method,
   amountCents,
   processing,
   onConfirm,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  values: FormValues | null;
+  session: PaymentSession | null;
+  method: "pix" | "card";
   amountCents: number;
   processing: boolean;
   onConfirm: () => void;
 }) {
-  const isPix = values?.payment_method === "pix";
-  const pixCode = useMemo(
-    () =>
-      values
-        ? `00020126PIX-DEMO-${values.customer_email.replace(/[^a-z0-9]/gi, "").slice(0, 12).toUpperCase()}5204000053039865802BR5913SANTA-LUZIA6009SAO-PAULO62070503***6304ABCD`
-        : "",
-    [values],
-  );
+  const isPix = method === "pix";
+  const hasPix = session?.method === "pix";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -352,13 +355,27 @@ function PaymentDialog({
             {isPix ? "Pague com PIX" : "Pagamento com cartão"}
           </DialogTitle>
           <DialogDescription>
-            {isPix
-              ? "Escaneie o QR Code ou copie o código PIX abaixo para concluir."
-              : "Preencha os dados do cartão para finalizar."}
+            {hasPix
+              ? "Escaneie o QR Code ou copie o código PIX. A vela acende automaticamente após a confirmação."
+              : isPix
+                ? "Vamos gerar o QR Code PIX para você."
+                : "Você será redirecionado para o Mercado Pago para concluir o pagamento."}
           </DialogDescription>
         </DialogHeader>
 
-        {isPix ? <PixPanel code={pixCode} amountCents={amountCents} /> : <CardPanel />}
+        {hasPix ? (
+          <PixPanel
+            code={session.pix_qr_code ?? ""}
+            qrBase64={session.pix_qr_base64}
+            amountCents={amountCents}
+          />
+        ) : (
+          <div className="rounded-lg border border-border bg-secondary/40 p-4 text-center text-sm text-muted-foreground">
+            {processing
+              ? "Preparando pagamento seguro..."
+              : "Clique em confirmar para continuar."}
+          </div>
+        )}
 
         <DialogFooter className="mt-2 flex-col gap-2 sm:flex-row">
           <Button
@@ -367,29 +384,43 @@ function PaymentDialog({
             onClick={() => onOpenChange(false)}
             disabled={processing}
           >
-            Voltar
+            {hasPix ? "Fechar" : "Voltar"}
           </Button>
-          <Button
-            onClick={onConfirm}
-            disabled={processing}
-            className="w-full rounded-full bg-primary hover:bg-primary/90 sm:w-auto"
-          >
-            {processing ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Confirmando...
-              </>
-            ) : (
-              <>Confirmar pagamento ({formatBRL(amountCents)})</>
-            )}
-          </Button>
+          {!hasPix && (
+            <Button
+              onClick={onConfirm}
+              disabled={processing}
+              className="w-full rounded-full bg-primary hover:bg-primary/90 sm:w-auto"
+            >
+              {processing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Gerando cobrança...
+                </>
+              ) : isPix ? (
+                <>Gerar PIX ({formatBRL(amountCents)})</>
+              ) : (
+                <>
+                  Ir para Mercado Pago <ExternalLink className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
-function PixPanel({ code, amountCents }: { code: string; amountCents: number }) {
+function PixPanel({
+  code,
+  qrBase64,
+  amountCents,
+}: {
+  code: string;
+  qrBase64: string | null;
+  amountCents: number;
+}) {
   async function copy() {
     try {
       await navigator.clipboard.writeText(code);
@@ -400,53 +431,40 @@ function PixPanel({ code, amountCents }: { code: string; amountCents: number }) 
   }
   return (
     <div className="space-y-4">
-      <div className="mx-auto grid h-44 w-44 place-items-center rounded-xl border border-border bg-[repeating-conic-gradient(hsl(var(--foreground))_0_25%,hsl(var(--background))_0_50%)] [background-size:14px_14px]">
-        <span className="rounded-md bg-background/90 px-2 py-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-          QR Demo
-        </span>
+      <div className="mx-auto grid h-48 w-48 place-items-center overflow-hidden rounded-xl border border-border bg-white">
+        {qrBase64 ? (
+          <img
+            src={`data:image/png;base64,${qrBase64}`}
+            alt="QR Code PIX Mercado Pago"
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        )}
       </div>
       <div className="rounded-lg border border-border bg-secondary/40 p-3">
         <p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">
           PIX copia e cola
         </p>
         <p className="break-all font-mono text-[11px] leading-relaxed text-foreground/80">
-          {code}
+          {code || "Gerando..."}
         </p>
-        <Button type="button" variant="outline" size="sm" onClick={copy} className="mt-3 w-full">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={copy}
+          disabled={!code}
+          className="mt-3 w-full"
+        >
           <Copy className="mr-2 h-3.5 w-3.5" /> Copiar código
         </Button>
       </div>
-      <p className="text-center text-xs text-muted-foreground">
-        Valor: <strong className="text-foreground">{formatBRL(amountCents)}</strong>
+      <p className="flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
+        <Loader2 className="h-3 w-3 animate-spin" />
+        Aguardando pagamento — <strong className="text-foreground">{formatBRL(amountCents)}</strong>
       </p>
     </div>
   );
 }
 
-function CardPanel() {
-  return (
-    <div className="space-y-3">
-      <div>
-        <Label htmlFor="cc_number">Número do cartão</Label>
-        <Input id="cc_number" placeholder="0000 0000 0000 0000" inputMode="numeric" maxLength={19} />
-      </div>
-      <div>
-        <Label htmlFor="cc_name">Nome impresso no cartão</Label>
-        <Input id="cc_name" placeholder="Como aparece no cartão" autoComplete="cc-name" />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="cc_exp">Validade</Label>
-          <Input id="cc_exp" placeholder="MM/AA" maxLength={5} />
-        </div>
-        <div>
-          <Label htmlFor="cc_cvc">CVC</Label>
-          <Input id="cc_cvc" placeholder="000" inputMode="numeric" maxLength={4} />
-        </div>
-      </div>
-      <p className="text-xs text-muted-foreground">
-        Dados fictícios — nenhuma cobrança é realizada no modo demonstração.
-      </p>
-    </div>
-  );
-}
