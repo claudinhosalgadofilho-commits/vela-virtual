@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Flame, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoAsset from "@/assets/vela-virtual-logo.jpeg.asset.json";
 
 const links = [
   { to: "/", label: "Início" },
@@ -31,12 +32,14 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 md:px-8">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 ring-1 ring-primary/20 transition-transform group-hover:scale-105">
-            <Flame className="h-4 w-4 text-gold" strokeWidth={1.8} />
-          </span>
-          <span className="font-serif text-xl tracking-wide text-foreground">
-            Velas de Luz
+        <Link to="/" className="flex items-center gap-3 group">
+          <img
+            src={logoAsset.url}
+            alt="Vela Virtual Santa Luzia"
+            className="h-11 w-11 rounded-full object-cover ring-1 ring-gold/30 transition-transform group-hover:scale-105"
+          />
+          <span className="hidden font-serif text-lg tracking-wide text-foreground sm:inline">
+            Vela Virtual <span className="text-gold">Santa Luzia</span>
           </span>
         </Link>
 
