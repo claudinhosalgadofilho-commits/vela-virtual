@@ -328,9 +328,9 @@ function Page() {
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(0)}>«</Button>
-          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>‹</Button>
+          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(Math.max(0, page - 1))}>‹</Button>
           <span className="px-2 tabular-nums">{page + 1} / {totalPages}</span>
-          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage((p) => p + 1)}>›</Button>
+          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage(page + 1)}>›</Button>
           <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage(totalPages - 1)}>»</Button>
         </div>
       </div>
