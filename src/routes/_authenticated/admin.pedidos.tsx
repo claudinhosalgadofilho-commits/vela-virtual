@@ -131,13 +131,29 @@ function Page() {
     setSelected(null);
   }
 
-  function exportCsv() {
-    if (!filtered.length) return toast.error("Nada para exportar");
+  async function exportCsv() {
+    // Exporta TODOS os registros que batem com filtro/busca, não só a página atual
+    let q = supabase
+      .from("orders")
+      .select("*, candle:candles(name, slug)")
+      .order("created_at", { ascending: false })
+      .limit(10000);
+    if (filter !== "all") q = q.eq("status", filter);
+    if (debouncedSearch) {
+      const s = debouncedSearch.replace(/[%,()]/g, "");
+      q = q.or(
+        `customer_name.ilike.%${s}%,customer_email.ilike.%${s}%,tribute_name.ilike.%${s}%`
+      );
+    }
+    const { data: all, error } = await q;
+    if (error) return toast.error(error.message);
+    const list = (all ?? []) as unknown as OrderRow[];
+    if (!list.length) return toast.error("Nada para exportar");
     const header = [
       "Data", "Cliente", "Email", "Telefone", "Homenageado",
       "Vela", "Valor (BRL)", "Pagamento", "Status", "ID Externo", "ID",
     ];
-    const rows = filtered.map((o) => [
+    const csvRows = list.map((o) => [
       new Date(o.created_at).toLocaleString("pt-BR"),
       o.customer_name,
       o.customer_email,
@@ -150,7 +166,7 @@ function Page() {
       o.external_payment_id ?? "",
       o.id,
     ]);
-    const csv = [header, ...rows]
+    const csv = [header, ...csvRows]
       .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";"))
       .join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -160,7 +176,7 @@ function Page() {
     a.download = `pedidos-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`${filtered.length} pedido(s) exportado(s)`);
+    toast.success(`${list.length} pedido(s) exportado(s)`);
   }
 
   return (
