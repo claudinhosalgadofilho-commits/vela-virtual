@@ -24,7 +24,26 @@ function Page() {
     },
   });
 
+  const { data: adminCfg, isLoading: loadingAdmin } = useQuery({
+    queryKey: ["admin", "admin_settings"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("admin_settings")
+        .select("*")
+        .eq("id", 1)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { mp_access_token: string | null; mp_webhook_secret: string | null; mp_public_key: string | null } | null;
+    },
+  });
+
   const [form, setForm] = useState<Record<string, string>>({});
+  const [mpForm, setMpForm] = useState<{ mp_access_token: string; mp_webhook_secret: string; mp_public_key: string }>({
+    mp_access_token: "",
+    mp_webhook_secret: "",
+    mp_public_key: "",
+  });
+
   useEffect(() => { if (data) setForm({
     company_name: data.company_name ?? "",
     phone: data.phone ?? "", whatsapp: data.whatsapp ?? "", email: data.email ?? "",
@@ -32,6 +51,14 @@ function Page() {
     seo_title: data.seo_title ?? "", seo_description: data.seo_description ?? "",
     google_analytics_id: data.google_analytics_id ?? "", meta_pixel_id: data.meta_pixel_id ?? "",
   }); }, [data]);
+
+  useEffect(() => {
+    if (adminCfg) setMpForm({
+      mp_access_token: adminCfg.mp_access_token ?? "",
+      mp_webhook_secret: adminCfg.mp_webhook_secret ?? "",
+      mp_public_key: adminCfg.mp_public_key ?? "",
+    });
+  }, [adminCfg]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -42,10 +69,28 @@ function Page() {
     else { toast.success("Configurações salvas"); qc.invalidateQueries({ queryKey: ["admin", "settings"] }); }
   }
 
+  async function saveMp(e: React.FormEvent) {
+    e.preventDefault();
+    const payload = {
+      mp_access_token: mpForm.mp_access_token.trim() || null,
+      mp_webhook_secret: mpForm.mp_webhook_secret.trim() || null,
+      mp_public_key: mpForm.mp_public_key.trim() || null,
+    };
+    const { error } = await (supabase as any).from("admin_settings").update(payload).eq("id", 1);
+    if (error) toast.error(error.message);
+    else { toast.success("Credenciais Mercado Pago salvas"); qc.invalidateQueries({ queryKey: ["admin", "admin_settings"] }); }
+  }
+
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+  const setMp = (k: keyof typeof mpForm) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setMpForm((f) => ({ ...f, [k]: e.target.value }));
 
-  if (isLoading) return <Skeleton className="h-96 rounded-2xl" />;
+  if (isLoading || loadingAdmin) return <Skeleton className="h-96 rounded-2xl" />;
+
+  const webhookUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/api/public/webhooks/mercadopago`
+    : "/api/public/webhooks/mercadopago";
 
   return (
     <div className="max-w-3xl">
@@ -86,6 +131,54 @@ function Page() {
         </section>
 
         <Button type="submit" size="lg" className="rounded-full">Salvar alterações</Button>
+      </form>
+
+      <form onSubmit={saveMp} className="mt-8 space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft">
+        <div>
+          <h2 className="font-serif text-xl">Mercado Pago</h2>
+          <p className="text-sm text-muted-foreground">
+            Credenciais para processar PIX e cartão. Obtenha em <strong>Mercado Pago → Suas integrações → Credenciais</strong>.
+          </p>
+        </div>
+        <div>
+          <Label>Access Token</Label>
+          <Input
+            type="password"
+            value={mpForm.mp_access_token}
+            onChange={setMp("mp_access_token")}
+            placeholder="APP_USR-... (produção) ou TEST-... (sandbox)"
+            autoComplete="off"
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Nunca é exposto no navegador — usado apenas em chamadas server-side.
+          </p>
+        </div>
+        <div>
+          <Label>Webhook Secret (opcional, recomendado)</Label>
+          <Input
+            type="password"
+            value={mpForm.mp_webhook_secret}
+            onChange={setMp("mp_webhook_secret")}
+            placeholder="Segredo configurado em Webhooks no painel"
+            autoComplete="off"
+          />
+        </div>
+        <div>
+          <Label>Public Key (opcional)</Label>
+          <Input
+            value={mpForm.mp_public_key}
+            onChange={setMp("mp_public_key")}
+            placeholder="APP_USR-..."
+          />
+        </div>
+        <div className="rounded-lg border border-border bg-secondary/40 p-3 text-xs">
+          <p className="font-medium text-foreground">URL de notificação (Webhook)</p>
+          <p className="mt-1 break-all font-mono text-muted-foreground">{webhookUrl}</p>
+          <p className="mt-2 text-muted-foreground">
+            Cadastre esta URL em <em>Mercado Pago → Webhooks</em> e selecione o evento <strong>Pagamentos</strong>.
+          </p>
+        </div>
+        <Button type="submit" size="lg" className="rounded-full">Salvar credenciais</Button>
       </form>
     </div>
   );
