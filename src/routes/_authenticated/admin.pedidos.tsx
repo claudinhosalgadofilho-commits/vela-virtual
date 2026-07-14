@@ -287,6 +287,32 @@ function Page() {
         )}
       </div>
 
+      {/* Paginação */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
+        <div className="text-muted-foreground">
+          {totalCount === 0
+            ? "0 resultados"
+            : `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, totalCount)} de ${totalCount}`}
+          {isFetching && <span className="ml-2 opacity-60">carregando…</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground">Por página</span>
+          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+            <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10, 20, 50, 100].map((n) => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(0)}>«</Button>
+          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>‹</Button>
+          <span className="px-2 tabular-nums">{page + 1} / {totalPages}</span>
+          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage((p) => p + 1)}>›</Button>
+          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage(totalPages - 1)}>»</Button>
+        </div>
+      </div>
+
       {/* Drawer detalhes */}
       <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
