@@ -139,7 +139,7 @@ function Page() {
           window.clearInterval(interval);
           toast.success("Pagamento confirmado 🕯️");
           navigate({ to: "/homenagem/$id", params: { id: res.tribute_id } });
-        } else if (res.status === "failed") {
+        } else if (res.status === "cancelled") {
           window.clearInterval(interval);
           toast.error("Pagamento recusado. Tente novamente.");
           setSession(null);
