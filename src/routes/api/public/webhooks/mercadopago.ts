@@ -91,7 +91,7 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
           payment.status === "approved"
             ? "paid"
             : payment.status === "rejected" || payment.status === "cancelled"
-              ? "failed"
+              ? "cancelled"
               : "pending";
 
         if (order.status === nextStatus) return new Response("noop");
