@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { createOrderAndPayment, getOrderStatus } from "@/lib/payments.functions";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,12 @@ import {
   Loader2,
   QrCode,
   ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
+
+type PaymentSession =
+  | { order_id: string; method: "pix"; pix_qr_code: string | null; pix_qr_base64: string | null }
+  | { order_id: string; method: "card"; init_point: string; sandbox_init_point: string };
 
 export const Route = createFileRoute("/velas/$slug")({
   component: Page,
