@@ -108,47 +108,52 @@ function Page() {
     if (!candle || !pending) return;
     setProcessing(true);
     try {
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          candle_id: candle.id,
-          customer_name: pending.customer_name,
-          customer_email: pending.customer_email,
-          customer_phone: pending.customer_phone || null,
-          tribute_name: pending.tribute_name,
-          tribute_message: pending.tribute_message || null,
-          amount_cents: candle.price_cents,
-          payment_method: pending.payment_method,
-          status: "paid", // MOCK — trocar quando Mercado Pago for integrado.
-        })
-        .select()
-        .single();
-
-      if (orderErr || !order) throw orderErr ?? new Error("Falha ao criar pedido");
-
-      const ends = new Date(Date.now() + candle.duration_hours * 3600_000).toISOString();
-      const { data: tribute, error: tErr } = await supabase
-        .from("tributes")
-        .insert({
-          order_id: order.id,
-          candle_id: candle.id,
-          tribute_name: pending.tribute_name,
-          tribute_message: pending.tribute_message || null,
-          ends_at: ends,
-        })
-        .select()
-        .single();
-
-      if (tErr || !tribute) throw tErr ?? new Error("Falha ao criar homenagem");
-
-      toast.success("Vela acesa com sucesso 🕯️");
-      navigate({ to: "/homenagem/$id", params: { id: tribute.id } });
+      const result = (await createOrderAndPayment({
+        data: { ...pending, candle_id: candle.id },
+      })) as PaymentSession;
+      setSession(result);
+      if (result.method === "card") {
+        // Redirect to Mercado Pago Checkout Pro
+        window.location.href = result.init_point || result.sandbox_init_point;
+        return;
+      }
     } catch (err) {
       console.error(err);
-      toast.error("Não foi possível concluir. Tente novamente.");
+      toast.error(err instanceof Error ? err.message : "Não foi possível gerar o pagamento.");
+    } finally {
       setProcessing(false);
     }
   }
+
+  // Poll order status while a PIX session is open
+  useEffect(() => {
+    if (!session || session.method !== "pix") return;
+    let cancelled = false;
+    const orderId = session.order_id;
+    const interval = window.setInterval(async () => {
+      try {
+        const res = await getOrderStatus({ data: { order_id: orderId } });
+        if (cancelled) return;
+        if (res.status === "paid" && res.tribute_id) {
+          window.clearInterval(interval);
+          toast.success("Pagamento confirmado 🕯️");
+          navigate({ to: "/homenagem/$id", params: { id: res.tribute_id } });
+        } else if (res.status === "failed") {
+          window.clearInterval(interval);
+          toast.error("Pagamento recusado. Tente novamente.");
+          setSession(null);
+          setPending(null);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }, 4000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [session, navigate]);
+
 
   if (isLoading) {
     return (
