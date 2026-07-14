@@ -76,20 +76,20 @@ function Page() {
     return () => clearTimeout(t);
   }, [search]);
 
+  type SP = z.infer<typeof searchSchema>;
+
   useEffect(() => {
     if (debouncedSearch !== urlQ) {
-      navigate({ search: (p) => ({ ...p, q: debouncedSearch, page: 0 }), replace: true });
+      navigate({ search: (p: SP) => ({ ...p, q: debouncedSearch, page: 0 }), replace: true });
     }
   }, [debouncedSearch, urlQ, navigate]);
 
   const setFilter = (v: string) =>
-    navigate({ search: (p) => ({ ...p, status: v, page: 0 }) });
+    navigate({ search: (p: SP) => ({ ...p, status: v, page: 0 }) });
   const setPage = (n: number) =>
-    navigate({ search: (p) => ({ ...p, page: n }) });
+    navigate({ search: (p: SP) => ({ ...p, page: n }) });
   const setPageSize = (n: number) =>
-    navigate({ search: (p) => ({ ...p, pageSize: n, page: 0 }) });
-
-  useEffect(() => { setPage(0); }, [filter, debouncedSearch, pageSize]);
+    navigate({ search: (p: SP) => ({ ...p, pageSize: n, page: 0 }) });
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "orders", filter, debouncedSearch, page, pageSize],
