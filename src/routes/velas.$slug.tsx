@@ -68,6 +68,7 @@ function Page() {
   const navigate = useNavigate();
   const [pending, setPending] = useState<FormValues | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [session, setSession] = useState<PaymentSession | null>(null);
 
   const { data: candle, isLoading } = useQuery({
     queryKey: ["candle", slug],
