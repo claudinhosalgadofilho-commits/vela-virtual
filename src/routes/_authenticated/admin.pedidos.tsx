@@ -21,11 +21,22 @@ import {
   CheckCircle2, Clock, ExternalLink, X,
 } from "lucide-react";
 
+const PAGE_SIZE_STORAGE_KEY = "admin.pedidos.pageSize";
+const DEFAULT_PAGE_SIZE = 20;
+const ALLOWED_PAGE_SIZES = [10, 20, 50, 100];
+
+function getStoredPageSize(): number {
+  if (typeof window === "undefined") return DEFAULT_PAGE_SIZE;
+  const raw = window.localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
+  const n = raw ? Number(raw) : NaN;
+  return ALLOWED_PAGE_SIZES.includes(n) ? n : DEFAULT_PAGE_SIZE;
+}
+
 const searchSchema = z.object({
   status: fallback(z.string(), "all").default("all"),
   q: fallback(z.string(), "").default(""),
   page: fallback(z.number().int(), 0).default(0),
-  pageSize: fallback(z.number().int(), 20).default(20),
+  pageSize: fallback(z.number().int(), DEFAULT_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
 });
 
 export const Route = createFileRoute("/_authenticated/admin/pedidos")({
