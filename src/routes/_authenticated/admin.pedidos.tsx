@@ -1,6 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +21,15 @@ import {
   CheckCircle2, Clock, ExternalLink,
 } from "lucide-react";
 
+const searchSchema = z.object({
+  status: fallback(z.string(), "all").default("all"),
+  q: fallback(z.string(), "").default(""),
+  page: fallback(z.number().int(), 0).default(0),
+  pageSize: fallback(z.number().int(), 20).default(20),
+});
+
 export const Route = createFileRoute("/_authenticated/admin/pedidos")({
+  validateSearch: zodValidator(searchSchema),
   component: Page,
 });
 
