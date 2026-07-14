@@ -242,6 +242,11 @@ function Page() {
             <SelectItem value="cancelled">Cancelado</SelectItem>
           </SelectContent>
         </Select>
+        {hasFilters && (
+          <Button variant="ghost" onClick={resetFilters} className="gap-2">
+            <X className="h-4 w-4" /> Limpar filtros
+          </Button>
+        )}
         <Button variant="outline" onClick={exportCsv} className="gap-2">
           <Download className="h-4 w-4" /> Exportar CSV
         </Button>
