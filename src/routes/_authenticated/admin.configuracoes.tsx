@@ -132,6 +132,54 @@ function Page() {
 
         <Button type="submit" size="lg" className="rounded-full">Salvar alterações</Button>
       </form>
+
+      <form onSubmit={saveMp} className="mt-8 space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft">
+        <div>
+          <h2 className="font-serif text-xl">Mercado Pago</h2>
+          <p className="text-sm text-muted-foreground">
+            Credenciais para processar PIX e cartão. Obtenha em <strong>Mercado Pago → Suas integrações → Credenciais</strong>.
+          </p>
+        </div>
+        <div>
+          <Label>Access Token</Label>
+          <Input
+            type="password"
+            value={mpForm.mp_access_token}
+            onChange={setMp("mp_access_token")}
+            placeholder="APP_USR-... (produção) ou TEST-... (sandbox)"
+            autoComplete="off"
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Nunca é exposto no navegador — usado apenas em chamadas server-side.
+          </p>
+        </div>
+        <div>
+          <Label>Webhook Secret (opcional, recomendado)</Label>
+          <Input
+            type="password"
+            value={mpForm.mp_webhook_secret}
+            onChange={setMp("mp_webhook_secret")}
+            placeholder="Segredo configurado em Webhooks no painel"
+            autoComplete="off"
+          />
+        </div>
+        <div>
+          <Label>Public Key (opcional)</Label>
+          <Input
+            value={mpForm.mp_public_key}
+            onChange={setMp("mp_public_key")}
+            placeholder="APP_USR-..."
+          />
+        </div>
+        <div className="rounded-lg border border-border bg-secondary/40 p-3 text-xs">
+          <p className="font-medium text-foreground">URL de notificação (Webhook)</p>
+          <p className="mt-1 break-all font-mono text-muted-foreground">{webhookUrl}</p>
+          <p className="mt-2 text-muted-foreground">
+            Cadastre esta URL em <em>Mercado Pago → Webhooks</em> e selecione o evento <strong>Pagamentos</strong>.
+          </p>
+        </div>
+        <Button type="submit" size="lg" className="rounded-full">Salvar credenciais</Button>
+      </form>
     </div>
   );
 }
