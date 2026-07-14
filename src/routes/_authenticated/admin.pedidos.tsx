@@ -240,12 +240,12 @@ function Page() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filtered.length === 0 && (
+              {rows.length === 0 && (
                 <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">
                   {search ? "Nenhum pedido encontrado para a busca." : "Nenhum pedido."}
                 </td></tr>
               )}
-              {filtered.map((o) => (
+              {rows.map((o) => (
                 <tr
                   key={o.id}
                   onClick={() => setSelected(o)}
