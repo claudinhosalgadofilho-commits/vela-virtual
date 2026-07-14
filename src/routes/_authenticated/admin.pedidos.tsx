@@ -96,18 +96,23 @@ function Page() {
   const totalCount = data?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
-  const kpis = useMemo(() => {
-    const list = data ?? [];
-    const paid = list.filter((o) => o.status === "paid");
-    const pending = list.filter((o) => o.status === "pending");
-    const revenue = paid.reduce((sum, o) => sum + o.amount_cents, 0);
-    return {
-      total: list.length,
-      paidCount: paid.length,
-      pendingCount: pending.length,
-      revenue,
-    };
-  }, [data]);
+  const { data: kpis } = useQuery({
+    queryKey: ["admin", "orders", "kpis"],
+    queryFn: async () => {
+      const [total, paid, pending, revenue] = await Promise.all([
+        supabase.from("orders").select("id", { count: "exact", head: true }),
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "paid"),
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("orders").select("amount_cents").eq("status", "paid"),
+      ]);
+      return {
+        total: total.count ?? 0,
+        paidCount: paid.count ?? 0,
+        pendingCount: pending.count ?? 0,
+        revenue: (revenue.data ?? []).reduce((s, r) => s + (r.amount_cents ?? 0), 0),
+      };
+    },
+  });
 
   async function updateStatus(id: string, status: Status) {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
