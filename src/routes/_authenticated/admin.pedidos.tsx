@@ -1,6 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +21,15 @@ import {
   CheckCircle2, Clock, ExternalLink,
 } from "lucide-react";
 
+const searchSchema = z.object({
+  status: fallback(z.string(), "all").default("all"),
+  q: fallback(z.string(), "").default(""),
+  page: fallback(z.number().int(), 0).default(0),
+  pageSize: fallback(z.number().int(), 20).default(20),
+});
+
 export const Route = createFileRoute("/_authenticated/admin/pedidos")({
+  validateSearch: zodValidator(searchSchema),
   component: Page,
 });
 
@@ -55,19 +65,31 @@ type OrderRow = {
 
 function Page() {
   const qc = useQueryClient();
-  const [filter, setFilter] = useState<Status | "all">("all");
-  const [search, setSearch] = useState("");
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { status: filter, q: urlQ, page, pageSize } = Route.useSearch();
   const [selected, setSelected] = useState<OrderRow | null>(null);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [search, setSearch] = useState(urlQ);
+  const [debouncedSearch, setDebouncedSearch] = useState(urlQ);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => { setPage(0); }, [filter, debouncedSearch, pageSize]);
+  type SP = z.infer<typeof searchSchema>;
+
+  useEffect(() => {
+    if (debouncedSearch !== urlQ) {
+      navigate({ search: (p: SP) => ({ ...p, q: debouncedSearch, page: 0 }), replace: true });
+    }
+  }, [debouncedSearch, urlQ, navigate]);
+
+  const setFilter = (v: string) =>
+    navigate({ search: (p: SP) => ({ ...p, status: v, page: 0 }) });
+  const setPage = (n: number) =>
+    navigate({ search: (p: SP) => ({ ...p, page: n }) });
+  const setPageSize = (n: number) =>
+    navigate({ search: (p: SP) => ({ ...p, pageSize: n, page: 0 }) });
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "orders", filter, debouncedSearch, page, pageSize],
@@ -306,9 +328,9 @@ function Page() {
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(0)}>«</Button>
-          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>‹</Button>
+          <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(Math.max(0, page - 1))}>‹</Button>
           <span className="px-2 tabular-nums">{page + 1} / {totalPages}</span>
-          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage((p) => p + 1)}>›</Button>
+          <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage(page + 1)}>›</Button>
           <Button variant="outline" size="sm" disabled={page + 1 >= totalPages} onClick={() => setPage(totalPages - 1)}>»</Button>
         </div>
       </div>
