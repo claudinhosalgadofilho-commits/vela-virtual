@@ -250,9 +250,8 @@ function Page() {
             <div className="mt-6 flex items-start gap-2 rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <span>
-                <strong>Modo demonstração:</strong> nenhum valor é cobrado. A integração
-                com Mercado Pago (PIX e cartão reais) é ativada assim que suas credenciais
-                forem fornecidas.
+                Pagamento processado com segurança pelo <strong>Mercado Pago</strong>.
+                PIX ou cartão de crédito.
               </span>
             </div>
 
