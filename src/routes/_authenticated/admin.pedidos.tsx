@@ -90,6 +90,12 @@ function Page() {
     navigate({ search: (p: SP) => ({ ...p, page: n }) });
   const setPageSize = (n: number) =>
     navigate({ search: (p: SP) => ({ ...p, pageSize: n, page: 0 }) });
+  const hasFilters = filter !== "all" || debouncedSearch !== "" || search !== "";
+  const resetFilters = () => {
+    setSearch("");
+    setDebouncedSearch("");
+    navigate({ search: () => ({ status: "all", q: "", page: 0, pageSize }) });
+  };
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["admin", "orders", filter, debouncedSearch, page, pageSize],
