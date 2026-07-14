@@ -21,11 +21,22 @@ import {
   CheckCircle2, Clock, ExternalLink, X,
 } from "lucide-react";
 
+const PAGE_SIZE_STORAGE_KEY = "admin.pedidos.pageSize";
+const DEFAULT_PAGE_SIZE = 20;
+const ALLOWED_PAGE_SIZES = [10, 20, 50, 100];
+
+function getStoredPageSize(): number {
+  if (typeof window === "undefined") return DEFAULT_PAGE_SIZE;
+  const raw = window.localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
+  const n = raw ? Number(raw) : NaN;
+  return ALLOWED_PAGE_SIZES.includes(n) ? n : DEFAULT_PAGE_SIZE;
+}
+
 const searchSchema = z.object({
   status: fallback(z.string(), "all").default("all"),
   q: fallback(z.string(), "").default(""),
   page: fallback(z.number().int(), 0).default(0),
-  pageSize: fallback(z.number().int(), 20).default(20),
+  pageSize: fallback(z.number().int(), DEFAULT_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
 });
 
 export const Route = createFileRoute("/_authenticated/admin/pedidos")({
@@ -84,12 +95,28 @@ function Page() {
     }
   }, [debouncedSearch, urlQ, navigate]);
 
+  // Ao montar, se a URL não trouxer pageSize explícito, aplica o valor persistido.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("pageSize")) return;
+    const stored = getStoredPageSize();
+    if (stored !== pageSize) {
+      navigate({ search: (p: SP) => ({ ...p, pageSize: stored, page: 0 }), replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const setFilter = (v: string) =>
     navigate({ search: (p: SP) => ({ ...p, status: v, page: 0 }) });
   const setPage = (n: number) =>
     navigate({ search: (p: SP) => ({ ...p, page: n }) });
-  const setPageSize = (n: number) =>
+  const setPageSize = (n: number) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(n));
+    }
     navigate({ search: (p: SP) => ({ ...p, pageSize: n, page: 0 }) });
+  };
   const hasFilters = filter !== "all" || debouncedSearch !== "" || search !== "";
   const resetFilters = () => {
     setSearch("");
