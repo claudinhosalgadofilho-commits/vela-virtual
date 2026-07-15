@@ -78,12 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Vela Virtual Santa Luzia — Acenda uma luz, eternize uma memória" },
+      { title: "Vela Virtual — Acenda uma luz, eternize uma memória" },
       { name: "description", content: "Preste sua homenagem acendendo uma vela virtual e deixe uma mensagem de conforto à família." },
-      { property: "og:title", content: "Vela Virtual Santa Luzia" },
+      { property: "og:title", content: "Vela Virtual" },
       { property: "og:description", content: "Acenda uma luz. Eternize uma memória." },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Vela Virtual Santa Luzia" },
+      { property: "og:site_name", content: "Vela Virtual" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
