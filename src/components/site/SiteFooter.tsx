@@ -10,11 +10,11 @@ export function SiteFooter() {
           <Link to="/" className="flex items-center gap-3">
             <img
               src={logoAsset.url}
-              alt="Vela Virtual Santa Luzia"
+              alt="Vela Virtual"
               className="h-10 w-10 rounded-full object-cover ring-1 ring-gold/30"
             />
             <span className="font-serif text-lg text-foreground">
-              Vela Virtual <span className="text-gold">Santa Luzia</span>
+              Vela <span className="text-gold">Virtual</span>
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground italic">
