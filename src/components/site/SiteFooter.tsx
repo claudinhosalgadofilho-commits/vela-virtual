@@ -10,11 +10,11 @@ export function SiteFooter() {
           <Link to="/" className="flex items-center gap-3">
             <img
               src={logoAsset.url}
-              alt="Vela Virtual Santa Luzia"
+              alt="Vela Virtual"
               className="h-10 w-10 rounded-full object-cover ring-1 ring-gold/30"
             />
             <span className="font-serif text-lg text-foreground">
-              Vela Virtual <span className="text-gold">Santa Luzia</span>
+              Vela <span className="text-gold">Virtual</span>
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground italic">
@@ -46,7 +46,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border/60">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground md:flex-row md:px-8">
-          <p>© {year} Vela Virtual Santa Luzia. Todos os direitos reservados.</p>
+          <p>© {year} Vela Virtual. Todos os direitos reservados.</p>
           <p className="italic">Feito com respeito e cuidado.</p>
         </div>
       </div>

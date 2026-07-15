@@ -35,11 +35,11 @@ export function SiteHeader() {
         <Link to="/" className="flex items-center gap-3 group">
           <img
             src={logoAsset.url}
-            alt="Vela Virtual Santa Luzia"
+            alt="Vela Virtual"
             className="h-11 w-11 rounded-full object-cover ring-1 ring-gold/30 transition-transform group-hover:scale-105"
           />
           <span className="hidden font-serif text-lg tracking-wide text-foreground sm:inline">
-            Vela Virtual <span className="text-gold">Santa Luzia</span>
+            Vela <span className="text-gold">Virtual</span>
           </span>
         </Link>
 
