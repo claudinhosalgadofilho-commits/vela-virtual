@@ -46,7 +46,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border/60">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground md:flex-row md:px-8">
-          <p>© {year} Vela Virtual Santa Luzia. Todos os direitos reservados.</p>
+          <p>© {year} Vela Virtual. Todos os direitos reservados.</p>
           <p className="italic">Feito com respeito e cuidado.</p>
         </div>
       </div>
