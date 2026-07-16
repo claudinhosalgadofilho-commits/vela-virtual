@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Heart } from "lucide-react";
+import { Heart, Link2 } from "lucide-react";
 
 /**
  * Livro de condolências público.
@@ -53,6 +53,43 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
       return data ?? [];
     },
   });
+
+  // Rola até (e destaca) a mensagem indicada por #condolencia-<id> na URL.
+  useEffect(() => {
+    if (!condolences?.length) return;
+    const hash = window.location.hash;
+    const match = hash.match(/^#condolencia-(.+)$/);
+    if (!match) return;
+    const id = match[1];
+    if (!condolences.some((c) => c.id === id)) return;
+    const el = document.getElementById(`condolencia-${id}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setHighlightedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    const t = setTimeout(() => {
+      setHighlightedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [condolences]);
+
+  const handleCopyLink = async (id: string) => {
+    const url = `${window.location.origin}${window.location.pathname}#condolencia-${id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link da mensagem copiado.");
+    } catch {
+      toast.error("Não foi possível copiar o link.");
+    }
+  };
+
 
   // Realtime: novas mensagens aprovadas aparecem sem refresh.
   // A RLS já garante que só recebemos linhas visíveis para este visitante.
@@ -202,28 +239,39 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
             return (
             <article
               key={c.id}
-              className={`rounded-xl border p-4 animate-fade-in transition-all duration-1000 ${
+              id={`condolencia-${c.id}`}
+              className={`group scroll-mt-24 rounded-xl border p-4 animate-fade-in transition-all duration-1000 ${
                 isNew
                   ? "border-gold/70 bg-gold/10 ring-2 ring-gold/40 shadow-soft"
                   : "border-border/50 bg-background/60"
               }`}
             >
-
-
               <p className="font-serif text-base italic text-foreground">
                 &ldquo;{c.message}&rdquo;
               </p>
-              <footer className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+              <footer className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
                 <span className="font-medium text-foreground/80">— {c.author_name}</span>
-                <time dateTime={c.created_at}>
-                  {new Date(c.created_at).toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </time>
+                <div className="flex items-center gap-2">
+                  <time dateTime={c.created_at}>
+                    {new Date(c.created_at).toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </time>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLink(c.id)}
+                    aria-label="Copiar link desta mensagem"
+                    title="Copiar link"
+                    className="opacity-60 hover:opacity-100 focus-visible:opacity-100 hover:text-gold transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/40 rounded"
+                  >
+                    <Link2 className="h-3.5 w-3.5" aria-hidden />
+                  </button>
+                </div>
               </footer>
             </article>
+
             );
           })
 
