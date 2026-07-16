@@ -67,10 +67,25 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
           table: "condolences",
           filter: `tribute_id=eq.${tributeId}`,
         },
-        () => {
+        (payload) => {
+          const newId = (payload.new as { id?: string })?.id;
+          if (newId) {
+            setHighlightedIds((prev) => {
+              const next = new Set(prev);
+              next.add(newId);
+              return next;
+            });
+            setTimeout(() => {
+              setHighlightedIds((prev) => {
+                const next = new Set(prev);
+                next.delete(newId);
+                return next;
+              });
+            }, 4000);
+          }
           qc.invalidateQueries({ queryKey: ["condolences", tributeId] });
         },
-      )
+
       .subscribe();
 
     return () => {
