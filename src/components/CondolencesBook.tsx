@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Heart } from "lucide-react";
+import { Heart, Link2 } from "lucide-react";
 
 /**
  * Livro de condolências público.
