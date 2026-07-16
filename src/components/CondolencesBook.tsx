@@ -85,8 +85,9 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
           }
           qc.invalidateQueries({ queryKey: ["condolences", tributeId] });
         },
-
+      )
       .subscribe();
+
 
     return () => {
       supabase.removeChannel(channel);
