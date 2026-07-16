@@ -54,6 +54,43 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
     },
   });
 
+  // Rola até (e destaca) a mensagem indicada por #condolencia-<id> na URL.
+  useEffect(() => {
+    if (!condolences?.length) return;
+    const hash = window.location.hash;
+    const match = hash.match(/^#condolencia-(.+)$/);
+    if (!match) return;
+    const id = match[1];
+    if (!condolences.some((c) => c.id === id)) return;
+    const el = document.getElementById(`condolencia-${id}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setHighlightedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    const t = setTimeout(() => {
+      setHighlightedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [condolences]);
+
+  const handleCopyLink = async (id: string) => {
+    const url = `${window.location.origin}${window.location.pathname}#condolencia-${id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link da mensagem copiado.");
+    } catch {
+      toast.error("Não foi possível copiar o link.");
+    }
+  };
+
+
   // Realtime: novas mensagens aprovadas aparecem sem refresh.
   // A RLS já garante que só recebemos linhas visíveis para este visitante.
   useEffect(() => {
