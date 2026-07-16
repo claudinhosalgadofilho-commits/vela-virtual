@@ -239,3 +239,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
 .candle-scene.extinguished .wick {
   background: linear-gradient(#1a1208, #0a0704);
 }
+
+#lovable-badge {
+  display: none !important;
+}
