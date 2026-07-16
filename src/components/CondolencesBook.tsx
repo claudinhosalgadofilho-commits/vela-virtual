@@ -239,28 +239,39 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
             return (
             <article
               key={c.id}
-              className={`rounded-xl border p-4 animate-fade-in transition-all duration-1000 ${
+              id={`condolencia-${c.id}`}
+              className={`group scroll-mt-24 rounded-xl border p-4 animate-fade-in transition-all duration-1000 ${
                 isNew
                   ? "border-gold/70 bg-gold/10 ring-2 ring-gold/40 shadow-soft"
                   : "border-border/50 bg-background/60"
               }`}
             >
-
-
               <p className="font-serif text-base italic text-foreground">
                 &ldquo;{c.message}&rdquo;
               </p>
-              <footer className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+              <footer className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
                 <span className="font-medium text-foreground/80">— {c.author_name}</span>
-                <time dateTime={c.created_at}>
-                  {new Date(c.created_at).toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </time>
+                <div className="flex items-center gap-2">
+                  <time dateTime={c.created_at}>
+                    {new Date(c.created_at).toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </time>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLink(c.id)}
+                    aria-label="Copiar link desta mensagem"
+                    title="Copiar link"
+                    className="opacity-60 hover:opacity-100 focus-visible:opacity-100 hover:text-gold transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/40 rounded"
+                  >
+                    <Link2 className="h-3.5 w-3.5" aria-hidden />
+                  </button>
+                </div>
               </footer>
             </article>
+
             );
           })
 
