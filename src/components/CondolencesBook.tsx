@@ -37,6 +37,8 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
   const [authorName, setAuthorName] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<{ author_name?: string; message?: string }>({});
+  const [highlightedIds, setHighlightedIds] = useState<Set<string>>(new Set());
+
 
   const { data: condolences, isLoading } = useQuery({
     queryKey: ["condolences", tributeId],
