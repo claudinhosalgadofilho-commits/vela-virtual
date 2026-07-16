@@ -182,8 +182,9 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
           condolences.map((c) => (
             <article
               key={c.id}
-              className="rounded-xl border border-border/50 bg-background/60 p-4"
+              className="rounded-xl border border-border/50 bg-background/60 p-4 animate-fade-in"
             >
+
               <p className="font-serif text-base italic text-foreground">
                 &ldquo;{c.message}&rdquo;
               </p>
