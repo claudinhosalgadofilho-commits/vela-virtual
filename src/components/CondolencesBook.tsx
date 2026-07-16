@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,6 +51,30 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
       return data ?? [];
     },
   });
+
+  // Realtime: novas mensagens aprovadas aparecem sem refresh.
+  // A RLS já garante que só recebemos linhas visíveis para este visitante.
+  useEffect(() => {
+    const channel = supabase
+      .channel(`condolences:${tributeId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "condolences",
+          filter: `tribute_id=eq.${tributeId}`,
+        },
+        () => {
+          qc.invalidateQueries({ queryKey: ["condolences", tributeId] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tributeId, qc]);
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof schema>) => {
