@@ -37,6 +37,8 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
   const [authorName, setAuthorName] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<{ author_name?: string; message?: string }>({});
+  const [highlightedIds, setHighlightedIds] = useState<Set<string>>(new Set());
+
 
   const { data: condolences, isLoading } = useQuery({
     queryKey: ["condolences", tributeId],
@@ -65,11 +67,27 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
           table: "condolences",
           filter: `tribute_id=eq.${tributeId}`,
         },
-        () => {
+        (payload) => {
+          const newId = (payload.new as { id?: string })?.id;
+          if (newId) {
+            setHighlightedIds((prev) => {
+              const next = new Set(prev);
+              next.add(newId);
+              return next;
+            });
+            setTimeout(() => {
+              setHighlightedIds((prev) => {
+                const next = new Set(prev);
+                next.delete(newId);
+                return next;
+              });
+            }, 4000);
+          }
           qc.invalidateQueries({ queryKey: ["condolences", tributeId] });
         },
       )
       .subscribe();
+
 
     return () => {
       supabase.removeChannel(channel);
@@ -179,11 +197,18 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
             <Skeleton className="h-20 w-full rounded-xl" />
           </>
         ) : condolences && condolences.length > 0 ? (
-          condolences.map((c) => (
+          condolences.map((c) => {
+            const isNew = highlightedIds.has(c.id);
+            return (
             <article
               key={c.id}
-              className="rounded-xl border border-border/50 bg-background/60 p-4 animate-fade-in"
+              className={`rounded-xl border p-4 animate-fade-in transition-all duration-1000 ${
+                isNew
+                  ? "border-gold/70 bg-gold/10 ring-2 ring-gold/40 shadow-soft"
+                  : "border-border/50 bg-background/60"
+              }`}
             >
+
 
               <p className="font-serif text-base italic text-foreground">
                 &ldquo;{c.message}&rdquo;
@@ -199,7 +224,9 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
                 </time>
               </footer>
             </article>
-          ))
+            );
+          })
+
         ) : (
           <p className="text-center text-sm text-muted-foreground italic">
             Seja o primeiro a deixar uma mensagem.
