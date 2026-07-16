@@ -140,6 +140,8 @@ function Page() {
             )}
           </div>
 
+          <CondolencesBook tributeId={data.id} disabled={expired} />
+
           <div className="mt-16 text-center">
             <Link to="/velas" className="text-sm text-primary hover:underline">
               Acender outra vela
