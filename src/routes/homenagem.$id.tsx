@@ -9,6 +9,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Music2, VolumeX } from "lucide-react";
+import { CondolencesBook } from "@/components/CondolencesBook";
 
 export const Route = createFileRoute("/homenagem/$id")({
   component: Page,
@@ -138,6 +139,8 @@ function Page() {
               <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8e5c3f56f.mp3" className="hidden" />
             )}
           </div>
+
+          <CondolencesBook tributeId={data.id} disabled={expired} />
 
           <div className="mt-16 text-center">
             <Link to="/velas" className="text-sm text-primary hover:underline">

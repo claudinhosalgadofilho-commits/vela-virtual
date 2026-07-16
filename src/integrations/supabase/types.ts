@@ -83,6 +83,44 @@ export type Database = {
         }
         Relationships: []
       }
+      condolences: {
+        Row: {
+          approved: boolean
+          author_name: string
+          created_at: string
+          id: string
+          message: string
+          tribute_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          author_name: string
+          created_at?: string
+          id?: string
+          message: string
+          tribute_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          author_name?: string
+          created_at?: string
+          id?: string
+          message?: string
+          tribute_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "condolences_tribute_id_fkey"
+            columns: ["tribute_id"]
+            isOneToOne: false
+            referencedRelation: "tributes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           amount_cents: number
