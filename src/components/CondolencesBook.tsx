@@ -224,7 +224,9 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
                 </time>
               </footer>
             </article>
-          ))
+            );
+          })
+
         ) : (
           <p className="text-center text-sm text-muted-foreground italic">
             Seja o primeiro a deixar uma mensagem.
