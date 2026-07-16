@@ -52,6 +52,30 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
     },
   });
 
+  // Realtime: novas mensagens aprovadas aparecem sem refresh.
+  // A RLS já garante que só recebemos linhas visíveis para este visitante.
+  useEffect(() => {
+    const channel = supabase
+      .channel(`condolences:${tributeId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "condolences",
+          filter: `tribute_id=eq.${tributeId}`,
+        },
+        () => {
+          qc.invalidateQueries({ queryKey: ["condolences", tributeId] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tributeId, qc]);
+
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof schema>) => {
       const { error } = await supabase.from("condolences").insert({
