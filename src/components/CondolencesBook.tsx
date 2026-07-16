@@ -197,11 +197,18 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
             <Skeleton className="h-20 w-full rounded-xl" />
           </>
         ) : condolences && condolences.length > 0 ? (
-          condolences.map((c) => (
+          condolences.map((c) => {
+            const isNew = highlightedIds.has(c.id);
+            return (
             <article
               key={c.id}
-              className="rounded-xl border border-border/50 bg-background/60 p-4 animate-fade-in"
+              className={`rounded-xl border p-4 animate-fade-in transition-all duration-1000 ${
+                isNew
+                  ? "border-gold/70 bg-gold/10 ring-2 ring-gold/40 shadow-soft"
+                  : "border-border/50 bg-background/60"
+              }`}
             >
+
 
               <p className="font-serif text-base italic text-foreground">
                 &ldquo;{c.message}&rdquo;
