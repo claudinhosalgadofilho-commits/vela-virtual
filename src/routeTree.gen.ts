@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VelasSlugRouteImport } from './routes/velas.$slug'
 import { Route as PedidoPendenteRouteImport } from './routes/pedido.pendente'
+import { Route as PedidoIdRouteImport } from './routes/pedido.$id'
 import { Route as HomenagemIdRouteImport } from './routes/homenagem.$id'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -58,6 +59,11 @@ const VelasSlugRoute = VelasSlugRouteImport.update({
 const PedidoPendenteRoute = PedidoPendenteRouteImport.update({
   id: '/pedido/pendente',
   path: '/pedido/pendente',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PedidoIdRoute = PedidoIdRouteImport.update({
+  id: '/pedido/$id',
+  path: '/pedido/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomenagemIdRoute = HomenagemIdRouteImport.update({
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/velas': typeof VelasRouteWithChildren
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/homenagem/$id': typeof HomenagemIdRoute
+  '/pedido/$id': typeof PedidoIdRoute
   '/pedido/pendente': typeof PedidoPendenteRoute
   '/velas/$slug': typeof VelasSlugRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/como-funciona': typeof ComoFuncionaRoute
   '/velas': typeof VelasRouteWithChildren
   '/homenagem/$id': typeof HomenagemIdRoute
+  '/pedido/$id': typeof PedidoIdRoute
   '/pedido/pendente': typeof PedidoPendenteRoute
   '/velas/$slug': typeof VelasSlugRoute
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/velas': typeof VelasRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/homenagem/$id': typeof HomenagemIdRoute
+  '/pedido/$id': typeof PedidoIdRoute
   '/pedido/pendente': typeof PedidoPendenteRoute
   '/velas/$slug': typeof VelasSlugRoute
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/velas'
     | '/admin'
     | '/homenagem/$id'
+    | '/pedido/$id'
     | '/pedido/pendente'
     | '/velas/$slug'
     | '/admin/configuracoes'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/velas'
     | '/homenagem/$id'
+    | '/pedido/$id'
     | '/pedido/pendente'
     | '/velas/$slug'
     | '/admin/configuracoes'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/velas'
     | '/_authenticated/admin'
     | '/homenagem/$id'
+    | '/pedido/$id'
     | '/pedido/pendente'
     | '/velas/$slug'
     | '/_authenticated/admin/configuracoes'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   VelasRoute: typeof VelasRouteWithChildren
   HomenagemIdRoute: typeof HomenagemIdRoute
+  PedidoIdRoute: typeof PedidoIdRoute
   PedidoPendenteRoute: typeof PedidoPendenteRoute
   ApiPublicWebhooksMercadopagoRoute: typeof ApiPublicWebhooksMercadopagoRoute
 }
@@ -277,6 +290,13 @@ declare module '@tanstack/react-router' {
       path: '/pedido/pendente'
       fullPath: '/pedido/pendente'
       preLoaderRoute: typeof PedidoPendenteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pedido/$id': {
+      id: '/pedido/$id'
+      path: '/pedido/$id'
+      fullPath: '/pedido/$id'
+      preLoaderRoute: typeof PedidoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/homenagem/$id': {
@@ -394,19 +414,10 @@ const rootRouteChildren: RootRouteChildren = {
   ComoFuncionaRoute: ComoFuncionaRoute,
   VelasRoute: VelasRouteWithChildren,
   HomenagemIdRoute: HomenagemIdRoute,
+  PedidoIdRoute: PedidoIdRoute,
   PedidoPendenteRoute: PedidoPendenteRoute,
   ApiPublicWebhooksMercadopagoRoute: ApiPublicWebhooksMercadopagoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
