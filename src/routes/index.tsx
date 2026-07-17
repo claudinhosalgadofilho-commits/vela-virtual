@@ -140,6 +140,70 @@ function HomePage() {
         </div>
       </section>
 
+      {/* EXEMPLO DE HOMENAGEM */}
+      <section className="mx-auto max-w-6xl px-4 py-20 md:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs uppercase tracking-[0.24em] text-gold">Exemplo de homenagem</p>
+          <h2 className="mt-2 font-serif text-4xl text-foreground md:text-5xl">
+            Veja como sua homenagem ficará
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Um pequeno altar digital, sereno e respeitoso, com o retrato de quem você ama ao lado de uma chama viva.
+          </p>
+        </div>
+
+        <div className="mt-14 rounded-3xl border border-border/60 bg-gradient-to-b from-secondary/40 to-background p-6 shadow-soft md:p-12">
+          <div className="grid items-center gap-10 md:grid-cols-2">
+            {/* Quadro / retrato */}
+            <div className="flex justify-center">
+              <div className="relative rounded-lg bg-gradient-to-br from-gold/70 via-primary/60 to-gold/70 p-3 shadow-glow">
+                <div className="rounded-md bg-card p-3">
+                  <div
+                    className="flex h-72 w-56 items-end justify-center rounded-sm bg-cover bg-center md:h-80 md:w-64"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to bottom, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80')",
+                    }}
+                    aria-label="Retrato de exemplo"
+                  >
+                    <span className="mb-3 px-2 text-center font-serif text-sm italic text-white/90">
+                      Maria Aparecida
+                    </span>
+                  </div>
+                </div>
+                <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 font-serif text-xs uppercase tracking-widest text-primary-foreground shadow-soft">
+                  1942 — 2024
+                </span>
+              </div>
+            </div>
+
+            {/* Vela sobre altar */}
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <div className="absolute inset-0 -z-10 rounded-full bg-[radial-gradient(circle,rgba(201,169,97,0.25),transparent_65%)] blur-2xl" />
+                <CandleFlame size="md" />
+              </div>
+              <div className="mt-2 h-3 w-56 rounded-b-lg bg-gradient-to-b from-[#c9a97a] to-[#8a6a45] shadow-soft" />
+              <p className="mt-6 max-w-xs text-center text-sm italic text-muted-foreground">
+                &ldquo;Que sua luz continue a nos guiar. Com amor eterno da família.&rdquo;
+              </p>
+              <p className="mt-4 text-xs uppercase tracking-[0.2em] text-gold">
+                Vela acesa há 2 dias · 7 dias restantes
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 flex justify-center">
+            <Button asChild size="lg" className="rounded-full bg-primary px-7 hover:bg-primary/90">
+              <Link to="/velas">
+                Criar minha homenagem
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* DEPOIMENTOS */}
       <section className="mx-auto max-w-6xl px-4 py-20 md:px-8">
         <h2 className="text-center font-serif text-4xl text-foreground">Palavras de quem passou por aqui</h2>
