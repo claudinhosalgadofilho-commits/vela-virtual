@@ -342,7 +342,141 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   box-shadow: 0 12px 30px -10px rgba(0,0,0,0.4);
 }
 
+/* ============ ORATÓRIO (casinha do altar) ============ */
+.oratorio {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 260px;
+  filter: drop-shadow(0 30px 40px rgba(74, 55, 25, 0.35));
+}
+
+/* Telhado triangular */
+.oratorio-roof {
+  width: 0;
+  height: 0;
+  border-left: 150px solid transparent;
+  border-right: 150px solid transparent;
+  border-bottom: 90px solid #6b4a25;
+  position: relative;
+  margin-bottom: -1px;
+  filter: drop-shadow(0 -2px 0 rgba(255, 220, 170, 0.15) inset);
+}
+.oratorio-roof::after {
+  content: "";
+  position: absolute;
+  left: -140px;
+  bottom: -90px;
+  width: 280px;
+  height: 90px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.18) 100%
+  );
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+.oratorio-cross {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  color: #c9a961;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Corpo da casinha */
+.oratorio-body {
+  width: 260px;
+  height: 260px;
+  background: linear-gradient(180deg, #8a5f30 0%, #6b4520 60%, #4a3015 100%);
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  box-shadow:
+    inset 0 8px 12px rgba(0, 0, 0, 0.35),
+    inset 6px 0 12px rgba(0, 0, 0, 0.25),
+    inset -6px 0 12px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.oratorio-body::before,
+.oratorio-body::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  width: 6px;
+  background: linear-gradient(180deg, #d9b769, #8a6d33);
+  border-radius: 2px;
+}
+.oratorio-body::before { left: 8px; }
+.oratorio-body::after { right: 8px; }
+
+/* Nicho arqueado onde fica a vela */
+.oratorio-niche {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(
+      ellipse at center 60%,
+      rgba(255, 200, 130, 0.35) 0%,
+      rgba(80, 55, 25, 0.4) 55%,
+      rgba(30, 20, 8, 0.85) 100%
+    );
+  border-radius: 100% 100% 4px 4px / 60% 60% 4px 4px;
+  border: 3px solid #c9a961;
+  border-bottom-width: 2px;
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(201, 169, 97, 0.25);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  padding-bottom: 4px;
+}
+.oratorio-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 70%,
+    rgba(255, 200, 120, 0.35) 0%,
+    transparent 65%
+  );
+  animation: halo-pulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.oratorio-niche .candle-scene { transform: scale(0.5); transform-origin: bottom center; margin-bottom: -30px; }
+
+/* Base sob o oratório */
+.oratorio-base {
+  width: 290px;
+  height: 18px;
+  background: linear-gradient(180deg, #a67a45 0%, #6b4520 100%);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 220, 170, 0.35),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35),
+    0 4px 8px rgba(0, 0, 0, 0.25);
+}
+.oratorio-base--wide {
+  width: 340px;
+  height: 12px;
+  margin-top: 2px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #8a6a45 0%, #4a3015 100%);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.45);
+}
+
 #lovable-badge {
   display: none !important;
 }
+
 
