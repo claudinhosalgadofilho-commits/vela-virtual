@@ -177,20 +177,32 @@ function HomePage() {
               </div>
             </div>
 
-            {/* Vela sobre altar */}
+            {/* Oratório em formato de casinha com vela dentro */}
             <div className="flex flex-col items-center">
-              <div className="relative">
-                <div className="absolute inset-0 -z-10 rounded-full bg-[radial-gradient(circle,rgba(201,169,97,0.25),transparent_65%)] blur-2xl" />
-                <CandleFlame size="md" />
+              <div className="oratorio">
+                {/* telhado */}
+                <div className="oratorio-roof" />
+                <div className="oratorio-cross" aria-hidden="true">✝</div>
+                {/* corpo com nicho */}
+                <div className="oratorio-body">
+                  <div className="oratorio-niche">
+                    <div className="oratorio-glow" />
+                    <CandleFlame size="sm" />
+                  </div>
+                </div>
+                {/* base */}
+                <div className="oratorio-base" />
+                <div className="oratorio-base oratorio-base--wide" />
               </div>
-              <div className="mt-2 h-3 w-56 rounded-b-lg bg-gradient-to-b from-[#c9a97a] to-[#8a6a45] shadow-soft" />
-              <p className="mt-6 max-w-xs text-center text-sm italic text-muted-foreground">
+
+              <p className="mt-8 max-w-xs text-center text-sm italic text-muted-foreground">
                 &ldquo;Que sua luz continue a nos guiar. Com amor eterno da família.&rdquo;
               </p>
-              <p className="mt-4 text-xs uppercase tracking-[0.2em] text-gold">
+              <p className="mt-3 text-xs uppercase tracking-[0.2em] text-gold">
                 Vela acesa há 2 dias · 7 dias restantes
               </p>
             </div>
+
           </div>
 
           <div className="mt-10 flex justify-center">
