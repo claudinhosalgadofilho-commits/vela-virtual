@@ -103,41 +103,49 @@ function Page() {
           </header>
 
 
-          {/* ALTAR */}
+          {/* ALTAR – mesa com quadro e vela */}
           <div className="altar mt-12 md:mt-16">
-            <div className="altar-stage">
-              {/* Quadro com foto */}
-              <figure className="altar-frame">
-                {data.tribute_photo_url ? (
-                  <img
-                    src={data.tribute_photo_url}
-                    alt={data.tribute_name}
-                    className="altar-photo"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="altar-photo flex items-center justify-center bg-secondary/60 font-serif text-4xl text-muted-foreground">
-                    {data.tribute_name.charAt(0)}
-                  </div>
-                )}
-                <figcaption className="altar-plaque font-serif">
-                  {data.tribute_name}
-                </figcaption>
-              </figure>
+            <div className="altar-table">
+              <div className="altar-stage">
+                {/* Quadro com foto */}
+                <figure className="altar-frame">
+                  {data.tribute_photo_url ? (
+                    <img
+                      src={data.tribute_photo_url}
+                      alt={data.tribute_name}
+                      className="altar-photo"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="altar-photo flex items-center justify-center bg-secondary/60 font-serif text-4xl text-muted-foreground">
+                      {data.tribute_name.charAt(0)}
+                    </div>
+                  )}
+                  <figcaption className="altar-plaque font-serif">
+                    {data.tribute_name}
+                  </figcaption>
+                </figure>
 
-              {/* Vela sobre o altar */}
-              <div className="altar-candle">
-                <CandleFlame
-                  extinguished={!showFlame}
-                  videoUrl={showFlame ? data.candle?.video_url : null}
-                />
-                <div className="altar-base" aria-hidden="true" />
+                {/* Vela sobre pedestal */}
+                <div className="altar-candle">
+                  <CandleFlame
+                    extinguished={!showFlame}
+                    videoUrl={showFlame ? data.candle?.video_url : null}
+                  />
+                  <div className="altar-pedestal" aria-hidden="true" />
+                </div>
+              </div>
+
+              {/* Tampo e pernas da mesa */}
+              <div className="altar-tabletop" aria-hidden="true" />
+              <div className="altar-table-legs" aria-hidden="true">
+                <span /><span /><span /><span />
               </div>
             </div>
 
             {/* Ação: acender */}
             {!expired && !lit && (
-              <div className="mt-8 flex flex-col items-center gap-3">
+              <div className="mt-10 flex flex-col items-center gap-3">
                 <Button
                   size="lg"
                   onClick={handleLight}
@@ -152,6 +160,7 @@ function Page() {
               </div>
             )}
           </div>
+
 
           {/* Estado / contador */}
           <div className="mt-12 text-center">
