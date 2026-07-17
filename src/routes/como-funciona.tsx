@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CreditCard, Flame, MessageCircleHeart, Share2, ShoppingBag } from "lucide-react";
+import { formatBRL } from "@/lib/format";
+import { ArrowRight, Clock, CreditCard, Flame, MessageCircleHeart, Share2, ShoppingBag, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/como-funciona")({
   head: () => ({
