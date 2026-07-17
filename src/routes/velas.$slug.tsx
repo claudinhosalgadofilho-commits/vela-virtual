@@ -311,6 +311,53 @@ function Page() {
                   maxLength={100}
                 />
               </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="tribute_birth_date">Data de nascimento</Label>
+                  <Input
+                    id="tribute_birth_date"
+                    name="tribute_birth_date"
+                    type="date"
+                    max={new Date().toISOString().slice(0, 10)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="tribute_death_date">Data de falecimento</Label>
+                  <Input
+                    id="tribute_death_date"
+                    name="tribute_death_date"
+                    type="date"
+                    max={new Date().toISOString().slice(0, 10)}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="tribute_photo">Foto do homenageado (opcional)</Label>
+                <div className="mt-1 flex items-center gap-4">
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="Prévia da foto"
+                      className="h-20 w-20 rounded-lg border border-border object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 text-xs text-muted-foreground">
+                      sem foto
+                    </div>
+                  )}
+                  <Input
+                    id="tribute_photo"
+                    name="tribute_photo"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handlePhotoChange}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  JPG, PNG ou WEBP. Máx 5MB.
+                </p>
+              </div>
               <div>
                 <Label htmlFor="tribute_message">Mensagem (opcional)</Label>
                 <Textarea
