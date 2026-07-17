@@ -320,7 +320,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
 }
 .altar-base {
   margin-top: -8px;
-  width: 220px;
+  width: min(220px, 78vw);
   height: 28px;
   background:
     linear-gradient(180deg, #f1e6cf 0%, #d7c39a 60%, #a68a5a 100%);
@@ -334,13 +334,13 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   content: "";
   display: block;
   margin: 28px auto 0;
-  width: 320px;
-  max-width: 90vw;
+  width: min(320px, 92vw);
   height: 14px;
   background: linear-gradient(180deg, #c9b48a, #8a7449);
   border-radius: 4px;
   box-shadow: 0 12px 30px -10px rgba(0,0,0,0.4);
 }
+
 
 /* ============ ORATÓRIO (casinha do altar) ============ */
 .oratorio {
