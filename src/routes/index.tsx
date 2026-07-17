@@ -51,12 +51,12 @@ function HomePage() {
               <span className="italic text-primary">eterna</span> de memória.
             </h1>
 
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
+            <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg md:mx-0">
               Acenda uma vela virtual e mantenha viva a lembrança de quem partiu.
               Uma homenagem discreta, respeitosa e para sempre acessível — em
               qualquer lugar do mundo.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
               <Button asChild size="lg" className="rounded-full bg-primary px-7 hover:bg-primary/90">
                 <Link to="/velas">
                   Acender uma vela
@@ -68,6 +68,7 @@ function HomePage() {
               </Button>
             </div>
           </div>
+
 
           <div className="flex justify-center py-12 md:py-0">
             <CandleFlame />
