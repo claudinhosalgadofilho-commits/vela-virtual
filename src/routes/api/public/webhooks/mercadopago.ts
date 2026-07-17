@@ -177,6 +177,9 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
             candle_id: order.candle_id,
             tribute_name: order.tribute_name,
             tribute_message: order.tribute_message,
+            tribute_photo_url: (order as { tribute_photo_url?: string | null }).tribute_photo_url ?? null,
+            tribute_birth_date: (order as { tribute_birth_date?: string | null }).tribute_birth_date ?? null,
+            tribute_death_date: (order as { tribute_death_date?: string | null }).tribute_death_date ?? null,
             ends_at: ends,
           } as never);
           if (insErr && (insErr as { code?: string }).code !== "23505") {
