@@ -375,6 +375,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   align-items: center;
 }
 .altar-pedestal {
+  position: relative;
   margin-top: -4px;
   width: 110px;
   height: 18px;
@@ -383,6 +384,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   border-radius: 4px;
   box-shadow:
     0 6px 14px -4px rgba(0,0,0,0.35),
+    0 14px 22px -10px rgba(0,0,0,0.28),
     inset 0 -4px 8px rgba(120,90,40,0.25),
     inset 0 2px 0 rgba(255,255,255,0.5);
 }
@@ -394,6 +396,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   height: 10px;
   background: linear-gradient(180deg, #c9b48a, #8a7449);
   border-radius: 3px;
+  box-shadow: 0 8px 14px -6px rgba(0,0,0,0.35);
 }
 
 
@@ -407,6 +410,19 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   align-items: center;
   width: min(360px, 88vw);
   filter: drop-shadow(0 30px 40px rgba(74, 55, 25, 0.35));
+}
+.oratorio::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  width: 92%;
+  height: 22px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Telhado triangular (escala com o container) */
