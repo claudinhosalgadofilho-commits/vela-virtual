@@ -99,6 +99,13 @@ function Page() {
             <h1 className="mt-3 font-serif text-4xl leading-tight text-foreground sm:text-5xl md:text-6xl">
               {data.tribute_name}
             </h1>
+            {(data.tribute_birth_date || data.tribute_death_date) && (
+              <p className="mt-2 font-serif text-base italic text-muted-foreground sm:text-lg">
+                {data.tribute_birth_date ? new Date(data.tribute_birth_date + "T00:00:00").toLocaleDateString("pt-BR") : "?"}
+                {" — "}
+                {data.tribute_death_date ? new Date(data.tribute_death_date + "T00:00:00").toLocaleDateString("pt-BR") : "?"}
+              </p>
+            )}
             <p className="mt-2 text-sm text-muted-foreground">Homenagem acesa em {dateStr}</p>
           </header>
 

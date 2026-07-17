@@ -138,6 +138,8 @@ export type Database = {
           pix_qr_base64: string | null
           pix_qr_code: string | null
           status: Database["public"]["Enums"]["order_status"]
+          tribute_birth_date: string | null
+          tribute_death_date: string | null
           tribute_message: string | null
           tribute_name: string
           tribute_photo_url: string | null
@@ -159,6 +161,8 @@ export type Database = {
           pix_qr_base64?: string | null
           pix_qr_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          tribute_birth_date?: string | null
+          tribute_death_date?: string | null
           tribute_message?: string | null
           tribute_name: string
           tribute_photo_url?: string | null
@@ -180,6 +184,8 @@ export type Database = {
           pix_qr_base64?: string | null
           pix_qr_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          tribute_birth_date?: string | null
+          tribute_death_date?: string | null
           tribute_message?: string | null
           tribute_name?: string
           tribute_photo_url?: string | null
@@ -285,6 +291,8 @@ export type Database = {
           id: string
           order_id: string | null
           starts_at: string
+          tribute_birth_date: string | null
+          tribute_death_date: string | null
           tribute_message: string | null
           tribute_name: string
           tribute_photo_url: string | null
@@ -299,6 +307,8 @@ export type Database = {
           id?: string
           order_id?: string | null
           starts_at?: string
+          tribute_birth_date?: string | null
+          tribute_death_date?: string | null
           tribute_message?: string | null
           tribute_name: string
           tribute_photo_url?: string | null
@@ -313,6 +323,8 @@ export type Database = {
           id?: string
           order_id?: string | null
           starts_at?: string
+          tribute_birth_date?: string | null
+          tribute_death_date?: string | null
           tribute_message?: string | null
           tribute_name?: string
           tribute_photo_url?: string | null
