@@ -263,10 +263,11 @@ function HomePage() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="mx-auto max-w-4xl px-4 py-24 text-center md:px-8">
-        <h2 className="font-serif text-4xl text-foreground md:text-5xl">
+      <section className="mx-auto max-w-4xl px-4 py-20 text-center md:px-8 md:py-24">
+        <h2 className="font-serif text-3xl text-foreground sm:text-4xl md:text-5xl">
           Uma luz para quem você ama.
         </h2>
+
         <p className="mt-4 text-muted-foreground">Comece agora sua homenagem.</p>
         <Button asChild size="lg" className="mt-8 rounded-full bg-primary px-8 hover:bg-primary/90">
           <Link to="/velas">
