@@ -77,15 +77,16 @@ function HomePage() {
       </section>
 
       {/* BENEFÍCIOS */}
-      <section className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
+      <section className="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-serif text-4xl text-foreground md:text-5xl">
+          <h2 className="font-serif text-3xl text-foreground sm:text-4xl md:text-5xl">
             Um gesto simples, uma memória eterna.
           </h2>
           <p className="mt-4 text-muted-foreground">
             Três razões para escolher a Velas de Luz.
           </p>
         </div>
+
 
         <div className="mt-14 grid gap-8 md:grid-cols-3">
           {[
