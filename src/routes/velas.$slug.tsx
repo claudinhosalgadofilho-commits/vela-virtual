@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, Link, notFound } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { z } from "zod";
