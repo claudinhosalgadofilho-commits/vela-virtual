@@ -3,10 +3,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Shield, ShieldOff, Trash2, Search, Loader2 } from "lucide-react";
+import { Shield, ShieldOff, Trash2, Search, Loader2, UserPlus, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -16,7 +18,10 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  listUsers, setUserAdmin, deleteUser, type AdminUserRow,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  listUsers, setUserAdmin, deleteUser, inviteUser, type AdminUserRow,
 } from "@/lib/admin-users.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
