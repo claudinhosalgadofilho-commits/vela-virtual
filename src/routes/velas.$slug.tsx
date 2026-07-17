@@ -190,17 +190,47 @@ function Page() {
                 Seus dados
               </legend>
               <div>
-                <Label htmlFor="customer_name">Seu nome</Label>
-                <Input id="customer_name" name="customer_name" required autoComplete="name" />
+                <Label htmlFor="customer_name">
+                  Seu nome <span className="text-destructive" aria-hidden="true">*</span>
+                </Label>
+                <Input
+                  id="customer_name"
+                  name="customer_name"
+                  required
+                  autoComplete="name"
+                  aria-required="true"
+                  minLength={2}
+                  maxLength={100}
+                />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor="customer_email">Seu email</Label>
-                  <Input id="customer_email" name="customer_email" type="email" required autoComplete="email" />
+                  <Label htmlFor="customer_email">
+                    Seu email <span className="text-destructive" aria-hidden="true">*</span>
+                  </Label>
+                  <Input
+                    id="customer_email"
+                    name="customer_email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    aria-required="true"
+                    aria-describedby="customer_email_hint"
+                    inputMode="email"
+                  />
+                  <p id="customer_email_hint" className="mt-1 text-xs text-muted-foreground">
+                    Enviaremos o link da homenagem para este email.
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="customer_phone">Telefone (opcional)</Label>
-                  <Input id="customer_phone" name="customer_phone" autoComplete="tel" />
+                  <Input
+                    id="customer_phone"
+                    name="customer_phone"
+                    autoComplete="tel"
+                    inputMode="tel"
+                    type="tel"
+                  />
                 </div>
               </div>
             </fieldset>
@@ -212,8 +242,17 @@ function Page() {
                 Homenageado
               </legend>
               <div>
-                <Label htmlFor="tribute_name">Nome da pessoa homenageada</Label>
-                <Input id="tribute_name" name="tribute_name" required />
+                <Label htmlFor="tribute_name">
+                  Nome da pessoa homenageada <span className="text-destructive" aria-hidden="true">*</span>
+                </Label>
+                <Input
+                  id="tribute_name"
+                  name="tribute_name"
+                  required
+                  aria-required="true"
+                  minLength={2}
+                  maxLength={100}
+                />
               </div>
               <div>
                 <Label htmlFor="tribute_message">Mensagem (opcional)</Label>
@@ -223,7 +262,11 @@ function Page() {
                   rows={4}
                   placeholder="Uma palavra, uma oração, uma lembrança..."
                   maxLength={500}
+                  aria-describedby="tribute_message_hint"
                 />
+                <p id="tribute_message_hint" className="mt-1 text-xs text-muted-foreground">
+                  Até 500 caracteres.
+                </p>
               </div>
             </fieldset>
 
@@ -233,15 +276,26 @@ function Page() {
               <legend className="mb-3 text-xs font-semibold uppercase tracking-widest text-gold">
                 Forma de pagamento
               </legend>
-              <RadioGroup name="payment_method" defaultValue="pix" className="grid grid-cols-2 gap-3">
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-border p-4 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
-                  <RadioGroupItem value="pix" id="pix" />
-                  <QrCode className="h-4 w-4 text-primary" />
+              <RadioGroup
+                name="payment_method"
+                defaultValue="pix"
+                className="grid grid-cols-2 gap-3"
+                aria-label="Escolha a forma de pagamento"
+              >
+                <label
+                  htmlFor="pay-pix"
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-border p-4 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary/40"
+                >
+                  <RadioGroupItem value="pix" id="pay-pix" />
+                  <QrCode className="h-4 w-4 text-primary" aria-hidden="true" />
                   <span className="font-medium">PIX</span>
                 </label>
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-border p-4 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
-                  <RadioGroupItem value="card" id="card" />
-                  <CreditCard className="h-4 w-4 text-primary" />
+                <label
+                  htmlFor="pay-card"
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-border p-4 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5 focus-within:ring-2 focus-within:ring-primary/40"
+                >
+                  <RadioGroupItem value="card" id="pay-card" />
+                  <CreditCard className="h-4 w-4 text-primary" aria-hidden="true" />
                   <span className="font-medium">Cartão</span>
                 </label>
               </RadioGroup>
