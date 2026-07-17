@@ -173,6 +173,42 @@ function Page() {
     },
   });
 
+  const { data: revenueSeries } = useQuery({
+    queryKey: ["admin", "orders", "revenue-30d"],
+    queryFn: async () => {
+      const since = new Date();
+      since.setHours(0, 0, 0, 0);
+      since.setDate(since.getDate() - 29);
+      const { data, error } = await supabase
+        .from("orders")
+        .select("created_at, amount_cents")
+        .eq("status", "paid")
+        .gte("created_at", since.toISOString())
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+
+      const buckets = new Map<string, { revenue: number; count: number }>();
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(since);
+        d.setDate(since.getDate() + i);
+        buckets.set(d.toISOString().slice(0, 10), { revenue: 0, count: 0 });
+      }
+      for (const row of data ?? []) {
+        const key = new Date(row.created_at).toISOString().slice(0, 10);
+        const b = buckets.get(key);
+        if (b) { b.revenue += (row.amount_cents ?? 0) / 100; b.count += 1; }
+      }
+      return Array.from(buckets, ([date, v]) => ({
+        date,
+        label: new Date(date + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+        revenue: Number(v.revenue.toFixed(2)),
+        count: v.count,
+      }));
+    },
+  });
+
+
+
   async function updateStatus(id: string, status: Status) {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
