@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import logoAsset from "@/assets/vela-virtual-logo.jpeg.asset.json";
+
 
 const links = [
   { to: "/", label: "Início" },
@@ -58,15 +60,20 @@ export function SiteHeader() {
           <Button asChild size="sm" className="rounded-full bg-primary px-5 hover:bg-primary/90">
             <Link to="/velas">Acender vela</Link>
           </Button>
+          <ThemeToggle />
         </nav>
 
-        <button
-          className="md:hidden rounded-md p-2 text-foreground"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            className="rounded-md p-2 text-foreground"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+
       </div>
 
       {open && (
