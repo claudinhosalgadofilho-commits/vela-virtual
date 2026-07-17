@@ -157,58 +157,45 @@ function HomePage() {
         </div>
 
         <div className="mt-12 rounded-3xl border border-border/60 bg-gradient-to-b from-secondary/40 to-background p-4 shadow-soft sm:p-6 md:p-12">
-          <div className="grid items-center gap-10 md:grid-cols-2">
-            {/* Quadro / retrato */}
-            <div className="flex justify-center">
-              <div className="relative rounded-lg bg-gradient-to-br from-gold/70 via-primary/60 to-gold/70 p-2 shadow-glow sm:p-3">
-                <div className="rounded-md bg-card p-2 sm:p-3">
-                  <div
-                    className="flex aspect-[3/4] w-44 items-end justify-center rounded-sm bg-cover bg-center sm:w-56 md:w-64"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(to bottom, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80')",
-                    }}
-                    aria-label="Retrato de exemplo"
-                  >
-                    <span className="mb-3 px-2 text-center font-serif text-sm italic text-white/90">
-                      Maria Aparecida
-                    </span>
-                  </div>
+          <div className="altar">
+            <div className="altar-table">
+              <div className="altar-stage">
+                {/* Quadro / retrato */}
+                <figure className="altar-frame">
+                  <img
+                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80"
+                    alt="Retrato de exemplo"
+                    className="altar-photo"
+                    loading="lazy"
+                  />
+                  <figcaption className="altar-plaque font-serif">
+                    Maria Aparecida · 1942–2024
+                  </figcaption>
+                </figure>
+
+                {/* Vela sobre pedestal */}
+                <div className="altar-candle">
+                  <CandleFlame size="sm" />
+                  <div className="altar-pedestal" aria-hidden="true" />
                 </div>
-                <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 font-serif text-[10px] uppercase tracking-widest text-primary-foreground shadow-soft sm:px-4 sm:text-xs">
-                  1942 — 2024
-                </span>
+              </div>
+
+              <div className="altar-tabletop" aria-hidden="true" />
+              <div className="altar-table-legs" aria-hidden="true">
+                <span /><span /><span /><span />
               </div>
             </div>
 
-
-            {/* Oratório em formato de casinha com vela dentro */}
-            <div className="flex flex-col items-center">
-              <div className="oratorio">
-                {/* telhado */}
-                <div className="oratorio-roof" />
-                <div className="oratorio-cross" aria-hidden="true">✝</div>
-                {/* corpo com nicho */}
-                <div className="oratorio-body">
-                  <div className="oratorio-niche">
-                    <div className="oratorio-glow" />
-                    <CandleFlame size="sm" />
-                  </div>
-                </div>
-                {/* base */}
-                <div className="oratorio-base" />
-                <div className="oratorio-base oratorio-base--wide" />
-              </div>
-
-              <p className="mt-8 max-w-xs text-center text-sm italic text-muted-foreground">
+            <div className="mt-10 flex flex-col items-center">
+              <p className="max-w-xs text-center text-sm italic text-muted-foreground">
                 &ldquo;Que sua luz continue a nos guiar. Com amor eterno da família.&rdquo;
               </p>
               <p className="mt-3 text-xs uppercase tracking-[0.2em] text-gold">
                 Vela acesa há 2 dias · 7 dias restantes
               </p>
             </div>
-
           </div>
+
 
           <div className="mt-10 flex justify-center">
             <Button asChild size="lg" className="rounded-full bg-primary px-7 hover:bg-primary/90">
