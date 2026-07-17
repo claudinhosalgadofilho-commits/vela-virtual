@@ -64,6 +64,8 @@ const schema = z.object({
   customer_phone: z.string().trim().max(30).optional().or(z.literal("")),
   tribute_name: z.string().trim().min(2, "Nome da pessoa homenageada").max(100),
   tribute_message: z.string().trim().max(500).optional().or(z.literal("")),
+  tribute_birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida").optional().or(z.literal("")),
+  tribute_death_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida").optional().or(z.literal("")),
   payment_method: z.enum(["pix", "card"]),
 });
 
