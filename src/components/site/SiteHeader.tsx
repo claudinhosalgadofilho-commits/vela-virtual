@@ -33,14 +33,14 @@ export function SiteHeader() {
           : "bg-transparent"
       )}
     >
-      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 md:px-8">
-        <Link to="/" className="flex items-center gap-3 group">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:h-20 md:px-8">
+        <Link to="/" className="flex min-w-0 items-center gap-2 group sm:gap-3">
           <img
             src={logoAsset.url}
             alt="Vela Virtual"
-            className="h-11 w-11 rounded-full object-cover ring-1 ring-gold/30 transition-transform group-hover:scale-105"
+            className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-gold/30 transition-transform group-hover:scale-105 sm:h-11 sm:w-11"
           />
-          <span className="hidden font-serif text-lg tracking-wide text-foreground sm:inline">
+          <span className="truncate font-serif text-base tracking-wide text-foreground sm:text-lg">
             Vela <span className="text-gold">Virtual</span>
           </span>
         </Link>
@@ -63,7 +63,7 @@ export function SiteHeader() {
           <ThemeToggle />
         </nav>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex shrink-0 items-center gap-1 md:hidden">
           <ThemeToggle />
           <button
             className="rounded-md p-2 text-foreground"
@@ -89,9 +89,13 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
+            <Button asChild size="sm" className="mt-2 rounded-full bg-primary hover:bg-primary/90">
+              <Link to="/velas" onClick={() => setOpen(false)}>Acender vela</Link>
+            </Button>
           </nav>
         </div>
       )}
+
     </header>
   );
 }
