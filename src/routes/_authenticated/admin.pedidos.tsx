@@ -459,16 +459,17 @@ function KpiCard({
   icon: Icon, label, value, accent,
 }: { icon: typeof ShoppingCart; label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {label}
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-5">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground sm:text-xs">
+        <Icon className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">{label}</span>
       </div>
-      <div className={`mt-2 font-serif text-2xl ${accent ? "text-primary" : "text-foreground"}`}>
+      <div className={`mt-2 font-serif text-xl sm:text-2xl ${accent ? "text-primary" : "text-foreground"}`}>
         {value}
       </div>
     </div>
   );
 }
+
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
