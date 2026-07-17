@@ -248,9 +248,10 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
 /* Mesa de madeira onde o quadro e a vela repousam */
 .altar-table {
   position: relative;
-  margin: 3rem auto 0;
-  width: min(760px, 96vw);
-  padding: 0 1rem;
+  margin: clamp(1.5rem, 5vw, 3rem) auto 0;
+  width: 100%;
+  max-width: min(760px, 96vw);
+  padding: 0 clamp(0.5rem, 3vw, 1rem);
 }
 .altar-stage {
   position: relative;
@@ -258,8 +259,8 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   grid-template-columns: 1fr;
   justify-items: center;
   align-items: end;
-  gap: 2rem;
-  padding: 1rem 0.5rem 0;
+  gap: clamp(1rem, 4vw, 2rem);
+  padding: clamp(0.5rem, 2vw, 1rem) 0.25rem 0;
 }
 @media (min-width: 768px) {
   .altar-stage {
