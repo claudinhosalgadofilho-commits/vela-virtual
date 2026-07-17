@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Flame, Heart, Shield, Sparkles } from "lucide-react";
+import { ArrowRight, CreditCard, Flame, Heart, QrCode, Shield, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
@@ -121,10 +121,8 @@ function HomePage() {
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {candles?.map((c) => (
-              <Link
+              <div
                 key={c.id}
-                to="/velas/$slug"
-                params={{ slug: c.slug }}
                 className="group flex flex-col rounded-2xl border border-border/60 bg-card p-8 transition-all hover:border-gold/50 hover:shadow-glow"
               >
                 <div className="flex h-40 items-center justify-center">
@@ -132,13 +130,35 @@ function HomePage() {
                 </div>
                 <h3 className="mt-6 font-serif text-2xl text-foreground">{c.name}</h3>
                 <p className="mt-2 flex-1 text-sm text-muted-foreground">{c.description}</p>
-                <div className="mt-6 flex items-center justify-between">
+                <div className="mt-6 flex items-baseline justify-between">
                   <span className="font-serif text-2xl text-primary">{formatBRL(c.price_cents)}</span>
-                  <span className="inline-flex items-center gap-1 text-xs uppercase tracking-widest text-gold group-hover:gap-2 transition-all">
-                    Acender <ArrowRight className="h-3 w-3" />
-                  </span>
+                  <Link
+                    to="/velas/$slug"
+                    params={{ slug: c.slug }}
+                    className="text-xs uppercase tracking-widest text-muted-foreground hover:text-gold"
+                  >
+                    detalhes →
+                  </Link>
                 </div>
-              </Link>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Link
+                    to="/velas/$slug"
+                    params={{ slug: c.slug }}
+                    search={{ pay: "pix" }}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                  >
+                    <QrCode className="h-3.5 w-3.5" /> Pix
+                  </Link>
+                  <Link
+                    to="/velas/$slug"
+                    params={{ slug: c.slug }}
+                    search={{ pay: "card" }}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/60 px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-gold/60 hover:text-gold"
+                  >
+                    <CreditCard className="h-3.5 w-3.5" /> Cartão
+                  </Link>
+                </div>
+              </div>
             ))}
           </div>
         </div>

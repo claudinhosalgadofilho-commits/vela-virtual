@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, Link, notFound } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -39,7 +40,12 @@ type PaymentSession =
   | { order_id: string; method: "pix"; pix_qr_code: string | null; pix_qr_base64: string | null }
   | { order_id: string; method: "card"; init_point: string; sandbox_init_point: string };
 
+const searchSchema = z.object({
+  pay: fallback(z.string(), "pix").default("pix"),
+});
+
 export const Route = createFileRoute("/velas/$slug")({
+  validateSearch: zodValidator(searchSchema),
   component: Page,
   notFoundComponent: () => (
     <SiteShell>
@@ -65,6 +71,8 @@ type FormValues = z.infer<typeof schema>;
 
 function Page() {
   const { slug } = Route.useParams();
+  const { pay } = Route.useSearch();
+  const preselectedMethod: "pix" | "card" = pay === "card" ? "card" : "pix";
   const navigate = useNavigate();
   const [pending, setPending] = useState<FormValues | null>(null);
   const [processing, setProcessing] = useState(false);
@@ -278,7 +286,7 @@ function Page() {
               </legend>
               <RadioGroup
                 name="payment_method"
-                defaultValue="pix"
+                defaultValue={preselectedMethod}
                 className="grid grid-cols-2 gap-3"
                 aria-label="Escolha a forma de pagamento"
               >
