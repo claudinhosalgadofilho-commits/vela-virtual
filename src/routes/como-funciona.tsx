@@ -28,6 +28,20 @@ const steps = [
 ];
 
 function Page() {
+  const { data: candles } = useQuery({
+    queryKey: ["candles", "featured"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("candles")
+        .select("*")
+        .eq("active", true)
+        .order("display_order")
+        .limit(3);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <SiteShell>
       <section className="mx-auto max-w-4xl px-4 py-20 md:px-8 md:py-28 text-center">
