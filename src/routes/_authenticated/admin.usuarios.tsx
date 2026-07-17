@@ -38,11 +38,17 @@ function UsersAdminPage() {
   const fetchUsers = useServerFn(listUsers);
   const toggleAdmin = useServerFn(setUserAdmin);
   const removeUser = useServerFn(deleteUser);
+  const invite = useServerFn(inviteUser);
 
   const [query, setQuery] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<AdminUserRow | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteName, setInviteName] = useState("");
+  const [inviteAsAdmin, setInviteAsAdmin] = useState(false);
+  const [inviting, setInviting] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
