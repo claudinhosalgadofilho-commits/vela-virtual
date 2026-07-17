@@ -8,8 +8,38 @@ const createOrderInput = z.object({
   customer_phone: z.string().trim().max(30).optional().nullable(),
   tribute_name: z.string().trim().min(2).max(100),
   tribute_message: z.string().trim().max(500).optional().nullable(),
+  tribute_photo_url: z.string().url().max(2000).optional().nullable(),
+  tribute_birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  tribute_death_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
   payment_method: z.enum(["pix", "card"]),
 });
+
+const uploadPhotoInput = z.object({
+  filename: z.string().trim().min(1).max(120),
+  content_type: z.string().trim().regex(/^image\/(jpeg|jpg|png|webp)$/i),
+  data_base64: z.string().min(10).max(8_000_000), // ~6MB decoded
+});
+
+export const uploadTributePhoto = createServerFn({ method: "POST" })
+  .inputValidator((raw) => uploadPhotoInput.parse(raw))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const ext = (data.filename.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const safeExt = ["jpg", "jpeg", "png", "webp"].includes(ext) ? ext : "jpg";
+    const path = `${new Date().getFullYear()}/${crypto.randomUUID()}.${safeExt}`;
+    const buf = Buffer.from(data.data_base64, "base64");
+    if (buf.length > 5 * 1024 * 1024) throw new Error("Foto muito grande (máx 5MB).");
+    const { error: upErr } = await supabaseAdmin.storage
+      .from("tribute-photos")
+      .upload(path, buf, { contentType: data.content_type, upsert: false });
+    if (upErr) throw new Error("Falha ao enviar foto: " + upErr.message);
+    // Signed URL válido por 10 anos (bucket privado).
+    const { data: signed, error: signErr } = await supabaseAdmin.storage
+      .from("tribute-photos")
+      .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+    if (signErr || !signed) throw new Error("Falha ao gerar URL da foto.");
+    return { url: signed.signedUrl };
+  });
 
 export const createOrderAndPayment = createServerFn({ method: "POST" })
   .inputValidator((raw) => createOrderInput.parse(raw))
