@@ -250,8 +250,8 @@ function Page() {
       </div>
 
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-64">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative w-full flex-1 sm:min-w-64">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Buscar por cliente, e-mail, homenageado ou vela..."
@@ -260,24 +260,27 @@ function Page() {
             className="pl-9"
           />
         </div>
-        <Select value={filter} onValueChange={(v) => setFilter(v as Status | "all")}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos status</SelectItem>
-            <SelectItem value="pending">Pendente</SelectItem>
-            <SelectItem value="paid">Pago</SelectItem>
-            <SelectItem value="cancelled">Cancelado</SelectItem>
-          </SelectContent>
-        </Select>
-        {hasFilters && (
-          <Button variant="ghost" onClick={resetFilters} className="gap-2">
-            <X className="h-4 w-4" /> Limpar filtros
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={filter} onValueChange={(v) => setFilter(v as Status | "all")}>
+            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos status</SelectItem>
+              <SelectItem value="pending">Pendente</SelectItem>
+              <SelectItem value="paid">Pago</SelectItem>
+              <SelectItem value="cancelled">Cancelado</SelectItem>
+            </SelectContent>
+          </Select>
+          {hasFilters && (
+            <Button variant="ghost" onClick={resetFilters} className="gap-2">
+              <X className="h-4 w-4" /> Limpar
+            </Button>
+          )}
+          <Button variant="outline" onClick={exportCsv} className="gap-2">
+            <Download className="h-4 w-4" /> Exportar CSV
           </Button>
-        )}
-        <Button variant="outline" onClick={exportCsv} className="gap-2">
-          <Download className="h-4 w-4" /> Exportar CSV
-        </Button>
+        </div>
       </div>
+
 
       {/* Tabela */}
       <div className="rounded-2xl border border-border bg-card shadow-soft overflow-x-auto">
