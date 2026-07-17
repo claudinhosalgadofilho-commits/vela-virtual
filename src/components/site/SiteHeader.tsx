@@ -74,15 +74,6 @@ export function SiteHeader() {
           </button>
         </div>
 
-
-        <button
-          className="hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-
       </div>
 
       {open && (
