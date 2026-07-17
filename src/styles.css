@@ -348,28 +348,23 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 260px;
+  width: min(260px, 82vw);
   filter: drop-shadow(0 30px 40px rgba(74, 55, 25, 0.35));
 }
 
-/* Telhado triangular */
+/* Telhado triangular (escala com o container) */
 .oratorio-roof {
-  width: 0;
-  height: 0;
-  border-left: 150px solid transparent;
-  border-right: 150px solid transparent;
-  border-bottom: 90px solid #6b4a25;
-  position: relative;
+  width: 100%;
+  aspect-ratio: 300 / 90;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: #6b4a25;
   margin-bottom: -1px;
-  filter: drop-shadow(0 -2px 0 rgba(255, 220, 170, 0.15) inset);
+  position: relative;
 }
 .oratorio-roof::after {
   content: "";
   position: absolute;
-  left: -140px;
-  bottom: -90px;
-  width: 280px;
-  height: 90px;
+  inset: 0;
   background: linear-gradient(
     180deg,
     transparent 0%,
@@ -391,8 +386,8 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
 
 /* Corpo da casinha */
 .oratorio-body {
-  width: 260px;
-  height: 260px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   background: linear-gradient(180deg, #8a5f30 0%, #6b4520 60%, #4a3015 100%);
   border-radius: 4px 4px 0 0;
   position: relative;
@@ -400,7 +395,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
     inset 0 8px 12px rgba(0, 0, 0, 0.35),
     inset 6px 0 12px rgba(0, 0, 0, 0.25),
     inset -6px 0 12px rgba(0, 0, 0, 0.25);
-  padding: 20px;
+  padding: 16px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -457,7 +452,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
 
 /* Base sob o oratório */
 .oratorio-base {
-  width: 290px;
+  width: min(290px, 90vw);
   height: 18px;
   background: linear-gradient(180deg, #a67a45 0%, #6b4520 100%);
   border-radius: 3px;
@@ -467,13 +462,14 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
     0 4px 8px rgba(0, 0, 0, 0.25);
 }
 .oratorio-base--wide {
-  width: 340px;
+  width: min(340px, 96vw);
   height: 12px;
   margin-top: 2px;
   border-radius: 4px;
   background: linear-gradient(180deg, #8a6a45 0%, #4a3015 100%);
   box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.45);
 }
+
 
 #lovable-badge {
   display: none !important;
