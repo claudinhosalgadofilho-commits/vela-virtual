@@ -99,6 +99,30 @@ function UsersAdminPage() {
     }
   }
 
+  async function handleInvite(e: React.FormEvent) {
+    e.preventDefault();
+    setInviting(true);
+    try {
+      await invite({
+        data: {
+          email: inviteEmail,
+          fullName: inviteName || undefined,
+          makeAdmin: inviteAsAdmin,
+        },
+      });
+      toast.success(`Convite enviado para ${inviteEmail}`);
+      setInviteOpen(false);
+      setInviteEmail("");
+      setInviteName("");
+      setInviteAsAdmin(false);
+      await refetch();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Falha ao enviar convite");
+    } finally {
+      setInviting(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -108,9 +132,14 @@ function UsersAdminPage() {
             Gerencie contas e permissões administrativas.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Badge variant="secondary">{data?.length ?? 0} usuários</Badge>
-          <Badge variant="secondary">{adminCount} admins</Badge>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Badge variant="secondary">{data?.length ?? 0} usuários</Badge>
+            <Badge variant="secondary">{adminCount} admins</Badge>
+          </div>
+          <Button onClick={() => setInviteOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" /> Convidar
+          </Button>
         </div>
       </header>
 
