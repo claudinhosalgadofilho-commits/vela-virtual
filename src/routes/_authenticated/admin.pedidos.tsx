@@ -18,8 +18,12 @@ import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
 import {
   Trash2, Search, Download, ShoppingCart, DollarSign,
-  CheckCircle2, Clock, ExternalLink, X,
+  CheckCircle2, Clock, ExternalLink, X, TrendingUp,
 } from "lucide-react";
+import {
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
+  Tooltip, CartesianGrid,
+} from "recharts";
 
 const PAGE_SIZE_STORAGE_KEY = "admin.pedidos.pageSize";
 const DEFAULT_PAGE_SIZE = 20;
@@ -169,6 +173,42 @@ function Page() {
     },
   });
 
+  const { data: revenueSeries } = useQuery({
+    queryKey: ["admin", "orders", "revenue-30d"],
+    queryFn: async () => {
+      const since = new Date();
+      since.setHours(0, 0, 0, 0);
+      since.setDate(since.getDate() - 29);
+      const { data, error } = await supabase
+        .from("orders")
+        .select("created_at, amount_cents")
+        .eq("status", "paid")
+        .gte("created_at", since.toISOString())
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+
+      const buckets = new Map<string, { revenue: number; count: number }>();
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(since);
+        d.setDate(since.getDate() + i);
+        buckets.set(d.toISOString().slice(0, 10), { revenue: 0, count: 0 });
+      }
+      for (const row of data ?? []) {
+        const key = new Date(row.created_at).toISOString().slice(0, 10);
+        const b = buckets.get(key);
+        if (b) { b.revenue += (row.amount_cents ?? 0) / 100; b.count += 1; }
+      }
+      return Array.from(buckets, ([date, v]) => ({
+        date,
+        label: new Date(date + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+        revenue: Number(v.revenue.toFixed(2)),
+        count: v.count,
+      }));
+    },
+  });
+
+
+
   async function updateStatus(id: string, status: Status) {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
@@ -248,6 +288,82 @@ function Page() {
         <KpiCard icon={CheckCircle2} label="Pagos" value={String(kpis?.paidCount ?? 0)} />
         <KpiCard icon={Clock} label="Pendentes" value={String(kpis?.pendingCount ?? 0)} />
       </div>
+
+      {/* Gráfico de receita — últimos 30 dias */}
+      <div className="mb-6 rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-5">
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+              <TrendingUp className="h-3.5 w-3.5" /> Receita — últimos 30 dias
+            </div>
+            <div className="mt-1 font-serif text-xl text-primary sm:text-2xl">
+              {formatBRL(Math.round((revenueSeries ?? []).reduce((s, d) => s + d.revenue, 0) * 100))}
+            </div>
+          </div>
+          <div className="text-right text-xs text-muted-foreground">
+            <div className="font-serif text-lg text-foreground">
+              {(revenueSeries ?? []).reduce((s, d) => s + d.count, 0)}
+            </div>
+            pedidos pagos
+          </div>
+        </div>
+        <div className="h-56 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={revenueSeries ?? []} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis
+                dataKey="label"
+                stroke="var(--muted-foreground)"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                interval="preserveStartEnd"
+                minTickGap={24}
+              />
+              <YAxis
+                stroke="var(--muted-foreground)"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                width={56}
+                tickFormatter={(v: number) =>
+                  v >= 1000 ? `R$ ${(v / 1000).toFixed(1)}k` : `R$ ${v.toFixed(0)}`
+                }
+              />
+              <Tooltip
+                cursor={{ stroke: "var(--primary)", strokeOpacity: 0.2 }}
+                contentStyle={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 12,
+                  fontSize: 12,
+                }}
+                labelStyle={{ color: "var(--muted-foreground)" }}
+                formatter={(value: number, name) =>
+                  name === "revenue"
+                    ? [formatBRL(Math.round(value * 100)), "Receita"]
+                    : [value, "Pedidos"]
+                }
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="var(--primary)"
+                strokeWidth={2}
+                fill="url(#revenueFill)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+
 
 
       {/* Toolbar */}
