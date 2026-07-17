@@ -289,6 +289,82 @@ function Page() {
         <KpiCard icon={Clock} label="Pendentes" value={String(kpis?.pendingCount ?? 0)} />
       </div>
 
+      {/* Gráfico de receita — últimos 30 dias */}
+      <div className="mb-6 rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-5">
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+              <TrendingUp className="h-3.5 w-3.5" /> Receita — últimos 30 dias
+            </div>
+            <div className="mt-1 font-serif text-xl text-primary sm:text-2xl">
+              {formatBRL(Math.round((revenueSeries ?? []).reduce((s, d) => s + d.revenue, 0) * 100))}
+            </div>
+          </div>
+          <div className="text-right text-xs text-muted-foreground">
+            <div className="font-serif text-lg text-foreground">
+              {(revenueSeries ?? []).reduce((s, d) => s + d.count, 0)}
+            </div>
+            pedidos pagos
+          </div>
+        </div>
+        <div className="h-56 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={revenueSeries ?? []} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+              <XAxis
+                dataKey="label"
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                interval="preserveStartEnd"
+                minTickGap={24}
+              />
+              <YAxis
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                width={56}
+                tickFormatter={(v: number) =>
+                  v >= 1000 ? `R$ ${(v / 1000).toFixed(1)}k` : `R$ ${v.toFixed(0)}`
+                }
+              />
+              <Tooltip
+                cursor={{ stroke: "hsl(var(--primary))", strokeOpacity: 0.2 }}
+                contentStyle={{
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: 12,
+                  fontSize: 12,
+                }}
+                labelStyle={{ color: "hsl(var(--muted-foreground))" }}
+                formatter={(value: number, name) =>
+                  name === "revenue"
+                    ? [formatBRL(Math.round(value * 100)), "Receita"]
+                    : [value, "Pedidos"]
+                }
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                fill="url(#revenueFill)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+
+
 
       {/* Toolbar */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
