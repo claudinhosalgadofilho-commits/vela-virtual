@@ -168,6 +168,35 @@ export const getOrderStatus = createServerFn({ method: "GET" })
     return { status: order.status, tribute_id };
   });
 
+export const getOrderDetails = createServerFn({ method: "GET" })
+  .inputValidator((raw) => orderStatusInput.parse(raw))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select(
+        "id, status, amount_cents, payment_method, tribute_name, customer_name, customer_email, pix_qr_code, pix_qr_base64, mp_payment_id, created_at, paid_at, candle_id",
+      )
+      .eq("id", data.order_id)
+      .maybeSingle();
+    if (!order) return { found: false as const };
+    let tribute_id: string | null = null;
+    if (order.status === "paid") {
+      const { data: t } = await supabaseAdmin
+        .from("tributes")
+        .select("id")
+        .eq("order_id", order.id)
+        .maybeSingle();
+      tribute_id = t?.id ?? null;
+    }
+    const { data: candle } = await supabaseAdmin
+      .from("candles")
+      .select("name, slug")
+      .eq("id", order.candle_id)
+      .maybeSingle();
+    return { found: true as const, order, tribute_id, candle };
+  });
+
 function getSiteUrl(): string {
   const url = process.env.SITE_URL || process.env.PUBLIC_URL;
   if (url) return url.replace(/\/$/, "");
