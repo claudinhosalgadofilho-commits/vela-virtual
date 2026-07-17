@@ -93,14 +93,15 @@ function Page() {
           style={{ background: "radial-gradient(ellipse at 50% 30%, rgba(201,169,97,0.22), transparent 65%)" }}
         />
 
-        <article className="mx-auto max-w-5xl px-4 py-14 md:py-20 md:px-8">
+        <article className="mx-auto max-w-5xl px-4 py-12 sm:py-14 md:py-20 md:px-8">
           <header className="text-center">
-            <p className="text-xs uppercase tracking-[0.28em] text-gold">Em memória de</p>
-            <h1 className="mt-3 font-serif text-5xl leading-tight text-foreground md:text-6xl">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-gold sm:text-xs">Em memória de</p>
+            <h1 className="mt-3 font-serif text-4xl leading-tight text-foreground sm:text-5xl md:text-6xl">
               {data.tribute_name}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">Homenagem acesa em {dateStr}</p>
           </header>
+
 
           {/* ALTAR */}
           <div className="altar mt-12 md:mt-16">
