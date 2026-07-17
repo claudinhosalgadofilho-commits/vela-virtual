@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/velas")({
+export const Route = createFileRoute("/velas/")({
   head: () => ({
     meta: [
       { title: "Planos de Homenagem — Vela Virtual" },
