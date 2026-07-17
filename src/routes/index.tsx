@@ -290,7 +290,7 @@ function HomePage() {
 
           <dl className="mt-12 space-y-6">
             {[
-              { q: "Por quanto tempo a vela fica acesa?", a: "Depende do modelo escolhido: 7, 15 ou 30 dias. O tempo restante é exibido na página da homenagem." },
+              { q: "Por quanto tempo a vela fica acesa?", a: "Depende do plano escolhido: 10, 20 ou 30 dias. O tempo restante é exibido em contador na página da homenagem." },
               { q: "Como funciona o pagamento?", a: "Aceitamos PIX e cartão de crédito. Assim que o pagamento é aprovado, a homenagem é criada automaticamente." },
               { q: "Posso compartilhar a homenagem?", a: "Sim. Cada homenagem possui um link único que pode ser enviado por WhatsApp, redes sociais ou email." },
               { q: "O que acontece quando a vela apaga?", a: "A página permanece disponível para memória, mas a chama deixa de arder simbolicamente." },
