@@ -120,9 +120,9 @@ export const createOrderAndPayment = createServerFn({ method: "POST" })
         notification_url: buildNotificationUrl(),
         payment_methods: { excluded_payment_types: [{ id: "ticket" }, { id: "atm" }] },
         back_urls: {
-          success: `${getSiteUrl()}/homenagem/pending?order=${order.id}`,
-          failure: `${getSiteUrl()}/velas?erro=1`,
-          pending: `${getSiteUrl()}/homenagem/pending?order=${order.id}`,
+          success: `${getSiteUrl()}/pedido/pendente?order=${order.id}`,
+          failure: `${getSiteUrl()}/pedido/pendente?order=${order.id}`,
+          pending: `${getSiteUrl()}/pedido/pendente?order=${order.id}`,
         },
         auto_return: "approved",
       }),
