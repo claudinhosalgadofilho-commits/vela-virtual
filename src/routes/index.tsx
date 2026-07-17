@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Flame, Heart, Shield, Sparkles } from "lucide-react";
+import { ArrowRight, CreditCard, Flame, Heart, QrCode, Shield, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
