@@ -286,7 +286,7 @@ function Page() {
               </legend>
               <RadioGroup
                 name="payment_method"
-                defaultValue="pix"
+                defaultValue={preselectedMethod}
                 className="grid grid-cols-2 gap-3"
                 aria-label="Escolha a forma de pagamento"
               >
