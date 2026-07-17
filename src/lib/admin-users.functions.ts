@@ -95,3 +95,45 @@ export const deleteUser = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const inviteUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { email: string; makeAdmin?: boolean; fullName?: string }) => {
+    const email = input.email?.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error("E-mail inválido.");
+    }
+    return {
+      email,
+      makeAdmin: !!input.makeAdmin,
+      fullName: input.fullName?.trim() || undefined,
+    };
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const origin =
+      process.env.SITE_URL ||
+      process.env.VITE_SITE_URL ||
+      undefined;
+
+    const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
+      data: data.fullName ? { full_name: data.fullName } : undefined,
+      redirectTo: origin ? `${origin}/auth` : undefined,
+    });
+    if (error) throw new Error(error.message);
+
+    const newUserId = invited?.user?.id;
+    if (data.makeAdmin && newUserId) {
+      const { error: roleErr } = await supabaseAdmin
+        .from("user_roles")
+        .upsert(
+          { user_id: newUserId, role: "admin" },
+          { onConflict: "user_id,role", ignoreDuplicates: true },
+        );
+      if (roleErr) throw new Error(roleErr.message);
+    }
+
+    return { ok: true, userId: newUserId ?? null };
+  });

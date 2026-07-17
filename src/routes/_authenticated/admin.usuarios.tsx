@@ -3,10 +3,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Shield, ShieldOff, Trash2, Search, Loader2 } from "lucide-react";
+import { Shield, ShieldOff, Trash2, Search, Loader2, UserPlus, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -16,7 +18,10 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  listUsers, setUserAdmin, deleteUser, type AdminUserRow,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  listUsers, setUserAdmin, deleteUser, inviteUser, type AdminUserRow,
 } from "@/lib/admin-users.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
@@ -33,11 +38,17 @@ function UsersAdminPage() {
   const fetchUsers = useServerFn(listUsers);
   const toggleAdmin = useServerFn(setUserAdmin);
   const removeUser = useServerFn(deleteUser);
+  const invite = useServerFn(inviteUser);
 
   const [query, setQuery] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<AdminUserRow | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteName, setInviteName] = useState("");
+  const [inviteAsAdmin, setInviteAsAdmin] = useState(false);
+  const [inviting, setInviting] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
@@ -88,6 +99,30 @@ function UsersAdminPage() {
     }
   }
 
+  async function handleInvite(e: React.FormEvent) {
+    e.preventDefault();
+    setInviting(true);
+    try {
+      await invite({
+        data: {
+          email: inviteEmail,
+          fullName: inviteName || undefined,
+          makeAdmin: inviteAsAdmin,
+        },
+      });
+      toast.success(`Convite enviado para ${inviteEmail}`);
+      setInviteOpen(false);
+      setInviteEmail("");
+      setInviteName("");
+      setInviteAsAdmin(false);
+      await refetch();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Falha ao enviar convite");
+    } finally {
+      setInviting(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -97,9 +132,14 @@ function UsersAdminPage() {
             Gerencie contas e permissões administrativas.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Badge variant="secondary">{data?.length ?? 0} usuários</Badge>
-          <Badge variant="secondary">{adminCount} admins</Badge>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Badge variant="secondary">{data?.length ?? 0} usuários</Badge>
+            <Badge variant="secondary">{adminCount} admins</Badge>
+          </div>
+          <Button onClick={() => setInviteOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" /> Convidar
+          </Button>
         </div>
       </header>
 
@@ -214,6 +254,63 @@ function UsersAdminPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent>
+          <form onSubmit={handleInvite} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-gold" /> Convidar por e-mail
+              </DialogTitle>
+              <DialogDescription>
+                Enviaremos um link de acesso. Ao aceitar, a conta é criada automaticamente.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="invite-email">E-mail</Label>
+                <Input
+                  id="invite-email"
+                  type="email"
+                  required
+                  autoFocus
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="pessoa@exemplo.com"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="invite-name">Nome (opcional)</Label>
+                <Input
+                  id="invite-name"
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  placeholder="Nome completo"
+                />
+              </div>
+              <label className="flex items-center gap-2 text-sm text-foreground">
+                <Checkbox
+                  checked={inviteAsAdmin}
+                  onCheckedChange={(v) => setInviteAsAdmin(v === true)}
+                />
+                Conceder permissão de administrador
+              </label>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={inviting}>
+                {inviting && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                Enviar convite
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
+
   );
 }
