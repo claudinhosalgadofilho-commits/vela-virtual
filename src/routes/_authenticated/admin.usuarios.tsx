@@ -125,25 +125,23 @@ function UsersAdminPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="font-serif text-3xl text-foreground">Usuários</h1>
+      <header className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-serif text-2xl text-foreground sm:text-3xl">Usuários</h1>
           <p className="text-sm text-muted-foreground">
             Gerencie contas e permissões administrativas.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Badge variant="secondary">{data?.length ?? 0} usuários</Badge>
-            <Badge variant="secondary">{adminCount} admins</Badge>
-          </div>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Badge variant="secondary">{data?.length ?? 0} usuários</Badge>
+          <Badge variant="secondary">{adminCount} admins</Badge>
           <Button onClick={() => setInviteOpen(true)} className="gap-2">
             <UserPlus className="h-4 w-4" /> Convidar
           </Button>
         </div>
       </header>
 
-      <div className="relative max-w-sm">
+      <div className="relative w-full sm:max-w-sm">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
@@ -153,7 +151,8 @@ function UsersAdminPage() {
         />
       </div>
 
-      <div className="rounded-xl border border-border bg-card">
+
+      <div className="rounded-xl border border-border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>

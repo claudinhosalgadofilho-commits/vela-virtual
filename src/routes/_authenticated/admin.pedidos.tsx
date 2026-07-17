@@ -242,16 +242,17 @@ function Page() {
       </div>
 
       {/* KPIs */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <KpiCard icon={ShoppingCart} label="Total de pedidos" value={String(kpis?.total ?? 0)} />
         <KpiCard icon={DollarSign} label="Receita (pagos)" value={formatBRL(kpis?.revenue ?? 0)} accent />
         <KpiCard icon={CheckCircle2} label="Pagos" value={String(kpis?.paidCount ?? 0)} />
         <KpiCard icon={Clock} label="Pendentes" value={String(kpis?.pendingCount ?? 0)} />
       </div>
 
+
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-64">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative w-full flex-1 sm:min-w-64">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Buscar por cliente, e-mail, homenageado ou vela..."
@@ -260,24 +261,27 @@ function Page() {
             className="pl-9"
           />
         </div>
-        <Select value={filter} onValueChange={(v) => setFilter(v as Status | "all")}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos status</SelectItem>
-            <SelectItem value="pending">Pendente</SelectItem>
-            <SelectItem value="paid">Pago</SelectItem>
-            <SelectItem value="cancelled">Cancelado</SelectItem>
-          </SelectContent>
-        </Select>
-        {hasFilters && (
-          <Button variant="ghost" onClick={resetFilters} className="gap-2">
-            <X className="h-4 w-4" /> Limpar filtros
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={filter} onValueChange={(v) => setFilter(v as Status | "all")}>
+            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos status</SelectItem>
+              <SelectItem value="pending">Pendente</SelectItem>
+              <SelectItem value="paid">Pago</SelectItem>
+              <SelectItem value="cancelled">Cancelado</SelectItem>
+            </SelectContent>
+          </Select>
+          {hasFilters && (
+            <Button variant="ghost" onClick={resetFilters} className="gap-2">
+              <X className="h-4 w-4" /> Limpar
+            </Button>
+          )}
+          <Button variant="outline" onClick={exportCsv} className="gap-2">
+            <Download className="h-4 w-4" /> Exportar CSV
           </Button>
-        )}
-        <Button variant="outline" onClick={exportCsv} className="gap-2">
-          <Download className="h-4 w-4" /> Exportar CSV
-        </Button>
+        </div>
       </div>
+
 
       {/* Tabela */}
       <div className="rounded-2xl border border-border bg-card shadow-soft overflow-x-auto">
@@ -455,16 +459,17 @@ function KpiCard({
   icon: Icon, label, value, accent,
 }: { icon: typeof ShoppingCart; label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {label}
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-5">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground sm:text-xs">
+        <Icon className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">{label}</span>
       </div>
-      <div className={`mt-2 font-serif text-2xl ${accent ? "text-primary" : "text-foreground"}`}>
+      <div className={`mt-2 font-serif text-xl sm:text-2xl ${accent ? "text-primary" : "text-foreground"}`}>
         {value}
       </div>
     </div>
   );
 }
+
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
