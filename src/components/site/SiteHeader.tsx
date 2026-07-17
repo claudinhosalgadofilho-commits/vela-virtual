@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import logoAsset from "@/assets/vela-virtual-logo.jpeg.asset.json";
+
 
 const links = [
   { to: "/", label: "Início" },
