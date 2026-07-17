@@ -41,15 +41,16 @@ function HomePage() {
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-secondary/40 via-background to-background" />
         <div className="absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(201,169,97,0.10),transparent_60%)]" />
 
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 md:grid-cols-2 md:items-center md:gap-16 md:px-8 md:py-24">
-          <div>
-            <p className="mb-4 text-xs uppercase tracking-[0.28em] text-gold">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:py-16 md:grid-cols-2 md:items-center md:gap-16 md:px-8 md:py-24">
+          <div className="text-center md:text-left">
+            <p className="mb-4 text-[11px] uppercase tracking-[0.28em] text-gold sm:text-xs">
               Homenagem digital
             </p>
-            <h1 className="font-serif text-5xl leading-[1.05] text-foreground md:text-6xl lg:text-7xl">
+            <h1 className="font-serif text-4xl leading-[1.1] text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
               Uma chama<br />
               <span className="italic text-primary">eterna</span> de memória.
             </h1>
+
             <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
               Acenda uma vela virtual e mantenha viva a lembrança de quem partiu.
               Uma homenagem discreta, respeitosa e para sempre acessível — em
