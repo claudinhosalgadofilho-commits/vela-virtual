@@ -242,12 +242,13 @@ function Page() {
       </div>
 
       {/* KPIs */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <KpiCard icon={ShoppingCart} label="Total de pedidos" value={String(kpis?.total ?? 0)} />
         <KpiCard icon={DollarSign} label="Receita (pagos)" value={formatBRL(kpis?.revenue ?? 0)} accent />
         <KpiCard icon={CheckCircle2} label="Pagos" value={String(kpis?.paidCount ?? 0)} />
         <KpiCard icon={Clock} label="Pendentes" value={String(kpis?.pendingCount ?? 0)} />
       </div>
+
 
       {/* Toolbar */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
