@@ -18,8 +18,12 @@ import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
 import {
   Trash2, Search, Download, ShoppingCart, DollarSign,
-  CheckCircle2, Clock, ExternalLink, X,
+  CheckCircle2, Clock, ExternalLink, X, TrendingUp,
 } from "lucide-react";
+import {
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
+  Tooltip, CartesianGrid,
+} from "recharts";
 
 const PAGE_SIZE_STORAGE_KEY = "admin.pedidos.pageSize";
 const DEFAULT_PAGE_SIZE = 20;
