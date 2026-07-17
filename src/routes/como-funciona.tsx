@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CreditCard, Flame, MessageCircleHeart, Share2, ShoppingBag } from "lucide-react";
+import { formatBRL } from "@/lib/format";
+import { ArrowRight, Clock, CreditCard, Flame, MessageCircleHeart, Share2, ShoppingBag, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/como-funciona")({
   head: () => ({
@@ -25,6 +28,20 @@ const steps = [
 ];
 
 function Page() {
+  const { data: candles } = useQuery({
+    queryKey: ["candles", "featured"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("candles")
+        .select("*")
+        .eq("active", true)
+        .order("display_order")
+        .limit(3);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <SiteShell>
       <section className="mx-auto max-w-4xl px-4 py-20 md:px-8 md:py-28 text-center">
@@ -62,6 +79,61 @@ function Page() {
               Começar minha homenagem <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+        </div>
+      </section>
+
+      {/* PLANOS */}
+      <section className="border-t border-border/60 bg-secondary/30 py-16 md:py-24">
+        <div className="mx-auto max-w-6xl px-4 md:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs uppercase tracking-[0.24em] text-gold">Planos</p>
+            <h2 className="mt-2 font-serif text-3xl text-foreground sm:text-4xl">
+              Escolha o tempo da sua homenagem
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Pagamento único via Pix ou cartão. Sem mensalidade, sem renovação automática.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3 md:items-stretch">
+            {candles?.map((c) => {
+              const isPopular = c.slug === "vela-20-dias";
+              const days = Math.max(1, Math.round(c.duration_hours / 24));
+              const perDay = c.price_cents / days / 100;
+              return (
+                <Link
+                  key={c.id}
+                  to="/velas/$slug"
+                  params={{ slug: c.slug }}
+                  className={
+                    "relative flex flex-col rounded-2xl border bg-card p-8 transition-all " +
+                    (isPopular
+                      ? "border-gold/70 shadow-glow md:-translate-y-2"
+                      : "border-border/60 hover:border-gold/40")
+                  }
+                >
+                  {isPopular && (
+                    <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gold px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-background">
+                      <Sparkles className="h-3 w-3" /> Mais escolhido
+                    </span>
+                  )}
+                  <h3 className="text-center font-serif text-2xl text-foreground">{c.name}</h3>
+                  <div className="mt-1 flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5" /> {days} dias acesa
+                  </div>
+                  <div className="mt-5 text-center">
+                    <div className="font-serif text-4xl text-primary">{formatBRL(c.price_cents)}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      R$ {perDay.toFixed(2).replace(".", ",")} por dia
+                    </div>
+                  </div>
+                  <span className="mt-6 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-gold">
+                    Acender esta vela <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </section>
     </SiteShell>

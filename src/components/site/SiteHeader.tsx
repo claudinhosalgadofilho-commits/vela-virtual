@@ -10,7 +10,7 @@ import logoAsset from "@/assets/vela-virtual-logo.jpeg.asset.json";
 const links = [
   { to: "/", label: "Início" },
   { to: "/como-funciona", label: "Como Funciona" },
-  { to: "/velas", label: "Acender uma Vela" },
+  { to: "/velas", label: "Planos" },
 ];
 
 export function SiteHeader() {
