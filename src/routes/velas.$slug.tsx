@@ -40,7 +40,12 @@ type PaymentSession =
   | { order_id: string; method: "pix"; pix_qr_code: string | null; pix_qr_base64: string | null }
   | { order_id: string; method: "card"; init_point: string; sandbox_init_point: string };
 
+const searchSchema = z.object({
+  pay: fallback(z.string(), "pix").default("pix"),
+});
+
 export const Route = createFileRoute("/velas/$slug")({
+  validateSearch: zodValidator(searchSchema),
   component: Page,
   notFoundComponent: () => (
     <SiteShell>
