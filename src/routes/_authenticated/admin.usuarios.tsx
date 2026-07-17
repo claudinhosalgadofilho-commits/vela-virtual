@@ -254,6 +254,63 @@ function UsersAdminPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent>
+          <form onSubmit={handleInvite} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-gold" /> Convidar por e-mail
+              </DialogTitle>
+              <DialogDescription>
+                Enviaremos um link de acesso. Ao aceitar, a conta é criada automaticamente.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="invite-email">E-mail</Label>
+                <Input
+                  id="invite-email"
+                  type="email"
+                  required
+                  autoFocus
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="pessoa@exemplo.com"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="invite-name">Nome (opcional)</Label>
+                <Input
+                  id="invite-name"
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  placeholder="Nome completo"
+                />
+              </div>
+              <label className="flex items-center gap-2 text-sm text-foreground">
+                <Checkbox
+                  checked={inviteAsAdmin}
+                  onCheckedChange={(v) => setInviteAsAdmin(v === true)}
+                />
+                Conceder permissão de administrador
+              </label>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={inviting}>
+                {inviting && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                Enviar convite
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
+
   );
 }
