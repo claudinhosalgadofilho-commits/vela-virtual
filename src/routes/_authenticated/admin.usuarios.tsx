@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Shield, ShieldOff, Trash2, Search, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,10 +39,9 @@ function UsersAdminPage() {
   const [confirmDelete, setConfirmDelete] = useState<AdminUserRow | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  useState(() => {
+  useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
-    return 0;
-  });
+  }, []);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ["admin", "users"],
