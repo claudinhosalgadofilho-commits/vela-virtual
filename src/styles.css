@@ -323,7 +323,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
 /* Quadro estilo moldura dourada envelhecida */
 .altar-frame {
   position: relative;
-  padding: 16px 16px 50px;
+  padding: clamp(10px, 2.5vw, 16px) clamp(10px, 2.5vw, 16px) clamp(36px, 8vw, 50px);
   background:
     linear-gradient(145deg, #d9b769 0%, #b8944a 45%, #8a6d33 100%);
   border-radius: 6px;
@@ -333,8 +333,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
     0 24px 40px -18px rgba(74, 60, 30, 0.55),
     0 8px 16px -6px rgba(0,0,0,0.25);
   transform: rotate(-0.6deg);
-  max-width: 240px;
-  width: 100%;
+  width: min(240px, 72vw);
   animation: frame-sway 7s ease-in-out infinite;
   transform-origin: 50% 0%;
 }
