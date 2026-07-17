@@ -19,6 +19,7 @@ import { Route as HomenagemIdRouteImport } from './routes/homenagem.$id'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminVelasRouteImport } from './routes/_authenticated/admin.velas'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedAdminPedidosRouteImport } from './routes/_authenticated/admin.pedidos'
 import { Route as AuthenticatedAdminHomenagensRouteImport } from './routes/_authenticated/admin.homenagens'
 import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin.configuracoes'
@@ -73,6 +74,12 @@ const AuthenticatedAdminVelasRoute = AuthenticatedAdminVelasRouteImport.update({
   path: '/velas',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/usuarios',
+    path: '/usuarios',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPedidosRoute =
   AuthenticatedAdminPedidosRouteImport.update({
     id: '/pedidos',
@@ -109,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/velas': typeof AuthenticatedAdminVelasRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
@@ -123,6 +131,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/velas': typeof AuthenticatedAdminVelasRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
@@ -140,6 +149,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
   '/_authenticated/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/velas': typeof AuthenticatedAdminVelasRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/homenagens'
     | '/admin/pedidos'
+    | '/admin/usuarios'
     | '/admin/velas'
     | '/admin/'
     | '/api/public/webhooks/mercadopago'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/homenagens'
     | '/admin/pedidos'
+    | '/admin/usuarios'
     | '/admin/velas'
     | '/admin'
     | '/api/public/webhooks/mercadopago'
@@ -187,6 +199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/homenagens'
     | '/_authenticated/admin/pedidos'
+    | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/velas'
     | '/_authenticated/admin/'
     | '/api/public/webhooks/mercadopago'
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVelasRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/pedidos': {
       id: '/_authenticated/admin/pedidos'
       path: '/pedidos'
@@ -309,6 +329,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminHomenagensRoute: typeof AuthenticatedAdminHomenagensRoute
   AuthenticatedAdminPedidosRoute: typeof AuthenticatedAdminPedidosRoute
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVelasRoute: typeof AuthenticatedAdminVelasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -317,6 +338,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminHomenagensRoute: AuthenticatedAdminHomenagensRoute,
   AuthenticatedAdminPedidosRoute: AuthenticatedAdminPedidosRoute,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminVelasRoute: AuthenticatedAdminVelasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
@@ -357,13 +379,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

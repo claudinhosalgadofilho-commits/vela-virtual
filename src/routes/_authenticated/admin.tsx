@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
   LayoutDashboard, Flame, ShoppingCart, HeartHandshake,
-  Settings, LogOut, Menu, X,
+  Settings, LogOut, Menu, X, Users,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 const nav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/admin/usuarios", label: "Usuários", icon: Users },
   { to: "/admin/velas", label: "Velas", icon: Flame },
   { to: "/admin/pedidos", label: "Pedidos", icon: ShoppingCart },
   { to: "/admin/homenagens", label: "Homenagens", icon: HeartHandshake },
