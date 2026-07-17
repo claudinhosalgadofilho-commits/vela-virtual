@@ -173,11 +173,20 @@ function HomePage() {
                   </figcaption>
                 </figure>
 
-                {/* Vela sobre pedestal */}
+                {/* Oratório (casinha) com a vela dentro */}
                 <div className="altar-candle">
-                  <CandleFlame size="sm" />
-                  <div className="altar-pedestal" aria-hidden="true" />
+                  <div className="oratorio">
+                    <div className="oratorio-roof" />
+                    <div className="oratorio-cross" aria-hidden="true">✝</div>
+                    <div className="oratorio-body">
+                      <div className="oratorio-niche">
+                        <div className="oratorio-glow" />
+                        <CandleFlame size="sm" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
               </div>
 
               <div className="altar-tabletop" aria-hidden="true" />
