@@ -126,14 +126,23 @@ function Page() {
                   </figcaption>
                 </figure>
 
-                {/* Vela sobre pedestal */}
+                {/* Oratório (casinha) com a vela dentro */}
                 <div className="altar-candle">
-                  <CandleFlame
-                    extinguished={!showFlame}
-                    videoUrl={showFlame ? data.candle?.video_url : null}
-                  />
-                  <div className="altar-pedestal" aria-hidden="true" />
+                  <div className="oratorio">
+                    <div className="oratorio-roof" />
+                    <div className="oratorio-cross" aria-hidden="true">✝</div>
+                    <div className="oratorio-body">
+                      <div className="oratorio-niche">
+                        <div className="oratorio-glow" />
+                        <CandleFlame
+                          extinguished={!showFlame}
+                          videoUrl={showFlame ? data.candle?.video_url : null}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
               </div>
 
               {/* Tampo e pernas da mesa */}
