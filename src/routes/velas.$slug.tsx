@@ -71,6 +71,8 @@ type FormValues = z.infer<typeof schema>;
 
 function Page() {
   const { slug } = Route.useParams();
+  const { pay } = Route.useSearch();
+  const preselectedMethod: "pix" | "card" = pay === "card" ? "card" : "pix";
   const navigate = useNavigate();
   const [pending, setPending] = useState<FormValues | null>(null);
   const [processing, setProcessing] = useState(false);
