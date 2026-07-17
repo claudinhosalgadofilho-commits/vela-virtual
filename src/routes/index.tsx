@@ -105,61 +105,87 @@ function HomePage() {
         </div>
       </section>
 
-      {/* VELAS DISPONÍVEIS */}
-      <section className="border-y border-border/60 bg-secondary/30 py-16 md:py-20">
+      {/* PLANOS */}
+      <section id="planos" className="border-y border-border/60 bg-secondary/30 py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-4 md:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-gold">Nossas velas</p>
-              <h2 className="mt-2 font-serif text-3xl text-foreground sm:text-4xl">Escolha sua homenagem</h2>
-            </div>
-            <Link to="/velas" className="text-sm font-medium text-primary hover:underline">
-              Ver todas →
-            </Link>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs uppercase tracking-[0.24em] text-gold">Planos</p>
+            <h2 className="mt-2 font-serif text-3xl text-foreground sm:text-4xl md:text-5xl">
+              Escolha o tempo da sua homenagem
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Três planos, um único gesto de memória. Pagamento único via Pix ou cartão.
+            </p>
           </div>
 
+          <div className="mt-12 grid gap-6 md:grid-cols-3 md:items-stretch">
+            {candles?.map((c) => {
+              const isPopular = c.slug === "vela-20-dias";
+              const days = Math.max(1, Math.round(c.duration_hours / 24));
+              const perDay = c.price_cents / days / 100;
+              return (
+                <div
+                  key={c.id}
+                  className={
+                    "relative flex flex-col rounded-2xl border bg-card p-8 transition-all " +
+                    (isPopular
+                      ? "border-gold/70 shadow-glow md:-translate-y-3 md:scale-[1.03]"
+                      : "border-border/60 hover:border-gold/40")
+                  }
+                >
+                  {isPopular && (
+                    <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full bg-gold px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-background">
+                      <Sparkles className="h-3 w-3" /> Mais escolhido
+                    </span>
+                  )}
+                  <div className="flex h-40 items-center justify-center">
+                    <CandleFlame size="sm" />
+                  </div>
+                  <h3 className="mt-4 text-center font-serif text-2xl text-foreground">{c.name}</h3>
+                  <div className="mt-1 flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5" /> {days} dias acesa
+                  </div>
+                  <div className="mt-5 text-center">
+                    <div className="font-serif text-4xl text-primary">{formatBRL(c.price_cents)}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      R$ {perDay.toFixed(2).replace(".", ",")} por dia · pagamento único
+                    </div>
+                  </div>
+                  <p className="mt-4 flex-1 text-center text-sm text-muted-foreground">{c.description}</p>
+                  <div className="mt-6 grid grid-cols-2 gap-2">
+                    <Link
+                      to="/velas/$slug"
+                      params={{ slug: c.slug }}
+                      search={{ pay: "pix" }}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                    >
+                      <QrCode className="h-3.5 w-3.5" /> Pix
+                    </Link>
+                    <Link
+                      to="/velas/$slug"
+                      params={{ slug: c.slug }}
+                      search={{ pay: "card" }}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/60 px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-gold/60 hover:text-gold"
+                    >
+                      <CreditCard className="h-3.5 w-3.5" /> Cartão
+                    </Link>
+                  </div>
+                  <Link
+                    to="/velas/$slug"
+                    params={{ slug: c.slug }}
+                    className="mt-3 text-center text-xs uppercase tracking-widest text-muted-foreground hover:text-gold"
+                  >
+                    ver detalhes →
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {candles?.map((c) => (
-              <div
-                key={c.id}
-                className="group flex flex-col rounded-2xl border border-border/60 bg-card p-8 transition-all hover:border-gold/50 hover:shadow-glow"
-              >
-                <div className="flex h-40 items-center justify-center">
-                  <CandleFlame size="sm" />
-                </div>
-                <h3 className="mt-6 font-serif text-2xl text-foreground">{c.name}</h3>
-                <p className="mt-2 flex-1 text-sm text-muted-foreground">{c.description}</p>
-                <div className="mt-6 flex items-baseline justify-between">
-                  <span className="font-serif text-2xl text-primary">{formatBRL(c.price_cents)}</span>
-                  <Link
-                    to="/velas/$slug"
-                    params={{ slug: c.slug }}
-                    className="text-xs uppercase tracking-widest text-muted-foreground hover:text-gold"
-                  >
-                    detalhes →
-                  </Link>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  <Link
-                    to="/velas/$slug"
-                    params={{ slug: c.slug }}
-                    search={{ pay: "pix" }}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
-                  >
-                    <QrCode className="h-3.5 w-3.5" /> Pix
-                  </Link>
-                  <Link
-                    to="/velas/$slug"
-                    params={{ slug: c.slug }}
-                    search={{ pay: "card" }}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/60 px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-gold/60 hover:text-gold"
-                  >
-                    <CreditCard className="h-3.5 w-3.5" /> Cartão
-                  </Link>
-                </div>
-              </div>
-            ))}
+          <div className="mt-8 text-center">
+            <Link to="/velas" className="text-sm font-medium text-primary hover:underline">
+              Comparar planos em detalhes →
+            </Link>
           </div>
         </div>
       </section>
