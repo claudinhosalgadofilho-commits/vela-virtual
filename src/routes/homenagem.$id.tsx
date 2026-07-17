@@ -8,7 +8,7 @@ import { CountdownTimer } from "@/components/CountdownTimer";
 import { ShareButtons } from "@/components/ShareButtons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Music2, VolumeX } from "lucide-react";
+import { Music2, VolumeX, Flame } from "lucide-react";
 import { CondolencesBook } from "@/components/CondolencesBook";
 
 export const Route = createFileRoute("/homenagem/$id")({
