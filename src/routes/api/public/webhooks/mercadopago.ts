@@ -116,7 +116,7 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
 
         const { data: order } = await supabaseAdmin
           .from("orders")
-          .select("id, status, candle_id, tribute_name, tribute_message, mp_payment_id")
+          .select("id, status, candle_id, tribute_name, tribute_message, tribute_photo_url, tribute_birth_date, tribute_death_date, mp_payment_id")
           .eq("id", orderId)
           .maybeSingle();
         if (!order) return new Response("order_not_found", { status: 404 });
