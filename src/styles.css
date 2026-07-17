@@ -240,6 +240,109 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   background: linear-gradient(#1a1208, #0a0704);
 }
 
+/* ============ ALTAR ============ */
+.altar {
+  position: relative;
+}
+.altar-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 2.5rem;
+  padding: 3rem 1rem 0;
+}
+@media (min-width: 768px) {
+  .altar-stage {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 3.5rem;
+    padding-top: 4rem;
+  }
+  .altar-stage > .altar-frame { justify-self: end; }
+  .altar-stage > .altar-candle { grid-column: 2; }
+}
+
+/* Quadro estilo moldura dourada envelhecida */
+.altar-frame {
+  position: relative;
+  padding: 18px 18px 56px;
+  background:
+    linear-gradient(145deg, #d9b769 0%, #b8944a 45%, #8a6d33 100%);
+  border-radius: 6px;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.35) inset,
+    0 -3px 0 rgba(0,0,0,0.25) inset,
+    0 30px 50px -20px rgba(74, 60, 30, 0.55),
+    0 10px 20px -8px rgba(0,0,0,0.25);
+  transform: rotate(-0.6deg);
+  max-width: 280px;
+  width: 100%;
+}
+.altar-frame::before {
+  content: "";
+  position: absolute;
+  inset: 8px 8px 46px 8px;
+  border: 2px solid rgba(0,0,0,0.35);
+  border-radius: 3px;
+  pointer-events: none;
+}
+.altar-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: 2px;
+  filter: sepia(0.15) contrast(1.02) brightness(0.98);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.35);
+}
+.altar-plaque {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: #2a1e08;
+  text-align: center;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Base de altar sob a vela */
+.altar-candle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.altar-base {
+  margin-top: -8px;
+  width: 220px;
+  height: 28px;
+  background:
+    linear-gradient(180deg, #f1e6cf 0%, #d7c39a 60%, #a68a5a 100%);
+  border-radius: 4px;
+  box-shadow:
+    0 8px 20px -6px rgba(0,0,0,0.35),
+    inset 0 -6px 10px rgba(120,90,40,0.25),
+    inset 0 2px 0 rgba(255,255,255,0.5);
+}
+.altar-base::before {
+  content: "";
+  display: block;
+  margin: 28px auto 0;
+  width: 320px;
+  max-width: 90vw;
+  height: 14px;
+  background: linear-gradient(180deg, #c9b48a, #8a7449);
+  border-radius: 4px;
+  box-shadow: 0 12px 30px -10px rgba(0,0,0,0.4);
+}
+
 #lovable-badge {
   display: none !important;
 }
+
