@@ -106,17 +106,18 @@ function HomePage() {
       </section>
 
       {/* VELAS DISPONÍVEIS */}
-      <section className="border-y border-border/60 bg-secondary/30 py-20">
+      <section className="border-y border-border/60 bg-secondary/30 py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-4 md:px-8">
-          <div className="flex items-end justify-between gap-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.24em] text-gold">Nossas velas</p>
-              <h2 className="mt-2 font-serif text-4xl text-foreground">Escolha sua homenagem</h2>
+              <h2 className="mt-2 font-serif text-3xl text-foreground sm:text-4xl">Escolha sua homenagem</h2>
             </div>
-            <Link to="/velas" className="hidden text-sm font-medium text-primary hover:underline md:inline-flex">
+            <Link to="/velas" className="text-sm font-medium text-primary hover:underline">
               Ver todas →
             </Link>
           </div>
+
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {candles?.map((c) => (
