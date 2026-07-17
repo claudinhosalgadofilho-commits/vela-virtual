@@ -145,10 +145,10 @@ function HomePage() {
       </section>
 
       {/* EXEMPLO DE HOMENAGEM */}
-      <section className="mx-auto max-w-6xl px-4 py-20 md:px-8">
+      <section className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-20">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs uppercase tracking-[0.24em] text-gold">Exemplo de homenagem</p>
-          <h2 className="mt-2 font-serif text-4xl text-foreground md:text-5xl">
+          <h2 className="mt-2 font-serif text-3xl text-foreground sm:text-4xl md:text-5xl">
             Veja como sua homenagem ficará
           </h2>
           <p className="mt-4 text-muted-foreground">
@@ -156,14 +156,14 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="mt-14 rounded-3xl border border-border/60 bg-gradient-to-b from-secondary/40 to-background p-6 shadow-soft md:p-12">
+        <div className="mt-12 rounded-3xl border border-border/60 bg-gradient-to-b from-secondary/40 to-background p-4 shadow-soft sm:p-6 md:p-12">
           <div className="grid items-center gap-10 md:grid-cols-2">
             {/* Quadro / retrato */}
             <div className="flex justify-center">
-              <div className="relative rounded-lg bg-gradient-to-br from-gold/70 via-primary/60 to-gold/70 p-3 shadow-glow">
-                <div className="rounded-md bg-card p-3">
+              <div className="relative rounded-lg bg-gradient-to-br from-gold/70 via-primary/60 to-gold/70 p-2 shadow-glow sm:p-3">
+                <div className="rounded-md bg-card p-2 sm:p-3">
                   <div
-                    className="flex h-72 w-56 items-end justify-center rounded-sm bg-cover bg-center md:h-80 md:w-64"
+                    className="flex aspect-[3/4] w-44 items-end justify-center rounded-sm bg-cover bg-center sm:w-56 md:w-64"
                     style={{
                       backgroundImage:
                         "linear-gradient(to bottom, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80')",
@@ -175,11 +175,12 @@ function HomePage() {
                     </span>
                   </div>
                 </div>
-                <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 font-serif text-xs uppercase tracking-widest text-primary-foreground shadow-soft">
+                <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 font-serif text-[10px] uppercase tracking-widest text-primary-foreground shadow-soft sm:px-4 sm:text-xs">
                   1942 — 2024
                 </span>
               </div>
             </div>
+
 
             {/* Oratório em formato de casinha com vela dentro */}
             <div className="flex flex-col items-center">
