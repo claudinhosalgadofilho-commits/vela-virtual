@@ -222,17 +222,17 @@ function HomePage() {
       </section>
 
       {/* DEPOIMENTOS */}
-      <section className="mx-auto max-w-6xl px-4 py-20 md:px-8">
-        <h2 className="text-center font-serif text-4xl text-foreground">Palavras de quem passou por aqui</h2>
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+      <section className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-20">
+        <h2 className="text-center font-serif text-3xl text-foreground sm:text-4xl">Palavras de quem passou por aqui</h2>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 md:mt-14 md:grid-cols-3">
           {[
             { name: "Maria S.", text: "Uma forma linda de manter presente a memória do meu pai. Pude compartilhar com toda a família." },
             { name: "João P.", text: "Foi simples, respeitoso e emocionante. A chama parece viva." },
             { name: "Clara M.", text: "Chorei ao ver a vela acesa com o nome da minha avó. Recomendo de coração." },
           ].map((t) => (
-            <figure key={t.name} className="rounded-2xl bg-card p-8 shadow-soft border border-border/60">
+            <figure key={t.name} className="rounded-2xl bg-card p-6 shadow-soft border border-border/60 sm:p-8">
               <Flame className="h-5 w-5 text-gold" strokeWidth={1.5} />
-              <blockquote className="mt-4 font-serif text-lg leading-relaxed text-foreground italic">
+              <blockquote className="mt-4 font-serif text-base leading-relaxed text-foreground italic sm:text-lg">
                 &ldquo;{t.text}&rdquo;
               </blockquote>
               <figcaption className="mt-4 text-sm text-muted-foreground">— {t.name}</figcaption>
@@ -242,9 +242,10 @@ function HomePage() {
       </section>
 
       {/* FAQ */}
-      <section className="border-t border-border/60 bg-secondary/30 py-20">
+      <section className="border-t border-border/60 bg-secondary/30 py-16 md:py-20">
         <div className="mx-auto max-w-3xl px-4 md:px-8">
-          <h2 className="text-center font-serif text-4xl text-foreground">Perguntas frequentes</h2>
+          <h2 className="text-center font-serif text-3xl text-foreground sm:text-4xl">Perguntas frequentes</h2>
+
           <dl className="mt-12 space-y-6">
             {[
               { q: "Por quanto tempo a vela fica acesa?", a: "Depende do modelo escolhido: 7, 15 ou 30 dias. O tempo restante é exibido na página da homenagem." },
