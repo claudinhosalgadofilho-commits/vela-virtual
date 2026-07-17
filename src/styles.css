@@ -334,7 +334,30 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   transform: rotate(-0.6deg);
   max-width: 240px;
   width: 100%;
+  animation: frame-sway 7s ease-in-out infinite;
+  transform-origin: 50% 0%;
 }
+@keyframes frame-sway {
+  0%, 100% { transform: rotate(-0.6deg) translateY(0); }
+  50% { transform: rotate(-0.15deg) translateY(-2px); }
+}
+.altar-frame:hover {
+  animation-play-state: paused;
+}
+
+/* Respiração sutil do oratório */
+.oratorio {
+  animation: oratorio-breathe 6s ease-in-out infinite;
+}
+@keyframes oratorio-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .altar-frame, .oratorio { animation: none; }
+}
+
 .altar-frame::before {
   content: "";
   position: absolute;
