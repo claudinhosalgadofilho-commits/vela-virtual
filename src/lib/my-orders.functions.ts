@@ -31,7 +31,7 @@ export const listMyOrders = createServerFn({ method: "GET" })
       .ilike("customer_email", email);
 
     if (data.status && (ALLOWED_STATUS as readonly string[]).includes(data.status)) {
-      query = query.eq("status", data.status);
+      query = query.eq("status", data.status as (typeof ALLOWED_STATUS)[number]);
     }
     const term = data.q?.trim();
     if (term) {
