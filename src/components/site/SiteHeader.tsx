@@ -11,6 +11,7 @@ const links = [
   { to: "/", label: "Início" },
   { to: "/como-funciona", label: "Como Funciona" },
   { to: "/velas", label: "Planos" },
+  { to: "/meus-pedidos", label: "Meus pedidos" },
 ];
 
 export function SiteHeader() {

@@ -18,6 +18,7 @@ import { Route as VelasSlugRouteImport } from './routes/velas.$slug'
 import { Route as PedidoPendenteRouteImport } from './routes/pedido.pendente'
 import { Route as PedidoIdRouteImport } from './routes/pedido.$id'
 import { Route as HomenagemIdRouteImport } from './routes/homenagem.$id'
+import { Route as AuthenticatedMeusPedidosRouteImport } from './routes/_authenticated/meus-pedidos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminVelasRouteImport } from './routes/_authenticated/admin.velas'
@@ -71,6 +72,12 @@ const HomenagemIdRoute = HomenagemIdRouteImport.update({
   path: '/homenagem/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMeusPedidosRoute =
+  AuthenticatedMeusPedidosRouteImport.update({
+    id: '/meus-pedidos',
+    path: '/meus-pedidos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/meus-pedidos': typeof AuthenticatedMeusPedidosRoute
   '/homenagem/$id': typeof HomenagemIdRoute
   '/pedido/$id': typeof PedidoIdRoute
   '/pedido/pendente': typeof PedidoPendenteRoute
@@ -139,6 +147,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/meus-pedidos': typeof AuthenticatedMeusPedidosRoute
   '/homenagem/$id': typeof HomenagemIdRoute
   '/pedido/$id': typeof PedidoIdRoute
   '/pedido/pendente': typeof PedidoPendenteRoute
@@ -159,6 +168,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/meus-pedidos': typeof AuthenticatedMeusPedidosRoute
   '/homenagem/$id': typeof HomenagemIdRoute
   '/pedido/$id': typeof PedidoIdRoute
   '/pedido/pendente': typeof PedidoPendenteRoute
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-funciona'
     | '/admin'
+    | '/meus-pedidos'
     | '/homenagem/$id'
     | '/pedido/$id'
     | '/pedido/pendente'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/como-funciona'
+    | '/meus-pedidos'
     | '/homenagem/$id'
     | '/pedido/$id'
     | '/pedido/pendente'
@@ -215,6 +227,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-funciona'
     | '/_authenticated/admin'
+    | '/_authenticated/meus-pedidos'
     | '/homenagem/$id'
     | '/pedido/$id'
     | '/pedido/pendente'
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomenagemIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/meus-pedidos': {
+      id: '/_authenticated/meus-pedidos'
+      path: '/meus-pedidos'
+      fullPath: '/meus-pedidos'
+      preLoaderRoute: typeof AuthenticatedMeusPedidosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -389,10 +409,12 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedMeusPedidosRoute: typeof AuthenticatedMeusPedidosRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedMeusPedidosRoute: AuthenticatedMeusPedidosRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
