@@ -5,10 +5,17 @@ cd /app
 
 echo ">>> Node: $(node -v)  npm: $(npm -v)"
 
-# Instala dependências apenas se node_modules não existir ou package.json mudou
-if [ ! -d "node_modules" ] || [ package.json -nt node_modules ]; then
-  echo ">>> Instalando dependências (npm ci)…"
-  npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+# Instala dependências apenas se node_modules não existir
+if [ ! -d "node_modules" ]; then
+  echo ">>> Instalando dependências (npm install)…"
+  npm install --legacy-peer-deps --include=optional
+fi
+
+# Fix npm bug #4828: bindings nativos opcionais (Rolldown) são pulados com
+# --legacy-peer-deps. Instala manualmente o binário Linux x64 se faltar.
+if [ ! -d "node_modules/@rolldown/binding-linux-x64-gnu" ]; then
+  echo ">>> Instalando binding nativo do Rolldown (workaround npm #4828)…"
+  npm install @rolldown/binding-linux-x64-gnu --no-save --legacy-peer-deps || true
 fi
 
 # Builda apenas se .output não existir
