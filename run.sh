@@ -42,12 +42,14 @@ fi
 # Usa npm puro porque a VPS/iContainer executa Node.js + npm; manter um único
 # gerenciador evita lockfiles divergentes e conflitos de peer dependencies.
 if [ ! -d "node_modules" ]; then
+  # Força instalação de devDependencies mesmo se NODE_ENV=production estiver no .env
+  # (o Vite/TanStack plugin fica em devDependencies e é necessário para o build).
   if [ -f "package-lock.json" ] || [ -f "npm-shrinkwrap.json" ]; then
-    echo ">>> Instalando dependências (npm ci)…"
-    npm ci --include=optional --no-audit --no-fund
+    echo ">>> Instalando dependências (npm ci, incluindo devDependencies)…"
+    NODE_ENV=development npm ci --include=dev --include=optional --no-audit --no-fund
   else
-    echo ">>> package-lock.json não encontrado; usando npm install para gerar instalação inicial…"
-    npm install --include=optional --no-audit --no-fund
+    echo ">>> package-lock.json não encontrado; usando npm install…"
+    NODE_ENV=development npm install --include=dev --include=optional --no-audit --no-fund
   fi
 fi
 
@@ -67,7 +69,7 @@ fi
 # Builda apenas se .output não existir
 if [ ! -f ".output/server/index.mjs" ]; then
   echo ">>> Build de produção (NODE_OPTIONS=$NODE_OPTIONS)…"
-  npm run build
+  NODE_ENV=development npm run build
 fi
 
 echo ">>> Subindo servidor Node em 0.0.0.0:${PORT:-${NODE_APP_PORT:-3000}}"
