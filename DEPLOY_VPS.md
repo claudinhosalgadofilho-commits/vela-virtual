@@ -2,11 +2,10 @@
 
 O projeto foi adaptado para gerar um bundle **Node.js standalone** via Nitro
 (preset `node-server`). O build produz `.output/server/index.mjs`, executável
-com `node` puro — sem Cloudflare Workers, sem wrangler.
+com `node` puro.
 
-> A preview do Lovable continua usando Cloudflare automaticamente. O preset
-> `node-server` só é aplicado quando você roda `bun run build` fora do
-> ambiente Lovable (ex.: na sua VPS ou CI próprio).
+> Na VPS use **npm**, não misture Bun e npm. O repositório mantém
+> `package-lock.json` como fonte única de instalação.
 
 ---
 
@@ -42,7 +41,6 @@ HOST=0.0.0.0
 # Ubuntu 22.04+
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs nginx
-curl -fsSL https://bun.sh/install | bash
 sudo npm i -g pm2
 ```
 
@@ -50,8 +48,8 @@ sudo npm i -g pm2
 
 ```bash
 git clone <seu-repo> app && cd app
-bun install
-bun run build         # gera .output/
+npm ci --include=optional --no-audit --no-fund
+NODE_OPTIONS=--max-old-space-size=2048 npm run build  # gera .output/
 pm2 start .output/server/index.mjs --name vela-virtual --update-env
 pm2 save
 pm2 startup           # siga a instrução impressa (systemd)
@@ -91,8 +89,9 @@ sudo certbot --nginx -d seudominio.com -d www.seudominio.com
 ```bash
 cd app
 git pull
-bun install
-bun run build
+rm -rf node_modules .output
+npm ci --include=optional --no-audit --no-fund
+NODE_OPTIONS=--max-old-space-size=2048 npm run build
 pm2 restart vela-virtual --update-env
 ```
 
@@ -130,7 +129,9 @@ https://seudominio.com/api/public/webhooks/mercadopago
 
 | Sintoma | Causa provável | Fix |
 |---|---|---|
-| `Cannot find module '.output/server/index.mjs'` | build não rodou | `bun run build` |
+| `Cannot find module '.output/server/index.mjs'` | build não rodou | `npm run build` |
+| `ERESOLVE` com `zod` | lock/dependências antigas na VPS | `rm -rf node_modules package-lock.json` somente se o repo ainda estiver antigo; depois `git pull && npm install` |
+| `Cannot find native binding` / Rolldown | dependência opcional não instalada | `rm -rf node_modules .output && npm ci --include=optional --no-audit --no-fund` |
 | `Missing Supabase environment variable(s)` | `.env` não carregado pelo PM2 | `pm2 restart vela-virtual --update-env` após exportar as vars, ou use `pm2 start ecosystem.config.js` |
 | 502 no Nginx | app não subiu | `pm2 logs vela-virtual` |
 | `EADDRINUSE :3000` | porta ocupada | mudar `PORT` no `.env` e rebuildar (se necessário) |

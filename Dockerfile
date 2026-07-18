@@ -1,12 +1,13 @@
 # --- build stage ---
-FROM oven/bun:1 AS build
+FROM node:22 AS build
 WORKDIR /app
 
-COPY package.json bun.lock* bunfig.toml* ./
-RUN bun install --frozen-lockfile || bun install
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci --include=optional --no-audit --no-fund
 
 COPY . .
-RUN bun run build
+ENV NODE_OPTIONS=--max-old-space-size=2048
+RUN npm run build
 
 # --- runtime stage ---
 FROM node:22-alpine AS runtime

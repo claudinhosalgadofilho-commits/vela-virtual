@@ -10,10 +10,17 @@ free -h || true
 # Limita heap do Node durante o build para evitar OOM em VPS com pouca RAM.
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
 
-# Instala dependências apenas se node_modules não existir
+# Instala dependências apenas se node_modules não existir.
+# Usa npm puro porque a VPS/iContainer executa Node.js + npm; manter um único
+# gerenciador evita lockfiles divergentes e conflitos de peer dependencies.
 if [ ! -d "node_modules" ]; then
-  echo ">>> Instalando dependências (npm install)…"
-  npm install --legacy-peer-deps --include=optional --no-audit --no-fund
+  if [ -f "package-lock.json" ]; then
+    echo ">>> Instalando dependências (npm ci)…"
+    npm ci --include=optional --no-audit --no-fund
+  else
+    echo ">>> Instalando dependências (npm install)…"
+    npm install --include=optional --no-audit --no-fund
+  fi
 fi
 
 # Fix npm bug #4828: bindings nativos opcionais (Rolldown) são pulados com
@@ -26,7 +33,7 @@ case "$ARCH" in
 esac
 if [ -n "$ROLLDOWN_PKG" ] && [ ! -d "node_modules/$ROLLDOWN_PKG" ]; then
   echo ">>> Instalando binding nativo do Rolldown ($ROLLDOWN_PKG)…"
-  npm install "$ROLLDOWN_PKG" --no-save --legacy-peer-deps --no-audit --no-fund || true
+  npm install "$ROLLDOWN_PKG" --no-save --include=optional --no-audit --no-fund || true
 fi
 
 # Builda apenas se .output não existir
