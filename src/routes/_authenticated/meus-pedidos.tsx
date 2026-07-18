@@ -72,7 +72,7 @@ function MyOrdersPage() {
   useEffect(() => {
     const t = setTimeout(() => {
       if (qInput !== q) {
-        navigate({ search: (prev) => ({ ...prev, q: qInput, page: 1 }) });
+        navigate({ search: (prev: { status: string; q: string; page: number }) => ({ ...prev, q: qInput, page: 1 }) });
       }
     }, 350);
     return () => clearTimeout(t);
@@ -97,9 +97,9 @@ function MyOrdersPage() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const setStatus = (s: string) =>
-    navigate({ search: (prev) => ({ ...prev, status: s, page: 1 }) });
+    navigate({ search: (prev: { status: string; q: string; page: number }) => ({ ...prev, status: s, page: 1 }) });
   const setPage = (p: number) =>
-    navigate({ search: (prev) => ({ ...prev, page: Math.min(totalPages, Math.max(1, p)) }) });
+    navigate({ search: (prev: { status: string; q: string; page: number }) => ({ ...prev, page: Math.min(totalPages, Math.max(1, p)) }) });
 
   return (
     <SiteShell>
