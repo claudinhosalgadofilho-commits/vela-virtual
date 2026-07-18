@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-cd /app
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -d "/app" ] && [ -f "/app/package.json" ]; then
+  cd /app
+else
+  cd "$SCRIPT_DIR"
+fi
 
 echo ">>> Node: $(node -v)  npm: $(npm -v)"
 echo ">>> RAM disponível:"
