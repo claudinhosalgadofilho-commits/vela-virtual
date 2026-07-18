@@ -175,6 +175,10 @@ function Page() {
         window.location.href = result.init_point || result.sandbox_init_point;
         return;
       }
+      // Pix: redireciona para página de status dedicada (URL compartilhável + polling)
+      navigate({ to: "/pedido/$id", params: { id: result.order_id } });
+      return;
+
     } catch (err) {
       console.error(err);
       toast.error(err instanceof Error ? err.message : "Não foi possível gerar o pagamento.");
