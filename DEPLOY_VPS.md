@@ -55,6 +55,38 @@ pm2 save
 pm2 startup           # siga a instrução impressa (systemd)
 ```
 
+### iContainer / pasta fixa `/etc/icontainer/runtime/node/vela-virtual`
+
+O erro `package.json: no such file or directory` significa que o container está
+na pasta certa, mas o projeto completo não foi enviado/clonado ali. Essa pasta
+precisa conter pelo menos `package.json`, `package-lock.json`, `src/`, `public/`,
+`vite.config.ts` e `run.sh`.
+
+Se a VPS não usa Git, envie os arquivos do projeto por SFTP/upload do painel e
+rode:
+
+```bash
+cd /etc/icontainer/runtime/node/vela-virtual
+ls -la package.json package-lock.json src public vite.config.ts run.sh
+chmod +x run.sh
+rm -rf node_modules .output
+bash run.sh
+```
+
+Se a VPS usa Git, clone dentro da pasta vazia:
+
+```bash
+cd /etc/icontainer/runtime/node
+rm -rf vela-virtual
+git clone <seu-repo> vela-virtual
+cd vela-virtual
+chmod +x run.sh
+bash run.sh
+```
+
+Não coloque `git pull` dentro do comando de inicialização do container. Use Git
+apenas para atualizar os arquivos antes de reiniciar.
+
 ### Nginx reverse proxy
 
 `/etc/nginx/sites-available/vela-virtual`:
@@ -129,6 +161,10 @@ https://seudominio.com/api/public/webhooks/mercadopago
 
 | Sintoma | Causa provável | Fix |
 |---|---|---|
+| `fatal: not a git repository` | comando de start tentando rodar `git pull` em pasta sem `.git` | remova `git pull` do start; envie/clone o projeto completo antes |
+| `package.json: no such file or directory` | projeto não está dentro da pasta `/etc/icontainer/runtime/node/vela-virtual` | envie/clone todos os arquivos do projeto para essa pasta |
+| `npm ci` pede `package-lock.json` | lockfile não está na VPS ou start antigo força `npm ci` | envie `package-lock.json` ou use o `run.sh` atualizado, que cai para `npm install` |
+| `run.sh: line 3: /.env: No such file` | script antigo tentando carregar `.env` com caminho vazio | substitua pelo `run.sh` atualizado; ele só carrega `.env` se existir |
 | `Cannot find module '.output/server/index.mjs'` | build não rodou | `npm run build` |
 | `ERESOLVE` com `zod` | lock/dependências antigas na VPS | `rm -rf node_modules package-lock.json` somente se o repo ainda estiver antigo; depois `git pull && npm install` |
 | `Cannot find native binding` / Rolldown | dependência opcional não instalada | `rm -rf node_modules .output && npm ci --include=optional --no-audit --no-fund` |
