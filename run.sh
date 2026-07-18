@@ -69,7 +69,7 @@ fi
 # Builda apenas se .output não existir
 if [ ! -f ".output/server/index.mjs" ]; then
   echo ">>> Build de produção (NODE_OPTIONS=$NODE_OPTIONS)…"
-  NODE_ENV=development npm run build
+  NODE_ENV=production npm run build
 fi
 
 echo ">>> Subindo servidor Node em 0.0.0.0:${PORT:-${NODE_APP_PORT:-3000}}"
