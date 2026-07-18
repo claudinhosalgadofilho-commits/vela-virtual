@@ -12,4 +12,11 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // VPS deploy (Node.js). Dentro do build do Lovable esse preset é ignorado
+  // e a build usa Cloudflare automaticamente — comportamento intencional do plugin.
+  // Fora do Lovable (ex.: `bun run build` na sua VPS), gera .output/server/index.mjs
+  // pronto para rodar com `node .output/server/index.mjs`.
+  nitro: {
+    preset: "node-server",
+  },
 });
