@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
-set -e
+set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -d "/app" ] && [ -f "/app/package.json" ]; then
+PROJECT_DIR="${PROJECT_DIR:-$SCRIPT_DIR}"
+
+# Em Docker multi-stage o projeto costuma estar em /app. Em iContainer/bind mount,
+# o projeto fica na mesma pasta do run.sh. Nunca usamos `git pull` aqui, porque
+# algumas VPS recebem os arquivos por upload/SFTP e nem sempre têm uma pasta .git.
+if [ -f "$PROJECT_DIR/package.json" ]; then
+  cd "$PROJECT_DIR"
+elif [ -f "/app/package.json" ]; then
   cd /app
 else
-  cd "$SCRIPT_DIR"
+  echo "ERRO: package.json não encontrado."
+  echo "Pasta atual: $(pwd)"
+  echo "Pasta do run.sh: $SCRIPT_DIR"
+  echo ""
+  echo "Envie/clone o projeto completo para esta pasta antes de rodar:"
+  echo "  /etc/icontainer/runtime/node/vela-virtual"
+  echo ""
+  echo "Arquivos obrigatórios na pasta: package.json, package-lock.json, src/, public/, vite.config.ts"
+  exit 1
 fi
 
 echo ">>> Node: $(node -v)  npm: $(npm -v)"
@@ -15,15 +30,23 @@ free -h || true
 # Limita heap do Node durante o build para evitar OOM em VPS com pouca RAM.
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
 
+# Carrega .env se existir. Se não existir, continua: variáveis podem vir do painel.
+if [ -f ".env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source ./.env
+  set +a
+fi
+
 # Instala dependências apenas se node_modules não existir.
 # Usa npm puro porque a VPS/iContainer executa Node.js + npm; manter um único
 # gerenciador evita lockfiles divergentes e conflitos de peer dependencies.
 if [ ! -d "node_modules" ]; then
-  if [ -f "package-lock.json" ]; then
+  if [ -f "package-lock.json" ] || [ -f "npm-shrinkwrap.json" ]; then
     echo ">>> Instalando dependências (npm ci)…"
     npm ci --include=optional --no-audit --no-fund
   else
-    echo ">>> Instalando dependências (npm install)…"
+    echo ">>> package-lock.json não encontrado; usando npm install para gerar instalação inicial…"
     npm install --include=optional --no-audit --no-fund
   fi
 fi
