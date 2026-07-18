@@ -1,20 +1,46 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const ALLOWED_STATUS = ["paid", "pending", "cancelled", "refunded"] as const;
+
+const inputSchema = z.object({
+  status: z.string().optional(),
+  q: z.string().optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(50).default(10),
+});
 
 export const listMyOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((data: unknown) => inputSchema.parse(data ?? {}))
+  .handler(async ({ context, data }) => {
     const email = (context.claims as { email?: string }).email?.toLowerCase().trim();
-    if (!email) return { orders: [] as MyOrder[] };
+    if (!email) return { orders: [] as MyOrder[], total: 0, page: data.page, pageSize: data.pageSize };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: orders, error } = await supabaseAdmin
+
+    const from = (data.page - 1) * data.pageSize;
+    const to = from + data.pageSize - 1;
+
+    let query = supabaseAdmin
       .from("orders")
       .select(
         "id, status, amount_cents, payment_method, tribute_name, candle_id, created_at, paid_at",
+        { count: "exact" },
       )
-      .ilike("customer_email", email)
+      .ilike("customer_email", email);
+
+    if (data.status && (ALLOWED_STATUS as readonly string[]).includes(data.status)) {
+      query = query.eq("status", data.status as (typeof ALLOWED_STATUS)[number]);
+    }
+    const term = data.q?.trim();
+    if (term) {
+      query = query.ilike("tribute_name", `%${term}%`);
+    }
+
+    const { data: orders, error, count } = await query
       .order("created_at", { ascending: false })
-      .limit(100);
+      .range(from, to);
     if (error) throw new Error("Falha ao carregar pedidos");
     const list = orders ?? [];
     const candleIds = Array.from(new Set(list.map((o) => o.candle_id)));
@@ -47,6 +73,9 @@ export const listMyOrders = createServerFn({ method: "GET" })
         paid_at: o.paid_at,
         tribute_id: tributeMap[o.id] ?? null,
       })) satisfies MyOrder[],
+      total: count ?? 0,
+      page: data.page,
+      pageSize: data.pageSize,
     };
   });
 
