@@ -9,7 +9,7 @@ export function SiteFooter() {
         <div className="md:col-span-2">
           <Link to="/" className="flex items-center gap-3">
             <img
-              src={logoAsset.url}
+              src={logoUrl}
               alt="Vela Virtual"
               className="h-10 w-10 rounded-full object-cover ring-1 ring-gold/30"
             />
