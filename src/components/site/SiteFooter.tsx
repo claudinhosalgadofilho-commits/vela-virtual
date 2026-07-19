@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logoAsset from "@/assets/vela-virtual-logo.jpeg.asset.json";
+const logoUrl = "/logo/vela-virtual.jpeg";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
