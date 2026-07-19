@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
-import logoAsset from "@/assets/vela-virtual-logo.jpeg.asset.json";
+const logoUrl = "/logo/vela-virtual.jpeg";
 
 
 const links = [
@@ -37,7 +37,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:h-20 md:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-2 group sm:gap-3">
           <img
-            src={logoAsset.url}
+            src={logoUrl}
             alt="Vela Virtual"
             className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-gold/30 transition-transform group-hover:scale-105 sm:h-11 sm:w-11"
           />
