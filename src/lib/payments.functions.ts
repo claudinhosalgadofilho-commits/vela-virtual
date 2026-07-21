@@ -78,7 +78,7 @@ export const createOrderAndPayment = createServerFn({ method: "POST" })
         tribute_birth_date: data.tribute_birth_date || null,
         tribute_death_date: data.tribute_death_date || null,
         amount_cents: candle.price_cents,
-        payment_method: data.payment_method,
+        payment_method: "checkout",
         status: "pending",
       } as never)
       .select("id")
@@ -88,48 +88,7 @@ export const createOrderAndPayment = createServerFn({ method: "POST" })
     const amountBRL = Number((candle.price_cents / 100).toFixed(2));
     const idempotencyKey = `order-${order.id}`;
 
-    if (data.payment_method === "pix") {
-      const [firstName, ...rest] = data.customer_name.trim().split(/\s+/);
-      const lastName = rest.join(" ") || firstName;
-      const resp = await fetch("https://api.mercadopago.com/v1/payments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          "X-Idempotency-Key": idempotencyKey,
-        },
-        body: JSON.stringify({
-          transaction_amount: amountBRL,
-          description: `Vela ${candle.name} — homenagem a ${data.tribute_name}`,
-          payment_method_id: "pix",
-          payer: { email: data.customer_email, first_name: firstName, last_name: lastName },
-          external_reference: order.id,
-          notification_url: buildNotificationUrl(),
-        }),
-      });
-      const payload = await resp.json();
-      if (!resp.ok) {
-        console.error("[MP pix]", payload);
-        throw new Error(payload?.message ?? "Falha ao gerar cobrança PIX");
-      }
-      const qr = payload?.point_of_interaction?.transaction_data;
-      await supabaseAdmin
-        .from("orders")
-        .update({
-          mp_payment_id: String(payload.id),
-          pix_qr_code: qr?.qr_code ?? null,
-          pix_qr_base64: qr?.qr_code_base64 ?? null,
-        } as never)
-        .eq("id", order.id);
-      return {
-        order_id: order.id,
-        method: "pix" as const,
-        pix_qr_code: qr?.qr_code ?? null,
-        pix_qr_base64: qr?.qr_code_base64 ?? null,
-      };
-    }
-
-    // Card: create Checkout Pro preference
+    // Checkout Pro: aceita PIX, cartão, boleto e saldo em conta na tela oficial do Mercado Pago.
     const resp = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",
       headers: {
@@ -151,7 +110,6 @@ export const createOrderAndPayment = createServerFn({ method: "POST" })
         payer: { email: data.customer_email, name: data.customer_name },
         external_reference: order.id,
         notification_url: buildNotificationUrl(),
-        payment_methods: { excluded_payment_types: [{ id: "ticket" }, { id: "atm" }] },
         back_urls: {
           success: `${getSiteUrl()}/pedido/${order.id}`,
           failure: `${getSiteUrl()}/pedido/${order.id}`,
@@ -171,7 +129,7 @@ export const createOrderAndPayment = createServerFn({ method: "POST" })
       .eq("id", order.id);
     return {
       order_id: order.id,
-      method: "card" as const,
+      method: "checkout" as const,
       init_point: payload.init_point as string,
       sandbox_init_point: payload.sandbox_init_point as string,
     };
