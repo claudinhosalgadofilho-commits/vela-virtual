@@ -1,51 +1,28 @@
 import { createFileRoute, useNavigate, Link, notFound } from "@tanstack/react-router";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { createOrderAndPayment, getOrderStatus, uploadTributePhoto } from "@/lib/payments.functions";
+import { createOrderAndPayment, uploadTributePhoto } from "@/lib/payments.functions";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { formatBRL } from "@/lib/format";
 import {
   ArrowLeft,
   ArrowRight,
   Clock,
-  Copy,
-  CreditCard,
   Loader2,
-  QrCode,
   ShieldCheck,
-  ExternalLink,
 } from "lucide-react";
 
-type PaymentSession =
-  | { order_id: string; method: "pix"; pix_qr_code: string | null; pix_qr_base64: string | null }
-  | { order_id: string; method: "card"; init_point: string; sandbox_init_point: string };
-
-const searchSchema = z.object({
-  pay: fallback(z.string(), "pix").default("pix"),
-});
-
 export const Route = createFileRoute("/velas/$slug")({
-  validateSearch: zodValidator(searchSchema),
   component: Page,
   notFoundComponent: () => (
     <SiteShell>
@@ -66,7 +43,6 @@ const schema = z.object({
   tribute_message: z.string().trim().max(500).optional().or(z.literal("")),
   tribute_birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida").optional().or(z.literal("")),
   tribute_death_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida").optional().or(z.literal("")),
-  payment_method: z.enum(["pix", "card"]),
 });
 
 type FormValues = z.infer<typeof schema>;
