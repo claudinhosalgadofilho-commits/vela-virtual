@@ -369,6 +369,62 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_events: {
+        Row: {
+          created_at: string
+          error: string | null
+          event_type: string | null
+          headers: Json | null
+          id: string
+          mp_status: string | null
+          order_id: string | null
+          payment_id: string | null
+          provider: string
+          raw_body: Json | null
+          result: string
+          signature_ok: boolean | null
+          status_code: number
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event_type?: string | null
+          headers?: Json | null
+          id?: string
+          mp_status?: string | null
+          order_id?: string | null
+          payment_id?: string | null
+          provider?: string
+          raw_body?: Json | null
+          result: string
+          signature_ok?: boolean | null
+          status_code: number
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event_type?: string | null
+          headers?: Json | null
+          id?: string
+          mp_status?: string | null
+          order_id?: string | null
+          payment_id?: string | null
+          provider?: string
+          raw_body?: Json | null
+          result?: string
+          signature_ok?: boolean | null
+          status_code?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
