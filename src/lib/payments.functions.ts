@@ -11,7 +11,7 @@ const createOrderInput = z.object({
   tribute_photo_url: z.string().url().max(2000).optional().nullable(),
   tribute_birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
   tribute_death_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
-  payment_method: z.enum(["pix", "card"]),
+  payment_method: z.enum(["checkout"]).default("checkout").optional(),
 });
 
 const uploadPhotoInput = z.object({
