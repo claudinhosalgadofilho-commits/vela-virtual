@@ -4,7 +4,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { createOrderAndPayment, uploadTributePhoto } from "@/lib/payments.functions";
+import { createOrderAndPayment } from "@/lib/payments.functions";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
 import { Button } from "@/components/ui/button";
@@ -35,32 +35,11 @@ const schema = z.object({
   customer_phone: z.string().trim().max(30).optional().or(z.literal("")),
   tribute_name: z.string().trim().min(2, "Nome da pessoa homenageada").max(100),
   tribute_message: z.string().trim().max(500).optional().or(z.literal("")),
-  tribute_birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida").optional().or(z.literal("")),
-  tribute_death_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida").optional().or(z.literal("")),
 });
 
 function Page() {
   const { slug } = Route.useParams();
   const [processing, setProcessing] = useState(false);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0] ?? null;
-    if (!f) { setPhotoFile(null); setPhotoPreview(null); return; }
-    if (!/^image\/(jpeg|jpg|png|webp)$/i.test(f.type)) {
-      toast.error("Formato inválido. Use JPG, PNG ou WEBP.");
-      e.target.value = "";
-      return;
-    }
-    if (f.size > 5 * 1024 * 1024) {
-      toast.error("Foto muito grande (máx 5MB).");
-      e.target.value = "";
-      return;
-    }
-    setPhotoFile(f);
-    setPhotoPreview(URL.createObjectURL(f));
-  }
 
   const { data: candle, isLoading } = useQuery({
     queryKey: ["candle", slug],
@@ -77,14 +56,6 @@ function Page() {
     },
   });
 
-  async function fileToBase64(file: File): Promise<string> {
-    const buf = await file.arrayBuffer();
-    let bin = "";
-    const bytes = new Uint8Array(buf);
-    for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
-    return btoa(bin);
-  }
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!candle || processing) return;
@@ -96,36 +67,21 @@ function Page() {
       customer_phone: String(formData.get("customer_phone") ?? ""),
       tribute_name: String(formData.get("tribute_name") ?? ""),
       tribute_message: String(formData.get("tribute_message") ?? ""),
-      tribute_birth_date: String(formData.get("tribute_birth_date") ?? ""),
-      tribute_death_date: String(formData.get("tribute_death_date") ?? ""),
     });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Preencha os campos corretamente.");
       return;
     }
-    if (parsed.data.tribute_birth_date && parsed.data.tribute_death_date &&
-        parsed.data.tribute_death_date < parsed.data.tribute_birth_date) {
-      toast.error("Data de falecimento não pode ser anterior à de nascimento.");
-      return;
-    }
 
     setProcessing(true);
     try {
-      let photoUrl: string | null = null;
-      if (photoFile) {
-        const data_base64 = await fileToBase64(photoFile);
-        const up = await uploadTributePhoto({
-          data: { filename: photoFile.name, content_type: photoFile.type, data_base64 },
-        });
-        photoUrl = up.url;
-      }
       const result = await createOrderAndPayment({
         data: {
           ...parsed.data,
           candle_id: candle.id,
-          tribute_photo_url: photoUrl,
-          tribute_birth_date: parsed.data.tribute_birth_date || null,
-          tribute_death_date: parsed.data.tribute_death_date || null,
+          tribute_photo_url: null,
+          tribute_birth_date: null,
+          tribute_death_date: null,
         },
       });
       const url = result.init_point || result.sandbox_init_point;
@@ -137,6 +93,7 @@ function Page() {
       setProcessing(false);
     }
   }
+
 
   if (isLoading) {
     return (
@@ -192,28 +149,6 @@ function Page() {
               <div>
                 <Label htmlFor="tribute_name">Nome da pessoa homenageada <span className="text-destructive" aria-hidden="true">*</span></Label>
                 <Input id="tribute_name" name="tribute_name" required minLength={2} maxLength={100} />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="tribute_birth_date">Data de nascimento</Label>
-                  <Input id="tribute_birth_date" name="tribute_birth_date" type="date" max={new Date().toISOString().slice(0, 10)} />
-                </div>
-                <div>
-                  <Label htmlFor="tribute_death_date">Data de falecimento</Label>
-                  <Input id="tribute_death_date" name="tribute_death_date" type="date" max={new Date().toISOString().slice(0, 10)} />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="tribute_photo">Foto do homenageado (opcional)</Label>
-                <div className="mt-1 flex items-center gap-4">
-                  {photoPreview ? (
-                    <img src={photoPreview} alt="Prévia da foto" className="h-20 w-20 rounded-lg border border-border object-cover" />
-                  ) : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 text-xs text-muted-foreground">sem foto</div>
-                  )}
-                  <Input id="tribute_photo" name="tribute_photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePhotoChange} className="cursor-pointer" />
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">JPG, PNG ou WEBP. Máx 5MB.</p>
               </div>
               <div>
                 <Label htmlFor="tribute_message">Mensagem (opcional)</Label>
