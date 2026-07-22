@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Music2, VolumeX, Flame } from "lucide-react";
 import { CondolencesBook } from "@/components/CondolencesBook";
+import { LightCandleDialog } from "@/components/LightCandleDialog";
 
 export const Route = createFileRoute("/homenagem/$id")({
   component: Page,
