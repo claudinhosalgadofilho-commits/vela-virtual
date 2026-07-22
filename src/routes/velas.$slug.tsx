@@ -40,25 +40,6 @@ const schema = z.object({
 function Page() {
   const { slug } = Route.useParams();
   const [processing, setProcessing] = useState(false);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0] ?? null;
-    if (!f) { setPhotoFile(null); setPhotoPreview(null); return; }
-    if (!/^image\/(jpeg|jpg|png|webp)$/i.test(f.type)) {
-      toast.error("Formato inválido. Use JPG, PNG ou WEBP.");
-      e.target.value = "";
-      return;
-    }
-    if (f.size > 5 * 1024 * 1024) {
-      toast.error("Foto muito grande (máx 5MB).");
-      e.target.value = "";
-      return;
-    }
-    setPhotoFile(f);
-    setPhotoPreview(URL.createObjectURL(f));
-  }
 
   const { data: candle, isLoading } = useQuery({
     queryKey: ["candle", slug],
@@ -75,14 +56,6 @@ function Page() {
     },
   });
 
-  async function fileToBase64(file: File): Promise<string> {
-    const buf = await file.arrayBuffer();
-    let bin = "";
-    const bytes = new Uint8Array(buf);
-    for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
-    return btoa(bin);
-  }
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!candle || processing) return;
@@ -94,36 +67,21 @@ function Page() {
       customer_phone: String(formData.get("customer_phone") ?? ""),
       tribute_name: String(formData.get("tribute_name") ?? ""),
       tribute_message: String(formData.get("tribute_message") ?? ""),
-      tribute_birth_date: String(formData.get("tribute_birth_date") ?? ""),
-      tribute_death_date: String(formData.get("tribute_death_date") ?? ""),
     });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Preencha os campos corretamente.");
       return;
     }
-    if (parsed.data.tribute_birth_date && parsed.data.tribute_death_date &&
-        parsed.data.tribute_death_date < parsed.data.tribute_birth_date) {
-      toast.error("Data de falecimento não pode ser anterior à de nascimento.");
-      return;
-    }
 
     setProcessing(true);
     try {
-      let photoUrl: string | null = null;
-      if (photoFile) {
-        const data_base64 = await fileToBase64(photoFile);
-        const up = await uploadTributePhoto({
-          data: { filename: photoFile.name, content_type: photoFile.type, data_base64 },
-        });
-        photoUrl = up.url;
-      }
       const result = await createOrderAndPayment({
         data: {
           ...parsed.data,
           candle_id: candle.id,
-          tribute_photo_url: photoUrl,
-          tribute_birth_date: parsed.data.tribute_birth_date || null,
-          tribute_death_date: parsed.data.tribute_death_date || null,
+          tribute_photo_url: null,
+          tribute_birth_date: null,
+          tribute_death_date: null,
         },
       });
       const url = result.init_point || result.sandbox_init_point;
@@ -135,6 +93,7 @@ function Page() {
       setProcessing(false);
     }
   }
+
 
   if (isLoading) {
     return (
