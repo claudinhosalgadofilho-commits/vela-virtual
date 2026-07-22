@@ -4,6 +4,7 @@ import { ArrowRight, Clock, CreditCard, Flame, Heart, QrCode, Shield, Sparkles }
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
+import { Altar } from "@/components/Altar";
 import { Button } from "@/components/ui/button";
 import { formatBRL } from "@/lib/format";
 
