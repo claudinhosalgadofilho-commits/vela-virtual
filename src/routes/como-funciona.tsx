@@ -22,7 +22,7 @@ export const Route = createFileRoute("/como-funciona")({
 const steps = [
   { icon: ShoppingBag, title: "Escolha da vela", text: "Selecione o modelo que melhor representa sua homenagem — cada um com uma duração diferente." },
   { icon: CreditCard, title: "Pagamento seguro", text: "Realize o pagamento via PIX ou cartão de crédito em poucos cliques, com total segurança." },
-  { icon: MessageCircleHeart, title: "Mensagem", text: "Escreva uma dedicatória, adicione o nome da pessoa homenageada e, se quiser, uma foto." },
+  { icon: MessageCircleHeart, title: "Mensagem", text: "Escreva uma dedicatória e adicione o nome da pessoa homenageada." },
   { icon: Flame, title: "Acendimento", text: "Após a confirmação do pagamento a vela é acesa automaticamente em uma página exclusiva." },
   { icon: Share2, title: "Compartilhamento", text: "Envie o link único para família e amigos por WhatsApp, redes sociais ou email." },
 ];

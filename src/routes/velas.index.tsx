@@ -39,7 +39,7 @@ const FEATURES_BASE = [
   "Página exclusiva de homenagem",
   "Livro de condolências digital",
   "Compartilhamento por link e redes sociais",
-  "Foto e biografia do homenageado",
+  "Mensagem de homenagem personalizada",
 ];
 
 const FEATURES_EXTRA: Record<string, string[]> = {
@@ -199,8 +199,8 @@ function Page() {
             <AccordionContent>
               A principal diferença é o tempo em que a vela permanece acesa e a
               página fica ativa. Todos os planos incluem os mesmos recursos
-              essenciais: página exclusiva, livro de condolências, foto,
-              biografia e compartilhamento.
+              essenciais: página exclusiva, livro de condolências, mensagem
+              personalizada e compartilhamento.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="q3">
