@@ -60,12 +60,6 @@ function Page() {
     }
   }, [data]);
 
-  function handleLight() {
-    setLit(true);
-    if (data && typeof window !== "undefined") {
-      localStorage.setItem(`tribute-lit-${data.id}`, "1");
-    }
-  }
 
   if (isLoading) {
     return (
