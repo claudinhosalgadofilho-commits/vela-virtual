@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
-import { CandleFlame } from "@/components/CandleFlame";
+import { Altar } from "@/components/Altar";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { ShareButtons } from "@/components/ShareButtons";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -93,56 +93,20 @@ function Page() {
           style={{ background: "radial-gradient(ellipse at 50% 30%, rgba(201,169,97,0.22), transparent 65%)" }}
         />
 
-        <article className="mx-auto max-w-5xl px-4 py-12 sm:py-14 md:py-20 md:px-8">
+        <article className="mx-auto max-w-5xl px-4 py-10 sm:py-14 md:py-20 md:px-8">
           <header className="text-center">
             <p className="text-[11px] uppercase tracking-[0.28em] text-gold sm:text-xs">Em memória de</p>
-            <h1
-              className="mt-3 font-serif text-4xl leading-tight sm:text-5xl md:text-6xl"
-              style={{
-                background: "linear-gradient(180deg, hsl(45 65% 78%) 0%, hsl(42 70% 55%) 45%, hsl(38 75% 42%) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-                textShadow: "0 1px 0 rgba(0,0,0,0.15)",
-                filter: "drop-shadow(0 2px 6px rgba(201,169,97,0.35))",
-              }}
-            >
-              {data.tribute_name}
-            </h1>
             <p className="mt-2 text-sm text-muted-foreground">Homenagem acesa em {dateStr}</p>
           </header>
 
+          {/* ALTAR – oratório com vela e nome dourado abaixo */}
+          <div className="mt-10 md:mt-14">
+            <Altar
+              name={data.tribute_name}
+              extinguished={!showFlame}
+              videoUrl={showFlame ? data.candle?.video_url : null}
+            />
 
-          {/* ALTAR – mesa com vela */}
-          <div className="altar mt-12 md:mt-16">
-            <div className="altar-table">
-              <div className="altar-stage justify-center">
-                {/* Oratório (casinha) com a vela dentro */}
-                <div className="altar-candle">
-                  <div className="oratorio">
-                    <div className="oratorio-roof" />
-                    <div className="oratorio-cross" aria-hidden="true">✝</div>
-                    <div className="oratorio-body">
-                      <div className="oratorio-niche">
-                        <div className="oratorio-glow" />
-                        <CandleFlame
-                          extinguished={!showFlame}
-                          videoUrl={showFlame ? data.candle?.video_url : null}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tampo e pernas da mesa */}
-              <div className="altar-tabletop" aria-hidden="true" />
-              <div className="altar-table-legs" aria-hidden="true">
-                <span /><span /><span /><span />
-              </div>
-            </div>
-
-            {/* Ação: acender */}
             {!expired && !lit && (
               <div className="mt-10 flex flex-col items-center gap-3">
                 <Button

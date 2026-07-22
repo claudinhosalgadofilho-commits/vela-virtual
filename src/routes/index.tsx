@@ -4,6 +4,7 @@ import { ArrowRight, Clock, CreditCard, Flame, Heart, QrCode, Shield, Sparkles }
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
+import { Altar } from "@/components/Altar";
 import { Button } from "@/components/ui/button";
 import { formatBRL } from "@/lib/format";
 
@@ -70,8 +71,8 @@ function HomePage() {
           </div>
 
 
-          <div className="flex justify-center py-12 md:py-0">
-            <CandleFlame />
+          <div className="flex justify-center py-8 md:py-0">
+            <Altar name="Em sua memória" size="sm" />
           </div>
         </div>
       </section>
