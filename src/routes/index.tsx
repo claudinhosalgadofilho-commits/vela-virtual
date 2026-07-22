@@ -13,8 +13,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Velas de Luz — Homenagens Digitais Eternas" },
       { name: "description", content: "Acenda uma vela virtual para homenagear quem você ama. Uma chama de memória, esperança e paz que atravessa distâncias." },
-      { property: "og:title", content: "Velas de Luz — Acenda uma vela virtual" },
-      { property: "og:description", content: "Uma chama de memória e paz para quem você ama." },
+      { property: "og:title", content: "Velas de Luz — Homenagens Digitais Eternas" },
+      { property: "og:description", content: "Acenda uma vela virtual para homenagear quem você ama. Uma chama de memória, esperança e paz que atravessa distâncias." },
     ],
   }),
   component: HomePage,
