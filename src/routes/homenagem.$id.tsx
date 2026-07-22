@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Music2, VolumeX, Flame } from "lucide-react";
 import { CondolencesBook } from "@/components/CondolencesBook";
+import { LightCandleDialog } from "@/components/LightCandleDialog";
 
 export const Route = createFileRoute("/homenagem/$id")({
   component: Page,
@@ -29,6 +30,7 @@ function Page() {
   const [expired, setExpired] = useState(false);
   const [lit, setLit] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
+  const [plansOpen, setPlansOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["tribute", id],
@@ -58,12 +60,6 @@ function Page() {
     }
   }, [data]);
 
-  function handleLight() {
-    setLit(true);
-    if (data && typeof window !== "undefined") {
-      localStorage.setItem(`tribute-lit-${data.id}`, "1");
-    }
-  }
 
   if (isLoading) {
     return (
@@ -111,14 +107,14 @@ function Page() {
               <div className="mt-10 flex flex-col items-center gap-3">
                 <Button
                   size="lg"
-                  onClick={handleLight}
+                  onClick={() => setPlansOpen(true)}
                   className="rounded-full bg-gold text-gold-foreground hover:bg-gold/90 shadow-glow px-8"
                 >
                   <Flame className="mr-2 h-5 w-5" />
                   Acender a vela
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  Faça um momento de silêncio e clique para acender.
+                  Escolha um plano para acender sua vela virtual.
                 </p>
               </div>
             )}
@@ -181,6 +177,7 @@ function Page() {
           </div>
         </article>
       </div>
+      <LightCandleDialog open={plansOpen} onOpenChange={setPlansOpen} />
     </SiteShell>
   );
 }
