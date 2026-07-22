@@ -199,57 +199,20 @@ function HomePage() {
             Veja como sua homenagem ficará
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Um pequeno altar digital, sereno e respeitoso, com o retrato de quem você ama ao lado de uma chama viva.
+            Um pequeno altar digital, sereno e respeitoso, com uma chama viva em memória de quem você ama.
           </p>
         </div>
 
         <div className="mt-12 rounded-3xl border border-border/60 bg-gradient-to-b from-secondary/40 to-background p-4 shadow-soft sm:p-6 md:p-12">
-          <div className="altar">
-            <div className="altar-table">
-              <div className="altar-stage">
-                {/* Quadro / retrato */}
-                <figure className="altar-frame">
-                  <img
-                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80"
-                    alt="Retrato de exemplo"
-                    className="altar-photo"
-                    loading="lazy"
-                  />
-                  <figcaption className="altar-plaque font-serif">
-                    Maria Aparecida · 1942–2024
-                  </figcaption>
-                </figure>
+          <Altar name="Maria Aparecida" size="md" />
 
-                {/* Oratório (casinha) com a vela dentro */}
-                <div className="altar-candle">
-                  <div className="oratorio">
-                    <div className="oratorio-roof" />
-                    <div className="oratorio-cross" aria-hidden="true">✝</div>
-                    <div className="oratorio-body">
-                      <div className="oratorio-niche">
-                        <div className="oratorio-glow" />
-                        <CandleFlame size="sm" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className="altar-tabletop" aria-hidden="true" />
-              <div className="altar-table-legs" aria-hidden="true">
-                <span /><span /><span /><span />
-              </div>
-            </div>
-
-            <div className="mt-10 flex flex-col items-center">
-              <p className="max-w-xs text-center text-sm italic text-muted-foreground">
-                &ldquo;Que sua luz continue a nos guiar. Com amor eterno da família.&rdquo;
-              </p>
-              <p className="mt-3 text-xs uppercase tracking-[0.2em] text-gold">
-                Vela acesa há 2 dias · 7 dias restantes
-              </p>
-            </div>
+          <div className="mt-10 flex flex-col items-center">
+            <p className="max-w-xs text-center text-sm italic text-muted-foreground">
+              &ldquo;Que sua luz continue a nos guiar. Com amor eterno da família.&rdquo;
+            </p>
+            <p className="mt-3 text-xs uppercase tracking-[0.2em] text-gold">
+              Vela acesa há 2 dias · 7 dias restantes
+            </p>
           </div>
 
 
