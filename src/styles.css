@@ -268,8 +268,7 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
     gap: 3rem;
     padding: 1.5rem 2rem 0;
   }
-  .altar-stage > .altar-frame { justify-self: end; }
-  .altar-stage > .altar-candle { justify-self: start; }
+  .altar-stage > .altar-candle { justify-self: center; }
 }
 
 /* Tampo da mesa (madeira nobre) */
@@ -320,72 +319,15 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   .altar-table-legs span { height: 64px; width: 18px; }
 }
 
-/* Quadro estilo moldura dourada envelhecida */
-.altar-frame {
-  position: relative;
-  padding: clamp(10px, 2.5vw, 16px) clamp(10px, 2.5vw, 16px) clamp(36px, 8vw, 50px);
-  background:
-    linear-gradient(145deg, #d9b769 0%, #b8944a 45%, #8a6d33 100%);
-  border-radius: 6px;
-  box-shadow:
-    0 2px 0 rgba(255,255,255,0.35) inset,
-    0 -3px 0 rgba(0,0,0,0.25) inset,
-    0 24px 40px -18px rgba(74, 60, 30, 0.55),
-    0 8px 16px -6px rgba(0,0,0,0.25);
-  transform: rotate(-0.6deg);
-  width: min(240px, 72vw);
-  animation: frame-sway 7s ease-in-out infinite;
-  transform-origin: 50% 0%;
-}
-@keyframes frame-sway {
-  0%, 100% { transform: rotate(-0.6deg) translateY(0); }
-  50% { transform: rotate(-0.15deg) translateY(-2px); }
-}
-.altar-frame:hover {
-  animation-play-state: paused;
-}
-
 /* Oratório estático — sem oscilação para manter alinhamento perfeito */
 .oratorio {
   transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .altar-frame, .oratorio { animation: none; }
+  .oratorio { animation: none; }
 }
 
-
-.altar-frame::before {
-  content: "";
-  position: absolute;
-  inset: 8px 8px 42px 8px;
-  border: 2px solid rgba(0,0,0,0.35);
-  border-radius: 3px;
-  pointer-events: none;
-}
-.altar-photo {
-  display: block;
-  width: 100%;
-  aspect-ratio: 3/4;
-  object-fit: cover;
-  border-radius: 2px;
-  filter: sepia(0.15) contrast(1.02) brightness(0.98);
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.35);
-}
-.altar-plaque {
-  position: absolute;
-  left: 50%;
-  bottom: 12px;
-  transform: translateX(-50%);
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
-  color: #2a1e08;
-  text-align: center;
-  max-width: 90%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 /* Vela sobre pequeno pedestal na mesa */
 .altar-candle {
