@@ -9,11 +9,12 @@ interface AltarProps {
 }
 
 /**
- * Altar reutilizável: oratório com vela sobre uma pequena mesa de madeira,
- * com o nome do homenageado gravado em letras douradas logo abaixo.
+ * Altar reutilizável: oratório com vela centralizado sobre uma mesa de
+ * madeira. Nome do homenageado em letras douradas logo abaixo.
  *
- * Totalmente responsivo — usa clamp/vw para escalar de mobile a desktop
- * sem quebrar o layout.
+ * Uma única largura base controla toda a composição — a mesa é sempre
+ * ~20% mais larga que o oratório para enquadrá-lo simetricamente em
+ * qualquer breakpoint.
  */
 export function Altar({
   name,
@@ -22,17 +23,20 @@ export function Altar({
   size = "md",
   className = "",
 }: AltarProps) {
-  const maxW = size === "sm" ? 320 : 440;
+  // Largura do oratório (peça central)
+  const oratorioW = size === "sm" ? "min(260px, 72vw)" : "min(320px, 78vw)";
+  // A mesa envolve o oratório com folga uniforme dos dois lados
+  const tableW = size === "sm" ? "min(340px, 88vw)" : "min(420px, 92vw)";
 
   return (
-    <div className={`altar mx-auto w-full ${className}`}>
+    <div className={`altar mx-auto flex w-full flex-col items-center ${className}`}>
       <div
         className="altar-table"
-        style={{ maxWidth: `min(${maxW}px, 92vw)` }}
+        style={{ width: tableW, maxWidth: "100%" }}
       >
-        <div className="altar-stage justify-center">
+        <div className="altar-stage">
           <div className="altar-candle">
-            <div className="oratorio" style={{ width: `min(${maxW - 60}px, 78vw)` }}>
+            <div className="oratorio" style={{ width: oratorioW }}>
               <div className="oratorio-roof" />
               <div className="oratorio-cross" aria-hidden="true">✝</div>
               <div className="oratorio-body">
@@ -53,7 +57,7 @@ export function Altar({
 
       {name && (
         <p
-          className="mx-auto mt-8 text-center font-serif italic leading-tight"
+          className="mt-8 text-center font-serif italic leading-tight"
           style={{
             fontSize: "clamp(1.5rem, 4.5vw, 2.5rem)",
             maxWidth: "min(560px, 92vw)",
