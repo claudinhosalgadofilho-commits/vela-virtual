@@ -96,43 +96,27 @@ function Page() {
         <article className="mx-auto max-w-5xl px-4 py-12 sm:py-14 md:py-20 md:px-8">
           <header className="text-center">
             <p className="text-[11px] uppercase tracking-[0.28em] text-gold sm:text-xs">Em memória de</p>
-            <h1 className="mt-3 font-serif text-4xl leading-tight text-foreground sm:text-5xl md:text-6xl">
+            <h1
+              className="mt-3 font-serif text-4xl leading-tight sm:text-5xl md:text-6xl"
+              style={{
+                background: "linear-gradient(180deg, hsl(45 65% 78%) 0%, hsl(42 70% 55%) 45%, hsl(38 75% 42%) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                textShadow: "0 1px 0 rgba(0,0,0,0.15)",
+                filter: "drop-shadow(0 2px 6px rgba(201,169,97,0.35))",
+              }}
+            >
               {data.tribute_name}
             </h1>
-            {(data.tribute_birth_date || data.tribute_death_date) && (
-              <p className="mt-2 font-serif text-base italic text-muted-foreground sm:text-lg">
-                {data.tribute_birth_date ? new Date(data.tribute_birth_date + "T00:00:00").toLocaleDateString("pt-BR") : "?"}
-                {" — "}
-                {data.tribute_death_date ? new Date(data.tribute_death_date + "T00:00:00").toLocaleDateString("pt-BR") : "?"}
-              </p>
-            )}
             <p className="mt-2 text-sm text-muted-foreground">Homenagem acesa em {dateStr}</p>
           </header>
 
 
-          {/* ALTAR – mesa com quadro e vela */}
+          {/* ALTAR – mesa com vela */}
           <div className="altar mt-12 md:mt-16">
             <div className="altar-table">
-              <div className="altar-stage">
-                {/* Quadro com foto */}
-                <figure className="altar-frame">
-                  {data.tribute_photo_url ? (
-                    <img
-                      src={data.tribute_photo_url}
-                      alt={data.tribute_name}
-                      className="altar-photo"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="altar-photo flex items-center justify-center bg-secondary/60 font-serif text-4xl text-muted-foreground">
-                      {data.tribute_name.charAt(0)}
-                    </div>
-                  )}
-                  <figcaption className="altar-plaque font-serif">
-                    {data.tribute_name}
-                  </figcaption>
-                </figure>
-
+              <div className="altar-stage justify-center">
                 {/* Oratório (casinha) com a vela dentro */}
                 <div className="altar-candle">
                   <div className="oratorio">
@@ -149,7 +133,6 @@ function Page() {
                     </div>
                   </div>
                 </div>
-
               </div>
 
               {/* Tampo e pernas da mesa */}
