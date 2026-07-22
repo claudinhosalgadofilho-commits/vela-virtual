@@ -4,7 +4,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { createOrderAndPayment, uploadTributePhoto } from "@/lib/payments.functions";
+import { createOrderAndPayment } from "@/lib/payments.functions";
 import { SiteShell } from "@/components/site/SiteShell";
 import { CandleFlame } from "@/components/CandleFlame";
 import { Button } from "@/components/ui/button";
