@@ -177,6 +177,7 @@ function Page() {
           </div>
         </article>
       </div>
+      <LightCandleDialog open={plansOpen} onOpenChange={setPlansOpen} />
     </SiteShell>
   );
 }
