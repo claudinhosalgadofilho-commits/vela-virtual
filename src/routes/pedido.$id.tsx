@@ -48,8 +48,13 @@ function OrderStatusPage() {
     queryKey: ["order-details", id],
     queryFn: () => fetchDetails({ data: { order_id: id } }),
     refetchInterval: (q) => {
-      const status = (q.state.data as { order?: { status?: string } } | undefined)?.order?.status;
-      return status === "pending" ? 5000 : false;
+      const d = q.state.data as
+        | { order?: { status?: string }; tribute_id?: string | null }
+        | undefined;
+      const status = d?.order?.status;
+      if (status === "pending") return 5000;
+      if (status === "paid" && !d?.tribute_id) return 3000;
+      return false;
     },
   });
 
