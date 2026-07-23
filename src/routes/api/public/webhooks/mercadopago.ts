@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createHmac, timingSafeEqual } from "crypto";
-import { syncMercadoPagoPayment } from "@/lib/payments.server";
+import { syncMercadoPagoMerchantOrder, syncMercadoPagoPayment } from "@/lib/payments.server";
 
 type LogInput = {
   event_type?: string | null;
@@ -66,9 +66,13 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
         }
 
         const secret = cfg?.mp_webhook_secret?.trim();
+        const resource = String((body as { resource?: string })?.resource ?? "");
+        const resourceId = resource ? resource.split("/").filter(Boolean).pop() : null;
         const dataId =
           (body as { data?: { id?: string | number } })?.data?.id ??
+          resourceId ??
           url.searchParams.get("data.id") ??
+          url.searchParams.get("resource")?.split("/").filter(Boolean).pop() ??
           url.searchParams.get("id") ??
           "";
 
@@ -108,16 +112,25 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
           (body as { type?: string; topic?: string }).type ??
           (body as { topic?: string }).topic ??
           url.searchParams.get("type") ??
-          url.searchParams.get("topic");
+          url.searchParams.get("topic") ??
+          (resource.includes("merchant_orders") ? "merchant_order" : null) ??
+          (resource.includes("payments") ? "payment" : null);
         const paymentId = String(dataId || "");
 
-        if (type !== "payment" || !paymentId) {
+        if (type !== "payment" && type !== "merchant_order") {
           await log({ status_code: 200, result: "ignored", event_type: type ?? null, payment_id: paymentId || null, raw_body: body, signature_ok: signatureOk });
           return new Response("ignored");
         }
 
+        if (!paymentId) {
+          await log({ status_code: 200, result: "ignored", event_type: type ?? null, raw_body: body, signature_ok: signatureOk });
+          return new Response("ignored");
+        }
+
         try {
-          const sync = await syncMercadoPagoPayment(paymentId);
+          const sync = type === "merchant_order"
+            ? await syncMercadoPagoMerchantOrder(paymentId)
+            : await syncMercadoPagoPayment(paymentId);
           const statusCode =
             sync.result === "order_not_found" ? 404 :
               sync.result === "payment_mismatch" ? 409 :

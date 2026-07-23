@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { getOrderDetails } from "@/lib/payments.functions";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,14 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/pedido/$id")({
+  validateSearch: (raw) =>
+    z
+      .object({
+        payment_id: z.coerce.string().optional(),
+        collection_id: z.coerce.string().optional(),
+        merchant_order_id: z.coerce.string().optional(),
+      })
+      .parse(raw),
   head: () => ({
     meta: [
       { title: "Status do pedido — Vela Virtual" },
@@ -41,12 +50,13 @@ const STATUS_MAP: Record<
 
 function OrderStatusPage() {
   const { id } = Route.useParams();
+  const search = Route.useSearch();
   const navigate = useNavigate();
   const fetchDetails = useServerFn(getOrderDetails);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["order-details", id],
-    queryFn: () => fetchDetails({ data: { order_id: id } }),
+    queryKey: ["order-details", id, search.payment_id, search.collection_id, search.merchant_order_id],
+    queryFn: () => fetchDetails({ data: { order_id: id, ...search } }),
     refetchInterval: (q) => {
       const d = q.state.data as
         | { order?: { status?: string }; tribute_id?: string | null }
