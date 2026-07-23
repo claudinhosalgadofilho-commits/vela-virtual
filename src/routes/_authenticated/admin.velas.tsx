@@ -94,7 +94,8 @@ function Page() {
               <div><Label>Descrição</Label><Textarea name="description" defaultValue={editing?.description ?? ""} rows={3} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Preço (R$)</Label><Input name="price" type="number" step="0.01" defaultValue={editing ? (editing.price_cents / 100).toFixed(2) : ""} required /></div>
-                <div><Label>Duração (horas)</Label><Input name="duration_hours" type="number" defaultValue={editing?.duration_hours ?? 168} required /></div>
+                <div><Label>Duração (minutos)</Label><Input name="duration_minutes" type="number" min={1} defaultValue={editing?.duration_minutes ?? 10080} required /></div>
+
               </div>
               <div><Label>URL do vídeo da chama (opcional)</Label><Input name="video_url" type="url" defaultValue={editing?.video_url ?? ""} placeholder="https://.../chama.mp4" /></div>
               <div><Label>Ordem de exibição</Label><Input name="display_order" type="number" defaultValue={editing?.display_order ?? 0} /></div>
