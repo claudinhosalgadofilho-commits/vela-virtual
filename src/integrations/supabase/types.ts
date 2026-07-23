@@ -45,6 +45,7 @@ export type Database = {
           description: string | null
           display_order: number
           duration_hours: number
+          duration_minutes: number
           id: string
           image_url: string | null
           name: string
@@ -59,6 +60,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           duration_hours?: number
+          duration_minutes: number
           id?: string
           image_url?: string | null
           name: string
@@ -73,6 +75,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           duration_hours?: number
+          duration_minutes?: number
           id?: string
           image_url?: string | null
           name?: string
