@@ -71,12 +71,13 @@ function Page() {
               <th className="p-4 text-left">Vela</th>
               <th className="p-4 text-left">Início</th>
               <th className="p-4 text-left">Encerra</th>
+              <th className="p-4 text-left">Tempo restante</th>
               <th className="p-4 text-left">Status</th>
               <th className="p-4"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {data?.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
+            {data?.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
             {data?.map((t) => {
               const ended = new Date(t.ends_at).getTime() <= Date.now();
               return (
@@ -84,7 +85,10 @@ function Page() {
                   <td className="p-4 font-medium">{t.tribute_name}</td>
                   <td className="p-4">{t.candle?.name}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.starts_at).toLocaleDateString("pt-BR")}</td>
-                  <td className="p-4 text-muted-foreground">{new Date(t.ends_at).toLocaleDateString("pt-BR")}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(t.ends_at).toLocaleString("pt-BR")}</td>
+                  <td className="p-4">
+                    <Countdown endsAt={t.ends_at} litAt={t.lit_at} />
+                  </td>
                   <td className="p-4">
                     <Badge className={ended ? "bg-muted text-muted-foreground" : "bg-primary/15 text-primary"}>
                       {ended ? "Encerrada" : "Ativa"}
