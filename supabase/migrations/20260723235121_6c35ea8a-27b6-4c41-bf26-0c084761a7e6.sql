@@ -1,0 +1,1 @@
+UPDATE public.tributes SET ends_at = now() + interval '2 hours', lit_at = now() WHERE id = '58792d5e-9924-450e-920f-68bf8401a51e';
