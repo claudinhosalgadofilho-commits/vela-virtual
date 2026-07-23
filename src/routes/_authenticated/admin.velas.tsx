@@ -19,9 +19,10 @@ export const Route = createFileRoute("/_authenticated/admin/velas")({
 
 type Candle = {
   id: string; slug: string; name: string; description: string | null;
-  price_cents: number; duration_hours: number; image_url: string | null;
+  price_cents: number; duration_hours: number; duration_minutes: number; image_url: string | null;
   video_url: string | null; active: boolean; display_order: number;
 };
+
 
 function Page() {
   const qc = useQueryClient();
