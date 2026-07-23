@@ -282,11 +282,19 @@ async function syncAndLoadOrder(input: OrderStatusInput): Promise<OrderRow | nul
     try {
       if (input.payment_id || input.collection_id) {
         await syncMercadoPagoPayment(String(input.payment_id || input.collection_id));
-      } else if (input.merchant_order_id) {
-        await syncMercadoPagoMerchantOrder(String(input.merchant_order_id));
-      } else {
-        await syncOrderWithMercadoPago(order.id);
       }
+
+      const afterPayment = await loadOrder(order.id);
+      if (afterPayment?.status === "paid") return afterPayment;
+
+      if (input.merchant_order_id) {
+        await syncMercadoPagoMerchantOrder(String(input.merchant_order_id));
+      }
+
+      const afterMerchantOrder = await loadOrder(order.id);
+      if (afterMerchantOrder?.status === "paid") return afterMerchantOrder;
+
+      await syncOrderWithMercadoPago(order.id);
     } catch (error) {
       console.error("[MP sync] fallback failed", error);
     }
