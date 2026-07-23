@@ -23,6 +23,16 @@ type MercadoPagoPayment = {
   preference_id?: string | null;
 };
 
+type MercadoPagoMerchantOrder = {
+  id: number | string;
+  external_reference?: string | null;
+  preference_id?: string | null;
+  payments?: Array<{
+    id?: number | string | null;
+    status?: string | null;
+  }>;
+};
+
 type SyncResult = {
   changed: boolean;
   result:
@@ -211,6 +221,41 @@ export async function syncMercadoPagoPayment(paymentId: string): Promise<SyncRes
   return applyMercadoPagoPayment(payment.external_reference, payment);
 }
 
+export async function syncMercadoPagoMerchantOrder(merchantOrderId: string): Promise<SyncResult> {
+  const accessToken = await loadMercadoPagoAccessToken();
+  if (!accessToken) return { changed: false, result: "no_credentials", payment_id: merchantOrderId };
+
+  const merchantOrder = await fetchMercadoPagoMerchantOrder(accessToken, merchantOrderId);
+  if (!merchantOrder) return { changed: false, result: "unknown_payment", payment_id: merchantOrderId };
+
+  const orderId =
+    merchantOrder.external_reference ||
+    (merchantOrder.preference_id ? await findOrderIdByPreferenceId(merchantOrder.preference_id) : null);
+
+  if (!orderId) {
+    return {
+      changed: false,
+      result: "no_reference",
+      payment_id: merchantOrderId,
+    };
+  }
+
+  const paymentFromOrder = selectMerchantOrderPayment(merchantOrder);
+  if (!paymentFromOrder?.id) return { changed: false, result: "no_payment", order_id: orderId };
+
+  const fullPayment = await fetchMercadoPagoPayment(accessToken, String(paymentFromOrder.id));
+  const payment: MercadoPagoPayment = {
+    ...(fullPayment ?? {
+      id: paymentFromOrder.id,
+      status: paymentFromOrder.status ?? "pending",
+    }),
+    external_reference: fullPayment?.external_reference || orderId,
+    preference_id: fullPayment?.preference_id || merchantOrder.preference_id || null,
+  };
+
+  return applyMercadoPagoPayment(orderId, payment);
+}
+
 export async function syncOrderWithMercadoPago(orderId: string): Promise<SyncResult> {
   const accessToken = await loadMercadoPagoAccessToken();
   if (!accessToken) return { changed: false, result: "no_credentials", order_id: orderId };
@@ -376,6 +421,16 @@ async function findTributeId(orderId: string): Promise<string | null> {
   return data?.id ?? null;
 }
 
+async function findOrderIdByPreferenceId(preferenceId: string): Promise<string | null> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("orders")
+    .select("id")
+    .eq("mp_preference_id", preferenceId)
+    .maybeSingle<{ id: string }>();
+  return data?.id ?? null;
+}
+
 async function ensureTributeForOrder(order: OrderRow): Promise<string | null> {
   const existing = await findTributeId(order.id);
   if (existing) return existing;
@@ -437,6 +492,57 @@ async function fetchMercadoPagoPayment(
   return (await resp.json()) as MercadoPagoPayment;
 }
 
+async function fetchMercadoPagoMerchantOrder(
+  accessToken: string,
+  merchantOrderId: string,
+): Promise<MercadoPagoMerchantOrder | null> {
+  const resp = await fetch(`https://api.mercadopago.com/merchant_orders/${encodeURIComponent(merchantOrderId)}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (resp.status === 404) return null;
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`Mercado Pago merchant order retornou ${resp.status}: ${text}`);
+  }
+  return (await resp.json()) as MercadoPagoMerchantOrder;
+}
+
+async function findMercadoPagoPaymentViaMerchantOrder(
+  accessToken: string,
+  order: OrderRow,
+): Promise<MercadoPagoPayment | null> {
+  const searches = [
+    new URLSearchParams({ external_reference: order.id }),
+  ];
+  if (order.mp_preference_id) searches.push(new URLSearchParams({ preference_id: order.mp_preference_id }));
+
+  for (const params of searches) {
+    const resp = await fetch(`https://api.mercadopago.com/merchant_orders/search?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!resp.ok) {
+      const text = await resp.text();
+      throw new Error(`Mercado Pago merchant order search retornou ${resp.status}: ${text}`);
+    }
+
+    const payload = (await resp.json()) as { elements?: MercadoPagoMerchantOrder[] };
+    const merchantOrders = payload.elements ?? [];
+    for (const merchantOrder of merchantOrders) {
+      const payment = selectMerchantOrderPayment(merchantOrder);
+      if (!payment?.id) continue;
+
+      const fullPayment = await fetchMercadoPagoPayment(accessToken, String(payment.id));
+      return {
+        ...(fullPayment ?? { id: payment.id, status: payment.status ?? "pending" }),
+        external_reference: fullPayment?.external_reference || merchantOrder.external_reference || order.id,
+        preference_id: fullPayment?.preference_id || merchantOrder.preference_id || order.mp_preference_id,
+      };
+    }
+  }
+
+  return null;
+}
+
 async function findMercadoPagoPaymentForOrder(
   accessToken: string,
   order: OrderRow,
@@ -466,7 +572,17 @@ async function findMercadoPagoPaymentForOrder(
     const selected = candidates.find((payment) => payment.status === "approved") ?? candidates[0];
     if (selected) return selected;
   }
-  return null;
+  return findMercadoPagoPaymentViaMerchantOrder(accessToken, order);
+}
+
+function selectMerchantOrderPayment(merchantOrder: MercadoPagoMerchantOrder) {
+  const payments = (merchantOrder.payments ?? []).filter((payment) => payment.id);
+  return (
+    payments.find((payment) => payment.status === "approved") ??
+    payments.find((payment) => payment.status === "in_process" || payment.status === "pending") ??
+    payments[0] ??
+    null
+  );
 }
 
 function mapMercadoPagoStatus(status: string): OrderStatus | null {
