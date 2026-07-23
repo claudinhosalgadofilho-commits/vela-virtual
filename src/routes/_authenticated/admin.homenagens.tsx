@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,28 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/admin/homenagens")({
   component: Page,
 });
+
+function Countdown({ endsAt, litAt }: { endsAt: string; litAt: string | null }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (!litAt) return <span className="text-muted-foreground">Não acesa</span>;
+
+  const diff = new Date(endsAt).getTime() - now;
+  if (diff <= 0) return <span className="text-muted-foreground">Encerrada</span>;
+
+  const s = Math.floor(diff / 1000);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const label = d > 0 ? `${d}d ${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(h)}:${pad(m)}:${pad(sec)}`;
+  return <span className="font-mono tabular-nums text-primary">{label}</span>;
+}
 
 function Page() {
   const qc = useQueryClient();
@@ -48,12 +71,13 @@ function Page() {
               <th className="p-4 text-left">Vela</th>
               <th className="p-4 text-left">Início</th>
               <th className="p-4 text-left">Encerra</th>
+              <th className="p-4 text-left">Tempo restante</th>
               <th className="p-4 text-left">Status</th>
               <th className="p-4"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {data?.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
+            {data?.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
             {data?.map((t) => {
               const ended = new Date(t.ends_at).getTime() <= Date.now();
               return (
@@ -61,7 +85,10 @@ function Page() {
                   <td className="p-4 font-medium">{t.tribute_name}</td>
                   <td className="p-4">{t.candle?.name}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.starts_at).toLocaleDateString("pt-BR")}</td>
-                  <td className="p-4 text-muted-foreground">{new Date(t.ends_at).toLocaleDateString("pt-BR")}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(t.ends_at).toLocaleString("pt-BR")}</td>
+                  <td className="p-4">
+                    <Countdown endsAt={t.ends_at} litAt={t.lit_at} />
+                  </td>
                   <td className="p-4">
                     <Badge className={ended ? "bg-muted text-muted-foreground" : "bg-primary/15 text-primary"}>
                       {ended ? "Encerrada" : "Ativa"}
