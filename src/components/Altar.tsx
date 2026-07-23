@@ -6,6 +6,7 @@ interface AltarProps {
   videoUrl?: string | null;
   size?: "sm" | "md";
   className?: string;
+  burnProgress?: number;
 }
 
 /**
@@ -22,6 +23,7 @@ export function Altar({
   videoUrl = null,
   size = "md",
   className = "",
+  burnProgress = 1,
 }: AltarProps) {
   // Largura do oratório (peça central)
   const oratorioW = size === "sm" ? "min(260px, 72vw)" : "min(320px, 78vw)";
@@ -42,7 +44,7 @@ export function Altar({
               <div className="oratorio-body">
                 <div className="oratorio-niche">
                   <div className="oratorio-glow" />
-                  <CandleFlame extinguished={extinguished} videoUrl={videoUrl} />
+                  <CandleFlame extinguished={extinguished} videoUrl={videoUrl} burnProgress={burnProgress} />
                 </div>
               </div>
             </div>
