@@ -30,7 +30,7 @@ function Page() {
   const [expired, setExpired] = useState(false);
   const [lit, setLit] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
-  const [plansOpen, setPlansOpen] = useState(false);
+  const [plansOpen, _setPlansOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["tribute", id],
