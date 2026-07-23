@@ -163,7 +163,7 @@ function Page() {
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <span>
                 Pagamento seguro pelo <strong>Checkout do Mercado Pago</strong>.
-                Na próxima tela você escolhe entre <strong>PIX, cartão de crédito, boleto</strong> ou saldo em conta.
+                Na próxima tela você escolhe entre <strong>PIX ou cartão de crédito/débito</strong>.
               </span>
             </div>
 
