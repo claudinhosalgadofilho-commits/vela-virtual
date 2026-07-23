@@ -81,7 +81,12 @@ function Page() {
   });
 
   const lit = Boolean((data as any)?.lit_at);
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const [shareUrl, setShareUrl] = useState("");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setShareUrl(`${window.location.origin}/homenagem/${id}`);
+    }
+  }, [id]);
 
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
