@@ -41,6 +41,7 @@ const STATUS_MAP: Record<
 
 function OrderStatusPage() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
   const fetchDetails = useServerFn(getOrderDetails);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
@@ -51,6 +52,18 @@ function OrderStatusPage() {
       return status === "pending" ? 5000 : false;
     },
   });
+
+  const tributeId = data?.found ? data.tribute_id : null;
+  const status = data?.found ? data.order.status : null;
+  useEffect(() => {
+    if (status === "paid" && tributeId) {
+      const t = setTimeout(() => {
+        navigate({ to: "/homenagem/$id", params: { id: tributeId } });
+      }, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [status, tributeId, navigate]);
+
 
   if (isLoading) {
     return (
