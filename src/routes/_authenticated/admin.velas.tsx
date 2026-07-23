@@ -55,12 +55,14 @@ function Page() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const name = String(fd.get("name") ?? "");
+    const minutes = parseInt(String(fd.get("duration_minutes") ?? "0"), 10);
     const payload = {
       name,
       slug: editing?.slug || slugify(name),
       description: String(fd.get("description") ?? "") || null,
       price_cents: Math.round(parseFloat(String(fd.get("price") ?? "0")) * 100),
-      duration_hours: parseInt(String(fd.get("duration_hours") ?? "168"), 10),
+      duration_minutes: minutes,
+      duration_hours: Math.max(1, Math.round(minutes / 60)),
       video_url: String(fd.get("video_url") ?? "") || null,
       display_order: parseInt(String(fd.get("display_order") ?? "0"), 10),
     };
@@ -72,6 +74,7 @@ function Page() {
     setOpen(false); setEditing(null);
     qc.invalidateQueries({ queryKey: ["admin", "candles"] });
   }
+
 
   return (
     <div>
