@@ -74,6 +74,10 @@ function Page() {
     }
 
     setProcessing(true);
+    // Abrimos a aba do MP imediatamente (mesmo gesto do usuário) para não ser
+    // bloqueada por pop-up blocker. Preenchemos a URL depois que a preferência
+    // é criada. Nossa aba principal vai para /pedido/pendente e faz polling.
+    const mpTab = window.open("about:blank", "_blank");
     try {
       const result = await createOrderAndPayment({
         data: {
@@ -86,9 +90,17 @@ function Page() {
       });
       const url = result.init_point || result.sandbox_init_point;
       if (!url) throw new Error("Não foi possível obter o link de pagamento.");
-      window.location.href = url;
+      if (mpTab) {
+        mpTab.location.href = url;
+      } else {
+        // Pop-up bloqueado: abrimos na mesma aba como fallback.
+        window.location.href = url;
+        return;
+      }
+      window.location.href = `/pedido/pendente?order=${result.order_id}`;
     } catch (err) {
       console.error(err);
+      if (mpTab) mpTab.close();
       toast.error(err instanceof Error ? err.message : "Não foi possível gerar o pagamento.");
       setProcessing(false);
     }
@@ -163,7 +175,8 @@ function Page() {
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <span>
                 Pagamento seguro pelo <strong>Checkout do Mercado Pago</strong>.
-                Na próxima tela você escolhe entre <strong>PIX ou cartão de crédito/débito</strong>.
+                Escolha entre <strong>PIX ou cartão</strong> em uma nova aba — esta página acompanha
+                a confirmação e leva você direto para a homenagem.
               </span>
             </div>
 
@@ -174,13 +187,13 @@ function Page() {
               className="mt-6 w-full rounded-full bg-primary text-base hover:bg-primary/90"
             >
               {processing ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirecionando...</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Abrindo Mercado Pago...</>
               ) : (
                 <>Ir para o Mercado Pago <ExternalLink className="ml-2 h-4 w-4" /></>
               )}
             </Button>
             <p className="mt-2 text-center text-[11px] text-muted-foreground">
-              Você será levado ao ambiente oficial do Mercado Pago. <ArrowRight className="inline h-3 w-3 -mt-0.5" />
+              Abre em uma nova aba. Esta tela aguarda a confirmação. <ArrowRight className="inline h-3 w-3 -mt-0.5" />
             </p>
           </form>
 
