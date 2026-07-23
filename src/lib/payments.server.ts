@@ -458,11 +458,12 @@ async function ensureTributeForOrder(order: OrderRow): Promise<string | null> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: candle } = await supabaseAdmin
     .from("candles")
-    .select("duration_hours")
+    .select("duration_hours, duration_minutes")
     .eq("id", order.candle_id)
-    .maybeSingle<{ duration_hours: number }>();
-  const hours = candle?.duration_hours ?? 24 * 7;
-  const ends = new Date(Date.now() + hours * 3600_000).toISOString();
+    .maybeSingle<{ duration_hours: number; duration_minutes: number | null }>();
+  const minutes = candle?.duration_minutes ?? (candle?.duration_hours ?? 24 * 7) * 60;
+  const ends = new Date(Date.now() + minutes * 60_000).toISOString();
+
 
   const { data: tribute, error } = await supabaseAdmin
     .from("tributes")
