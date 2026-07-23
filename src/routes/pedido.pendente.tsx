@@ -8,6 +8,9 @@ import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 const search = z.object({
   order: z.string().uuid().optional(),
+  payment_id: z.string().optional(),
+  collection_id: z.string().optional(),
+  merchant_order_id: z.string().optional(),
 });
 
 export const Route = createFileRoute("/pedido/pendente")({
@@ -17,6 +20,7 @@ export const Route = createFileRoute("/pedido/pendente")({
 
 function PendingPage() {
   const { order } = Route.useSearch();
+  const searchParams = Route.useSearch();
   const navigate = useNavigate();
   const [state, setState] = useState<"loading" | "paid" | "failed" | "waiting">("loading");
 
@@ -30,7 +34,7 @@ function PendingPage() {
 
     async function poll() {
       try {
-        const res = await getOrderStatus({ data: { order_id: order! } });
+        const res = await getOrderStatus({ data: { order_id: order!, ...searchParams } });
         if (cancelled) return;
         if (res.status === "paid" && res.tribute_id) {
           setState("paid");
