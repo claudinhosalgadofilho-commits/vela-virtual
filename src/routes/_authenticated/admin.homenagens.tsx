@@ -84,6 +84,59 @@ function TributePhotoCell({
   );
 }
 
+/**
+ * Célula editável de idade do homenageado (inline).
+ * Salva no blur ou ao pressionar Enter. Aceita 0-130 anos ou vazio.
+ */
+function TributeAgeCell({
+  tributeId,
+  age,
+  onChanged,
+}: {
+  tributeId: string;
+  age: number | null;
+  onChanged: () => void;
+}) {
+  const [value, setValue] = useState<string>(age?.toString() ?? "");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => { setValue(age?.toString() ?? ""); }, [age]);
+
+  async function commit() {
+    const trimmed = value.trim();
+    const next = trimmed === "" ? null : Number(trimmed);
+    if (next !== null && (!Number.isInteger(next) || next < 0 || next > 130)) {
+      toast.error("Idade deve ser um número entre 0 e 130");
+      setValue(age?.toString() ?? "");
+      return;
+    }
+    if (next === age) return;
+    setBusy(true);
+    const { error } = await supabase.from("tributes").update({ tribute_age: next }).eq("id", tributeId);
+    setBusy(false);
+    if (error) { toast.error(error.message); setValue(age?.toString() ?? ""); return; }
+    toast.success("Idade atualizada");
+    onChanged();
+  }
+
+  return (
+    <input
+      type="number"
+      min={0}
+      max={130}
+      value={value}
+      disabled={busy}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur(); }}
+      placeholder="—"
+      className="w-16 rounded border border-border bg-background px-2 py-1 text-sm"
+      aria-label="Idade do homenageado"
+    />
+  );
+}
+
+
 export const Route = createFileRoute("/_authenticated/admin/homenagens")({
   component: Page,
 });
