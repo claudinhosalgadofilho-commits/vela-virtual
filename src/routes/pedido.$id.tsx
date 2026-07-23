@@ -205,14 +205,18 @@ function OrderStatusPage() {
             {order.status === "paid" && tribute_id && (
               <>
                 <Separator />
+                <p className="text-center text-sm text-muted-foreground" aria-live="polite">
+                  Pagamento confirmado. Redirecionando para a homenagem…
+                </p>
                 <Button asChild className="w-full gap-2 rounded-full">
                   <Link to="/homenagem/$id" params={{ id: tribute_id }}>
                     <Flame className="h-4 w-4" aria-hidden="true" />
-                    Ver homenagem
+                    Ver homenagem agora
                   </Link>
                 </Button>
               </>
             )}
+
 
             {(order.status === "cancelled" || order.status === "refunded") && (
               <>
