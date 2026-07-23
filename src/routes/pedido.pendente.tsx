@@ -82,6 +82,22 @@ function PendingPage() {
         setLastError(null);
         setDetails(res);
         if (res.found && res.order.status === "paid" && res.tribute_id) {
+          let isPrimary = true;
+          try {
+            const primary = sessionStorage.getItem("vv:primary_order");
+            isPrimary = primary === orderId;
+          } catch {}
+          if (!isPrimary) {
+            // Esta é a aba do checkout do Mercado Pago — fecha automaticamente.
+            try {
+              window.close();
+            } catch {}
+            // Fallback: se o navegador não permitir fechar, redireciona.
+            setTimeout(() => {
+              navigate({ to: "/homenagem/$id", params: { id: res.tribute_id! }, replace: true });
+            }, 300);
+            return;
+          }
           navigate({ to: "/homenagem/$id", params: { id: res.tribute_id }, replace: true });
           return;
         }
