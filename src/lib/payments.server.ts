@@ -133,6 +133,8 @@ export async function createOrderPayment(data: CreateOrderInput) {
     statement_descriptor: "VELA VIRTUAL",
     binary_mode: false,
     payment_methods: {
+      // Habilita PIX + cartão de crédito + cartão de débito.
+      // Exclui apenas boleto (ticket) e pagamento em lotérica/ATM.
       excluded_payment_types: [{ id: "atm" }, { id: "ticket" }],
       excluded_payment_methods: [{ id: "bolbradesco" }, { id: "pec" }],
       installments: 12,
