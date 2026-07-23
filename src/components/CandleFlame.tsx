@@ -59,10 +59,10 @@ export function CandleFlame({
       style={{ transform: `scale(${scale})`, transformOrigin: "bottom center" }}
       aria-label={extinguished ? "Vela apagada" : "Vela acesa"}
     >
-      {!extinguished && <div className="candle-halo" style={{ opacity: 0.4 + 0.6 * p }} />}
+      <div className="candle-halo" style={{ opacity: extinguished ? 0 : 0.4 + 0.6 * p }} />
       <div
         className="flame transition-transform duration-1000 ease-linear"
-        style={{ transform: `scale(${flameScale})`, transformOrigin: "50% 100%" }}
+        style={extinguished ? undefined : { transform: `scale(${flameScale})`, transformOrigin: "50% 100%" }}
       />
       <div className="wick" />
       <div
