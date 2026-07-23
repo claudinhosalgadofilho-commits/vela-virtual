@@ -23,6 +23,7 @@ export function Altar({
   videoUrl = null,
   size = "md",
   className = "",
+  burnProgress = 1,
 }: AltarProps) {
   // Largura do oratório (peça central)
   const oratorioW = size === "sm" ? "min(260px, 72vw)" : "min(320px, 78vw)";
