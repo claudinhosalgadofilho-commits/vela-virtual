@@ -115,6 +115,8 @@ export async function createOrderPayment(data: CreateOrderInput) {
   if (orderErr || !order) throw new Error("Falha ao criar pedido");
 
   const amountBRL = Number((candle.price_cents / 100).toFixed(2));
+  const pendingReturnUrl = `${getSiteUrl()}/pedido/pendente?order=${order.id}`;
+
   const preferencePayload = {
     items: [
       {
@@ -141,9 +143,9 @@ export async function createOrderPayment(data: CreateOrderInput) {
       default_installments: 1,
     },
     back_urls: {
-      success: `${getSiteUrl()}/pedido/${order.id}`,
-      failure: `${getSiteUrl()}/pedido/${order.id}`,
-      pending: `${getSiteUrl()}/pedido/${order.id}`,
+      success: pendingReturnUrl,
+      failure: pendingReturnUrl,
+      pending: pendingReturnUrl,
     },
     auto_return: "approved",
   };
