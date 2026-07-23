@@ -1,0 +1,1 @@
+ALTER TABLE public.tributes ADD COLUMN IF NOT EXISTS tribute_age SMALLINT CHECK (tribute_age IS NULL OR (tribute_age >= 0 AND tribute_age <= 130));

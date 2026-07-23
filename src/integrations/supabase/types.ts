@@ -295,6 +295,7 @@ export type Database = {
           lit_at: string | null
           order_id: string | null
           starts_at: string
+          tribute_age: number | null
           tribute_birth_date: string | null
           tribute_death_date: string | null
           tribute_message: string | null
@@ -312,6 +313,7 @@ export type Database = {
           lit_at?: string | null
           order_id?: string | null
           starts_at?: string
+          tribute_age?: number | null
           tribute_birth_date?: string | null
           tribute_death_date?: string | null
           tribute_message?: string | null
@@ -329,6 +331,7 @@ export type Database = {
           lit_at?: string | null
           order_id?: string | null
           starts_at?: string
+          tribute_age?: number | null
           tribute_birth_date?: string | null
           tribute_death_date?: string | null
           tribute_message?: string | null
