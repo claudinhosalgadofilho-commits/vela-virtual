@@ -44,7 +44,7 @@ export function Altar({
               <div className="oratorio-body">
                 <div className="oratorio-niche">
                   <div className="oratorio-glow" />
-                  <CandleFlame extinguished={extinguished} videoUrl={videoUrl} />
+                  <CandleFlame extinguished={extinguished} videoUrl={videoUrl} burnProgress={burnProgress} />
                 </div>
               </div>
             </div>
