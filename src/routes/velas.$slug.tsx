@@ -97,6 +97,9 @@ function Page() {
         window.location.href = url;
         return;
       }
+      try {
+        sessionStorage.setItem("vv:primary_order", result.order_id);
+      } catch {}
       window.location.href = `/pedido/pendente?order=${result.order_id}`;
     } catch (err) {
       console.error(err);
