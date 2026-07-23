@@ -283,18 +283,19 @@ async function syncAndLoadOrder(input: OrderStatusInput): Promise<OrderRow | nul
       if (input.payment_id || input.collection_id) {
         await syncMercadoPagoPayment(String(input.payment_id || input.collection_id));
       }
-
-      const afterPayment = await loadOrder(order.id);
-      if (afterPayment?.status === "paid") return afterPayment;
-
       if (input.merchant_order_id) {
         await syncMercadoPagoMerchantOrder(String(input.merchant_order_id));
       }
 
-      const afterMerchantOrder = await loadOrder(order.id);
-      if (afterMerchantOrder?.status === "paid") return afterMerchantOrder;
-
-      await syncOrderWithMercadoPago(order.id);
+      const current = await loadOrder(order.id);
+      if (current?.status === "paid") {
+        // Garante que o tribute exista mesmo quando o pedido já foi marcado
+        // como pago pelo webhook (ou por sync anterior) sem criar a homenagem.
+        await ensureTributeForOrder(current);
+      } else {
+        // Ainda pendente: tenta buscar proativamente no Mercado Pago.
+        await syncOrderWithMercadoPago(order.id);
+      }
     } catch (error) {
       console.error("[MP sync] fallback failed", error);
     }
