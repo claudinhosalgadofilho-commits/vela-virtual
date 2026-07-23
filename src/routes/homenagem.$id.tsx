@@ -164,6 +164,7 @@ function Page() {
               name={data.tribute_name}
               extinguished={!showFlame}
               videoUrl={showFlame ? data.candle?.video_url : null}
+              burnProgress={burnProgress}
             />
 
             {!expired && !lit && (
