@@ -174,7 +174,7 @@ export async function createOrderPayment(data: CreateOrderInput) {
 }
 
 export async function fetchOrderStatus(data: OrderStatusInput) {
-  const order = await syncAndLoadOrder(data.order_id);
+  const order = await syncAndLoadOrder(data);
   if (!order) return { status: "not_found" as const, tribute_id: null };
   const tribute_id = order.status === "paid" ? await findTributeId(order.id) : null;
   return { status: order.status, tribute_id };
@@ -182,7 +182,7 @@ export async function fetchOrderStatus(data: OrderStatusInput) {
 
 export async function fetchOrderDetails(data: OrderStatusInput) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const order = await syncAndLoadOrder(data.order_id);
+  const order = await syncAndLoadOrder(data);
   if (!order) return { found: false as const };
 
   const { data: fullOrder } = await supabaseAdmin
@@ -274,18 +274,24 @@ export async function syncOrderWithMercadoPago(orderId: string): Promise<SyncRes
   return applyMercadoPagoPayment(order.id, payment, order);
 }
 
-async function syncAndLoadOrder(orderId: string): Promise<OrderRow | null> {
-  const order = await loadOrder(orderId);
+async function syncAndLoadOrder(input: OrderStatusInput): Promise<OrderRow | null> {
+  const order = await loadOrder(input.order_id);
   if (!order) return null;
 
   if (order.status === "pending" || order.status === "paid") {
     try {
-      await syncOrderWithMercadoPago(order.id);
+      if (input.payment_id || input.collection_id) {
+        await syncMercadoPagoPayment(String(input.payment_id || input.collection_id));
+      } else if (input.merchant_order_id) {
+        await syncMercadoPagoMerchantOrder(String(input.merchant_order_id));
+      } else {
+        await syncOrderWithMercadoPago(order.id);
+      }
     } catch (error) {
       console.error("[MP sync] fallback failed", error);
     }
   }
-  return loadOrder(orderId);
+  return loadOrder(input.order_id);
 }
 
 async function applyMercadoPagoPayment(
