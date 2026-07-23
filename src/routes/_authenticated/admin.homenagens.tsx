@@ -219,12 +219,6 @@ function Page() {
                     />
                   </td>
                   <td className="p-4">{t.candle?.name}</td>
-            {data?.map((t) => {
-              const ended = new Date(t.ends_at).getTime() <= Date.now();
-              return (
-                <tr key={t.id}>
-                  <td className="p-4 font-medium">{t.tribute_name}</td>
-                  <td className="p-4">{t.candle?.name}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.starts_at).toLocaleDateString("pt-BR")}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.ends_at).toLocaleString("pt-BR")}</td>
                   <td className="p-4">
