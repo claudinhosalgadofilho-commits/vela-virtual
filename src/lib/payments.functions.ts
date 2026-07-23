@@ -102,6 +102,7 @@ export const createOrderAndPayment = createServerFn({ method: "POST" })
             id: candle.id,
             title: `Vela ${candle.name}`,
             description: `Homenagem a ${data.tribute_name}`,
+            category_id: "services",
             quantity: 1,
             currency_id: "BRL",
             unit_price: amountBRL,
@@ -110,6 +111,13 @@ export const createOrderAndPayment = createServerFn({ method: "POST" })
         payer: { email: data.customer_email, name: data.customer_name },
         external_reference: order.id,
         notification_url: buildNotificationUrl(),
+        statement_descriptor: "VELA VIRTUAL",
+        binary_mode: false,
+        payment_methods: {
+          excluded_payment_types: [{ id: "atm" }],
+          installments: 12,
+          default_installments: 1,
+        },
         back_urls: {
           success: `${getSiteUrl()}/pedido/${order.id}`,
           failure: `${getSiteUrl()}/pedido/${order.id}`,
