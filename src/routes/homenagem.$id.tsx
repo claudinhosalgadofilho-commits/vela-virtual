@@ -14,6 +14,36 @@ import { LightCandleDialog } from "@/components/LightCandleDialog";
 
 export const Route = createFileRoute("/homenagem/$id")({
   component: Page,
+  loader: async ({ params }) => {
+    const { data } = await supabase
+      .from("tributes")
+      .select("tribute_name, tribute_message")
+      .eq("id", params.id)
+      .maybeSingle();
+    return { name: data?.tribute_name ?? null, message: data?.tribute_message ?? null };
+  },
+  head: ({ params, loaderData }) => {
+    const name = loaderData?.name ?? "Homenagem";
+    const title = `Em memória de ${name} — Vela Virtual`;
+    const description = loaderData?.message
+      ? `${loaderData.message.slice(0, 150)}`
+      : `Acenda uma vela virtual em memória de ${name}. Uma homenagem eterna, iluminada com amor.`;
+    const url = `https://velavirtual.lovable.app/homenagem/${params.id}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   notFoundComponent: () => (
     <SiteShell>
       <div className="mx-auto max-w-md px-4 py-24 text-center">
