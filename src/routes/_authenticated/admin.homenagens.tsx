@@ -1,16 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Trash2 } from "lucide-react";
+import { AlertTriangle, ExternalLink, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/homenagens")({
   component: Page,
 });
+
+const ALERT_THRESHOLD_MIN = 10;
 
 function Countdown({ endsAt, litAt }: { endsAt: string; litAt: string | null }) {
   const [now, setNow] = useState(() => Date.now());
@@ -31,7 +33,53 @@ function Countdown({ endsAt, litAt }: { endsAt: string; litAt: string | null }) 
   const sec = s % 60;
   const pad = (n: number) => String(n).padStart(2, "0");
   const label = d > 0 ? `${d}d ${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(h)}:${pad(m)}:${pad(sec)}`;
-  return <span className="font-mono tabular-nums text-primary">{label}</span>;
+  const ending = diff <= ALERT_THRESHOLD_MIN * 60 * 1000;
+  return (
+    <span
+      className={
+        "font-mono tabular-nums inline-flex items-center gap-1.5 " +
+        (ending ? "text-destructive font-semibold animate-pulse" : "text-primary")
+      }
+    >
+      {ending && <AlertTriangle className="h-3.5 w-3.5" />}
+      {label}
+    </span>
+  );
+}
+
+type TributeRow = {
+  id: string;
+  tribute_name: string;
+  ends_at: string;
+  lit_at: string | null;
+  active: boolean;
+};
+
+function useEndingAlerts(tributes: TributeRow[] | undefined) {
+  const notifiedRef = useRef<Map<string, "warn" | "ended">>(new Map());
+  useEffect(() => {
+    if (!tributes) return;
+    const check = () => {
+      const now = Date.now();
+      for (const t of tributes) {
+        if (!t.lit_at || !t.active) continue;
+        const diff = new Date(t.ends_at).getTime() - now;
+        const state = notifiedRef.current.get(t.id);
+        if (diff <= 0 && state !== "ended") {
+          notifiedRef.current.set(t.id, "ended");
+          toast.error(`Homenagem encerrada: ${t.tribute_name}`);
+        } else if (diff > 0 && diff <= ALERT_THRESHOLD_MIN * 60 * 1000 && !state) {
+          notifiedRef.current.set(t.id, "warn");
+          toast.warning(`${t.tribute_name} termina em menos de ${ALERT_THRESHOLD_MIN} min`, {
+            icon: "⚠️",
+          });
+        }
+      }
+    };
+    check();
+    const id = setInterval(check, 15000);
+    return () => clearInterval(id);
+  }, [tributes]);
 }
 
 function Page() {
@@ -47,6 +95,9 @@ function Page() {
       return data;
     },
   });
+
+  useEndingAlerts(data as TributeRow[] | undefined);
+
 
   async function remove(id: string) {
     if (!confirm("Excluir esta homenagem?")) return;
