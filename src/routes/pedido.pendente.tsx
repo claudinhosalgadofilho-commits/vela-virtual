@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { getOrderDetails } from "@/lib/payments.functions";
@@ -60,26 +61,37 @@ const STATUS_MAP: Record<
 };
 
 function PendingPage() {
-  const { order, ...searchParams } = Route.useSearch();
+  const { order, payment_id, collection_id, merchant_order_id } = Route.useSearch();
   const navigate = useNavigate();
+  const fetchDetails = useServerFn(getOrderDetails);
   const [details, setDetails] = useState<DetailsResult | null>(null);
+  const [lastError, setLastError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
 
   useEffect(() => {
     if (!order) return;
+    const orderId = order;
     let cancelled = false;
 
     async function poll() {
       try {
-        const res = await getOrderDetails({ data: { order_id: order!, ...searchParams } });
+        const res = await fetchDetails({
+          data: { order_id: orderId, payment_id, collection_id, merchant_order_id },
+        });
         if (cancelled) return;
+        setLastError(null);
         setDetails(res);
         if (res.found && res.order.status === "paid" && res.tribute_id) {
-          navigate({ to: "/homenagem/$id", params: { id: res.tribute_id! }, replace: true });
+          navigate({ to: "/homenagem/$id", params: { id: res.tribute_id }, replace: true });
           return;
         }
         setAttempts((a) => a + 1);
-      } catch {
+      } catch (error) {
+        console.error("[Pedido pendente] falha ao consultar status", error);
+        if (!cancelled) {
+          setLastError("Não foi possível consultar o status agora. Tentando novamente…");
+          setAttempts((a) => a + 1);
+        }
         // keep polling
       }
     }
@@ -90,7 +102,7 @@ function PendingPage() {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [order, navigate]);
+  }, [order, payment_id, collection_id, merchant_order_id, navigate, fetchDetails]);
 
   if (!order) {
     return (
@@ -115,6 +127,7 @@ function PendingPage() {
         <main className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
           <p className="mt-4 text-muted-foreground">Verificando status do pagamento…</p>
+          {lastError && <p className="mt-2 text-center text-xs text-muted-foreground">{lastError}</p>}
         </main>
       </SiteShell>
     );
