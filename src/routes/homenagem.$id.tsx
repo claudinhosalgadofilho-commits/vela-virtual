@@ -156,21 +156,26 @@ function Page() {
           style={{ background: "radial-gradient(ellipse at 50% 30%, rgba(201,169,97,0.22), transparent 65%)" }}
         />
 
-        <article className="mx-auto max-w-5xl px-4 py-10 sm:py-14 md:py-20 md:px-8">
+        <article className="mx-auto max-w-6xl px-4 py-10 sm:py-14 md:py-20 md:px-8">
           <header className="text-center">
             <p className="text-[11px] uppercase tracking-[0.28em] text-gold sm:text-xs">Em memória de</p>
             <p className="mt-2 text-sm text-muted-foreground">Homenagem acesa em {dateStr}</p>
           </header>
 
           {/* ALTAR – oratório com vela ao centro, foto à esquerda, popup + QR à direita */}
-          <div className="mt-10 md:mt-14 grid gap-8 md:gap-6 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center">
-            {/* Coluna esquerda: foto emoldurada */}
-            <div className="order-1 md:order-none">
+          <div className="mt-10 md:mt-14 grid gap-8 lg:gap-10 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] lg:items-center">
+            {/* Coluna esquerda: foto emoldurada + idade */}
+            <div className="order-1 lg:order-none">
               <TributePhoto photoPath={(data as any).tribute_photo_url} name={data.tribute_name} />
+              {(data as any).tribute_age != null && (
+                <p className="mt-3 text-center text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">{(data as any).tribute_age}</span> anos
+                </p>
+              )}
             </div>
 
             {/* Coluna central: altar e vela */}
-            <div className="order-2 md:order-none">
+            <div className="order-2 lg:order-none">
               <Altar
                 name={data.tribute_name}
                 extinguished={!showFlame}
@@ -202,22 +207,23 @@ function Page() {
             </div>
 
             {/* Coluna direita: última homenagem (popup em tempo real) + QR code */}
-            <div className="order-3 md:order-none flex flex-col gap-4 mx-auto w-full max-w-[280px]">
+            <div className="order-3 lg:order-none flex flex-col gap-5 mx-auto w-full max-w-md lg:max-w-none">
               <LatestCondolencePopup tributeId={data.id} />
-              <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur p-4 shadow-soft text-center">
+              <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur p-5 shadow-soft text-center">
                 <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-gold">
                   <QrCode className="h-3.5 w-3.5" aria-hidden />
-                  Assine no celular
+                  Compartilhar homenagem
                 </div>
                 <div className="mt-3 flex justify-center rounded-lg bg-white p-3">
-                  <QRCodeSVG value={`${shareUrl}#condolences-heading`} size={140} level="M" />
+                  <QRCodeSVG value={shareUrl} size={160} level="M" />
                 </div>
-                <p className="mt-2 text-[11px] text-muted-foreground">
-                  Aponte a câmera para deixar uma mensagem.
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Aponte a câmera para abrir esta página no celular.
                 </p>
               </div>
             </div>
           </div>
+
 
 
 
