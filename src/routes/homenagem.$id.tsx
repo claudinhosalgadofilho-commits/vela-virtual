@@ -79,12 +79,27 @@ function Page() {
   const lit = Boolean((data as any)?.lit_at);
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 15000);
+    return () => clearInterval(t);
+  }, []);
+
   useEffect(() => {
     if (data) {
       const ended = new Date(data.ends_at).getTime() <= Date.now();
       setExpired(ended);
     }
   }, [data]);
+
+  const burnProgress = (() => {
+    if (!data || !(data as any).lit_at) return 1;
+    const start = new Date((data as any).lit_at).getTime();
+    const end = new Date(data.ends_at).getTime();
+    if (!(end > start)) return 0;
+    const remaining = (end - now) / (end - start);
+    return Math.max(0, Math.min(1, remaining));
+  })();
 
   // Realtime: sincroniza estado da vela entre todos os visitantes
   useEffect(() => {
