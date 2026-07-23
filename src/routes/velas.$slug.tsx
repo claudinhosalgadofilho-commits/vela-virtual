@@ -74,6 +74,10 @@ function Page() {
     }
 
     setProcessing(true);
+    // Abrimos a aba do MP imediatamente (mesmo gesto do usuário) para não ser
+    // bloqueada por pop-up blocker. Preenchemos a URL depois que a preferência
+    // é criada. Nossa aba principal vai para /pedido/pendente e faz polling.
+    const mpTab = window.open("about:blank", "_blank");
     try {
       const result = await createOrderAndPayment({
         data: {
@@ -86,9 +90,17 @@ function Page() {
       });
       const url = result.init_point || result.sandbox_init_point;
       if (!url) throw new Error("Não foi possível obter o link de pagamento.");
-      window.location.href = url;
+      if (mpTab) {
+        mpTab.location.href = url;
+      } else {
+        // Pop-up bloqueado: abrimos na mesma aba como fallback.
+        window.location.href = url;
+        return;
+      }
+      window.location.href = `/pedido/pendente?order=${result.order_id}`;
     } catch (err) {
       console.error(err);
+      if (mpTab) mpTab.close();
       toast.error(err instanceof Error ? err.message : "Não foi possível gerar o pagamento.");
       setProcessing(false);
     }
