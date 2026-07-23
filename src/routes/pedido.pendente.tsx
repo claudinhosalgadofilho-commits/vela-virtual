@@ -38,9 +38,7 @@ function PendingPage() {
         if (cancelled) return;
         if (res.status === "paid" && res.tribute_id) {
           setState("paid");
-          setTimeout(() => {
-            navigate({ to: "/homenagem/$id", params: { id: res.tribute_id! } });
-          }, 800);
+          navigate({ to: "/homenagem/$id", params: { id: res.tribute_id! }, replace: true });
           return;
         }
         if (res.status === "cancelled" || res.status === "refunded") {

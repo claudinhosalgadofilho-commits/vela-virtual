@@ -72,10 +72,7 @@ function OrderStatusPage() {
   const status = data?.found ? data.order.status : null;
   useEffect(() => {
     if (status === "paid" && tributeId) {
-      const t = setTimeout(() => {
-        navigate({ to: "/homenagem/$id", params: { id: tributeId } });
-      }, 1500);
-      return () => clearTimeout(t);
+      navigate({ to: "/homenagem/$id", params: { id: tributeId }, replace: true });
     }
   }, [status, tributeId, navigate]);
 
