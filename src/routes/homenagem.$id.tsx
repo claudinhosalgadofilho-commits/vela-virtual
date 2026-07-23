@@ -67,7 +67,7 @@ function Page() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tributes")
-        .select("*, candle:candles(name, video_url, duration_hours)")
+        .select("*, candle:candles(name, video_url, duration_hours, duration_minutes)")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
