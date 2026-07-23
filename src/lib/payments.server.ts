@@ -133,7 +133,8 @@ export async function createOrderPayment(data: CreateOrderInput) {
     statement_descriptor: "VELA VIRTUAL",
     binary_mode: false,
     payment_methods: {
-      excluded_payment_types: [{ id: "atm" }],
+      excluded_payment_types: [{ id: "atm" }, { id: "ticket" }],
+      excluded_payment_methods: [{ id: "bolbradesco" }, { id: "pec" }],
       installments: 12,
       default_installments: 1,
     },

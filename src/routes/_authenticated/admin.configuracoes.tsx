@@ -157,7 +157,7 @@ function Page() {
               <p className="font-semibold">Token de teste (sandbox) detectado</p>
               <p className="mt-1">
                 No modo sandbox o Mercado Pago pode limitar as formas de pagamento exibidas (ex.: só cartão de teste, sem PIX real).
-                Para liberar PIX, cartões e boleto em produção, use um Access Token que começa com <strong>APP_USR-</strong>.
+                Para liberar PIX e cartões em produção, use um Access Token que começa com <strong>APP_USR-</strong>.
               </p>
             </div>
           )}
