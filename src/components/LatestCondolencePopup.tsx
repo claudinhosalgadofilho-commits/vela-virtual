@@ -55,27 +55,31 @@ export function LatestCondolencePopup({ tributeId }: LatestCondolencePopupProps)
 
   return (
     <div
-      className={`relative w-full rounded-2xl border bg-card/80 backdrop-blur p-4 shadow-soft transition-all duration-500 ${
+      className={`relative w-full rounded-2xl border bg-card/80 backdrop-blur p-5 sm:p-6 shadow-soft transition-all duration-500 ${
         flash ? "border-gold ring-2 ring-gold/40 scale-[1.02]" : "border-border/60"
       }`}
       aria-live="polite"
     >
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold">
-        <Heart className="h-3.5 w-3.5" aria-hidden />
+      <div className="flex items-center gap-2 text-xs sm:text-sm uppercase tracking-widest text-gold">
+        <Heart className="h-4 w-4" aria-hidden />
         Última homenagem
       </div>
       {data ? (
         <>
-          <p className="mt-3 font-serif text-sm italic text-foreground line-clamp-4">
+          <p
+            className="mt-4 font-serif italic text-foreground leading-relaxed"
+            style={{ fontSize: "clamp(1.05rem, 2.4vw, 1.5rem)" }}
+          >
             &ldquo;{data.message}&rdquo;
           </p>
-          <p className="mt-2 text-xs text-muted-foreground">— {data.author_name}</p>
+          <p className="mt-3 text-sm sm:text-base text-muted-foreground">— {data.author_name}</p>
         </>
       ) : (
-        <p className="mt-3 text-xs italic text-muted-foreground">
+        <p className="mt-4 text-sm sm:text-base italic text-muted-foreground">
           Nenhuma mensagem ainda. Seja o primeiro a deixar uma palavra de carinho.
         </p>
       )}
     </div>
   );
 }
+
