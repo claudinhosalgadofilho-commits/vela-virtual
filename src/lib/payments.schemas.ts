@@ -19,7 +19,14 @@ export const uploadPhotoInput = z.object({
   data_base64: z.string().min(10).max(8_000_000),
 });
 
-export const orderStatusInput = z.object({ order_id: z.string().uuid() });
+const mercadoPagoId = z.string().trim().min(1).max(80).optional().nullable();
+
+export const orderStatusInput = z.object({
+  order_id: z.string().uuid(),
+  payment_id: mercadoPagoId,
+  collection_id: mercadoPagoId,
+  merchant_order_id: mercadoPagoId,
+});
 
 export type CreateOrderInput = z.infer<typeof createOrderInput>;
 export type UploadPhotoInput = z.infer<typeof uploadPhotoInput>;
