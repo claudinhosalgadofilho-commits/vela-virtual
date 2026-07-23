@@ -24,9 +24,9 @@ export const Route = createFileRoute("/pedido/$id")({
   validateSearch: (raw) =>
     z
       .object({
-        payment_id: z.string().optional(),
-        collection_id: z.string().optional(),
-        merchant_order_id: z.string().optional(),
+        payment_id: z.coerce.string().optional(),
+        collection_id: z.coerce.string().optional(),
+        merchant_order_id: z.coerce.string().optional(),
       })
       .parse(raw),
   head: () => ({

@@ -8,9 +8,9 @@ import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 const search = z.object({
   order: z.string().uuid().optional(),
-  payment_id: z.string().optional(),
-  collection_id: z.string().optional(),
-  merchant_order_id: z.string().optional(),
+  payment_id: z.coerce.string().optional(),
+  collection_id: z.coerce.string().optional(),
+  merchant_order_id: z.coerce.string().optional(),
 });
 
 export const Route = createFileRoute("/pedido/pendente")({

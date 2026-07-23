@@ -19,7 +19,7 @@ export const uploadPhotoInput = z.object({
   data_base64: z.string().min(10).max(8_000_000),
 });
 
-const mercadoPagoId = z.string().trim().min(1).max(80).optional().nullable();
+const mercadoPagoId = z.coerce.string().trim().min(1).max(80).optional().nullable();
 
 export const orderStatusInput = z.object({
   order_id: z.string().uuid(),
