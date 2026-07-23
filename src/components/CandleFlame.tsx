@@ -5,49 +5,70 @@ interface CandleFlameProps {
   videoUrl?: string | null;
   className?: string;
   size?: "sm" | "md" | "lg";
+  /** 1 = vela nova (cheia); 0 = totalmente consumida. */
+  burnProgress?: number;
 }
 
 /**
  * Vela virtual com chama animada procedural (CSS+SVG).
  * Se `videoUrl` for fornecido, usa <video> em loop realista.
- * Nunca usa GIF; loop imperceptível.
+ * `burnProgress` encolhe a vela conforme o tempo passa.
  */
 export function CandleFlame({
   extinguished = false,
   videoUrl,
   className,
   size = "lg",
+  burnProgress = 1,
 }: CandleFlameProps) {
   const scale = size === "sm" ? 0.55 : size === "md" ? 0.8 : 1;
+  const p = Math.max(0, Math.min(1, burnProgress));
 
   if (videoUrl && !extinguished) {
+    const baseH = 360;
+    const baseW = 160;
+    const h = Math.max(70, Math.round(baseH * (0.2 + 0.8 * p)));
+    const w = Math.max(60, Math.round(baseW * (0.6 + 0.4 * p)));
     return (
-      <div className={cn("candle-scene relative", className)} style={{ transform: `scale(${scale})` }}>
-        <div className="candle-halo" />
+      <div
+        className={cn("candle-scene relative", className)}
+        style={{ transform: `scale(${scale})`, transformOrigin: "bottom center" }}
+      >
+        <div className="candle-halo" style={{ opacity: 0.4 + 0.6 * p }} />
         <video
-          className="relative z-10 rounded-lg"
+          className="relative z-10 rounded-lg transition-all duration-1000 ease-linear"
           src={videoUrl}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          style={{ width: 160, height: 360, objectFit: "cover" }}
+          style={{ width: w, height: h, objectFit: "cover" }}
         />
       </div>
     );
   }
 
+  const bodyBaseH = 260;
+  const bodyH = Math.max(28, Math.round(bodyBaseH * (0.12 + 0.88 * p)));
+  const flameScale = 0.7 + 0.3 * p;
+
   return (
     <div
       className={cn("candle-scene", extinguished && "extinguished", className)}
-      style={{ transform: `scale(${scale})` }}
+      style={{ transform: `scale(${scale})`, transformOrigin: "bottom center" }}
       aria-label={extinguished ? "Vela apagada" : "Vela acesa"}
     >
-      {!extinguished && <div className="candle-halo" />}
-      <div className="flame" />
+      {!extinguished && <div className="candle-halo" style={{ opacity: 0.4 + 0.6 * p }} />}
+      <div
+        className="flame transition-transform duration-1000 ease-linear"
+        style={{ transform: `scale(${flameScale})`, transformOrigin: "50% 100%" }}
+      />
       <div className="wick" />
-      <div className="candle-body" />
+      <div
+        className="candle-body transition-[height] duration-1000 ease-linear"
+        style={{ height: bodyH }}
+      />
     </div>
   );
 }
