@@ -108,12 +108,14 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
             await log({ status_code: 401, result: "missing_signature", signature_ok: false, raw_body: body, headers: headerObj, payment_id: String(dataId || "") });
             return new Response("missing_signature", { status: 401 });
           }
-          const tsNum = Number(ts);
-          if (!Number.isFinite(tsNum) || Math.abs(Date.now() - tsNum) > 5 * 60 * 1000) {
+          const tsRaw = Number(ts);
+          // MP sends ts in milliseconds; accept seconds too just in case.
+          const tsMs = tsRaw > 1e12 ? tsRaw : tsRaw * 1000;
+          if (!Number.isFinite(tsRaw) || Math.abs(Date.now() - tsMs) > 10 * 60 * 1000) {
             await log({ status_code: 401, result: "stale_signature", signature_ok: false, raw_body: body, headers: headerObj });
             return new Response("stale_signature", { status: 401 });
           }
-          const manifest = `id:${dataId};request-id:${xReqId};ts:${ts};`;
+          const manifest = `id:${String(dataId).toLowerCase()};request-id:${xReqId};ts:${ts};`;
           const expected = createHmac("sha256", secret).update(manifest).digest("hex");
           const a = Buffer.from(expected);
           const b = Buffer.from(v1);
