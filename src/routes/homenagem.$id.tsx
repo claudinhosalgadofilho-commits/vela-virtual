@@ -107,17 +107,23 @@ function Page() {
               <div className="mt-10 flex flex-col items-center gap-3">
                 <Button
                   size="lg"
-                  onClick={() => setPlansOpen(true)}
+                  onClick={() => {
+                    setLit(true);
+                    if (typeof window !== "undefined") {
+                      localStorage.setItem(`tribute-lit-${data.id}`, "1");
+                    }
+                  }}
                   className="rounded-full bg-gold text-gold-foreground hover:bg-gold/90 shadow-glow px-8"
                 >
                   <Flame className="mr-2 h-5 w-5" />
                   Acender a vela
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  Escolha um plano para acender sua vela virtual.
+                  Ao acender, a vela permanecerá acesa por {Math.round((data.candle?.duration_hours ?? 24) / 24)} dias.
                 </p>
               </div>
             )}
+
           </div>
 
 
