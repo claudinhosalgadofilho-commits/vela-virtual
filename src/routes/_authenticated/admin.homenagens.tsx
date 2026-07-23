@@ -195,6 +195,7 @@ function Page() {
           <thead className="bg-secondary/40 text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="p-4 text-left">Homenageado</th>
+              <th className="p-4 text-left">Foto</th>
               <th className="p-4 text-left">Vela</th>
               <th className="p-4 text-left">Início</th>
               <th className="p-4 text-left">Encerra</th>
@@ -204,7 +205,20 @@ function Page() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {data?.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
+            {data?.length === 0 && <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
+            {data?.map((t) => {
+              const ended = new Date(t.ends_at).getTime() <= Date.now();
+              return (
+                <tr key={t.id}>
+                  <td className="p-4 font-medium">{t.tribute_name}</td>
+                  <td className="p-4">
+                    <TributePhotoCell
+                      tributeId={t.id}
+                      photoPath={t.tribute_photo_url ?? null}
+                      onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "tributes"] })}
+                    />
+                  </td>
+                  <td className="p-4">{t.candle?.name}</td>
             {data?.map((t) => {
               const ended = new Date(t.ends_at).getTime() <= Date.now();
               return (
