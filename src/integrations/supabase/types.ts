@@ -289,6 +289,7 @@ export type Database = {
           created_at: string
           ends_at: string
           id: string
+          lit_at: string | null
           order_id: string | null
           starts_at: string
           tribute_birth_date: string | null
@@ -305,6 +306,7 @@ export type Database = {
           created_at?: string
           ends_at: string
           id?: string
+          lit_at?: string | null
           order_id?: string | null
           starts_at?: string
           tribute_birth_date?: string | null
@@ -321,6 +323,7 @@ export type Database = {
           created_at?: string
           ends_at?: string
           id?: string
+          lit_at?: string | null
           order_id?: string | null
           starts_at?: string
           tribute_birth_date?: string | null
@@ -438,6 +441,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      light_tribute: { Args: { _tribute_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"

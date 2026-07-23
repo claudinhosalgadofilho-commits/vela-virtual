@@ -28,11 +28,11 @@ export const Route = createFileRoute("/homenagem/$id")({
 function Page() {
   const { id } = Route.useParams();
   const [expired, setExpired] = useState(false);
-  const [lit, setLit] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
   const [plansOpen, setPlansOpen] = useState(false);
+  const [lighting, setLighting] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["tribute", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -46,19 +46,37 @@ function Page() {
     },
   });
 
+  const lit = Boolean((data as any)?.lit_at);
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
   useEffect(() => {
     if (data) {
       const ended = new Date(data.ends_at).getTime() <= Date.now();
       setExpired(ended);
-      // Restore lit state per tribute from local storage
-      if (!ended && typeof window !== "undefined") {
-        const key = `tribute-lit-${data.id}`;
-        if (localStorage.getItem(key) === "1") setLit(true);
-      }
     }
   }, [data]);
+
+  // Realtime: sincroniza estado da vela entre todos os visitantes
+  useEffect(() => {
+    if (!id) return;
+    const channel = supabase
+      .channel(`tribute-${id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "tributes", filter: `id=eq.${id}` },
+        () => { refetch(); },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [id, refetch]);
+
+  const handleLight = async () => {
+    if (!data || lighting) return;
+    setLighting(true);
+    const { error } = await supabase.rpc("light_tribute", { _tribute_id: data.id });
+    if (!error) await refetch();
+    setLighting(false);
+  };
 
 
   if (isLoading) {
@@ -107,16 +125,12 @@ function Page() {
               <div className="mt-10 flex flex-col items-center gap-3">
                 <Button
                   size="lg"
-                  onClick={() => {
-                    setLit(true);
-                    if (typeof window !== "undefined") {
-                      localStorage.setItem(`tribute-lit-${data.id}`, "1");
-                    }
-                  }}
+                  onClick={handleLight}
+                  disabled={lighting}
                   className="rounded-full bg-gold text-gold-foreground hover:bg-gold/90 shadow-glow px-8"
                 >
                   <Flame className="mr-2 h-5 w-5" />
-                  Acender a vela
+                  {lighting ? "Acendendo..." : "Acender a vela"}
                 </Button>
                 <p className="text-xs text-muted-foreground">
                   Ao acender, a vela permanecerá acesa por {Math.round((data.candle?.duration_hours ?? 24) / 24)} dias.
