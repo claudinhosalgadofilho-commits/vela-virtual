@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getOrderDetails } from "@/lib/payments.functions";
@@ -40,6 +41,7 @@ const STATUS_MAP: Record<
 
 function OrderStatusPage() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
   const fetchDetails = useServerFn(getOrderDetails);
 
   const { data, isLoading, refetch, isFetching } = useQuery({
@@ -50,6 +52,18 @@ function OrderStatusPage() {
       return status === "pending" ? 5000 : false;
     },
   });
+
+  const tributeId = data?.found ? data.tribute_id : null;
+  const status = data?.found ? data.order.status : null;
+  useEffect(() => {
+    if (status === "paid" && tributeId) {
+      const t = setTimeout(() => {
+        navigate({ to: "/homenagem/$id", params: { id: tributeId } });
+      }, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [status, tributeId, navigate]);
+
 
   if (isLoading) {
     return (
@@ -191,14 +205,18 @@ function OrderStatusPage() {
             {order.status === "paid" && tribute_id && (
               <>
                 <Separator />
+                <p className="text-center text-sm text-muted-foreground" aria-live="polite">
+                  Pagamento confirmado. Redirecionando para a homenagem…
+                </p>
                 <Button asChild className="w-full gap-2 rounded-full">
                   <Link to="/homenagem/$id" params={{ id: tribute_id }}>
                     <Flame className="h-4 w-4" aria-hidden="true" />
-                    Ver homenagem
+                    Ver homenagem agora
                   </Link>
                 </Button>
               </>
             )}
+
 
             {(order.status === "cancelled" || order.status === "refunded") && (
               <>
