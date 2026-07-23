@@ -152,6 +152,15 @@ function Page() {
           <p className="mt-1 text-xs text-muted-foreground">
             Nunca é exposto no navegador — usado apenas em chamadas server-side.
           </p>
+          {mpForm.mp_access_token.trim().toUpperCase().startsWith("TEST-") && (
+            <div className="mt-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
+              <p className="font-semibold">Token de teste (sandbox) detectado</p>
+              <p className="mt-1">
+                No modo sandbox o Mercado Pago pode limitar as formas de pagamento exibidas (ex.: só cartão de teste, sem PIX real).
+                Para liberar PIX, cartões e boleto em produção, use um Access Token que começa com <strong>APP_USR-</strong>.
+              </p>
+            </div>
+          )}
         </div>
         <div>
           <Label>Webhook Secret (opcional, recomendado)</Label>
