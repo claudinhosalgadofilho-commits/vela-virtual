@@ -67,7 +67,7 @@ function Page() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tributes")
-        .select("*, candle:candles(name, video_url, duration_hours)")
+        .select("*, candle:candles(name, video_url, duration_hours, duration_minutes)")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
@@ -179,7 +179,13 @@ function Page() {
                   {lighting ? "Acendendo..." : "Acender a vela"}
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  Ao acender, a vela permanecerá acesa por {Math.round((data.candle?.duration_hours ?? 24) / 24)} dias.
+                  Ao acender, a vela permanecerá acesa por {(() => {
+                    const m = (data.candle as any)?.duration_minutes ?? ((data.candle?.duration_hours ?? 24) * 60);
+                    if (m >= 1440) return `${Math.round(m / 1440)} dias`;
+                    if (m >= 60) return `${Math.round(m / 60)} horas`;
+                    return `${m} minutos`;
+                  })()}.
+
                 </p>
               </div>
             )}

@@ -19,9 +19,10 @@ export const Route = createFileRoute("/_authenticated/admin/velas")({
 
 type Candle = {
   id: string; slug: string; name: string; description: string | null;
-  price_cents: number; duration_hours: number; image_url: string | null;
+  price_cents: number; duration_hours: number; duration_minutes: number; image_url: string | null;
   video_url: string | null; active: boolean; display_order: number;
 };
+
 
 function Page() {
   const qc = useQueryClient();
@@ -54,12 +55,14 @@ function Page() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const name = String(fd.get("name") ?? "");
+    const minutes = parseInt(String(fd.get("duration_minutes") ?? "0"), 10);
     const payload = {
       name,
       slug: editing?.slug || slugify(name),
       description: String(fd.get("description") ?? "") || null,
       price_cents: Math.round(parseFloat(String(fd.get("price") ?? "0")) * 100),
-      duration_hours: parseInt(String(fd.get("duration_hours") ?? "168"), 10),
+      duration_minutes: minutes,
+      duration_hours: Math.max(1, Math.round(minutes / 60)),
       video_url: String(fd.get("video_url") ?? "") || null,
       display_order: parseInt(String(fd.get("display_order") ?? "0"), 10),
     };
@@ -71,6 +74,7 @@ function Page() {
     setOpen(false); setEditing(null);
     qc.invalidateQueries({ queryKey: ["admin", "candles"] });
   }
+
 
   return (
     <div>
@@ -90,7 +94,8 @@ function Page() {
               <div><Label>Descrição</Label><Textarea name="description" defaultValue={editing?.description ?? ""} rows={3} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Preço (R$)</Label><Input name="price" type="number" step="0.01" defaultValue={editing ? (editing.price_cents / 100).toFixed(2) : ""} required /></div>
-                <div><Label>Duração (horas)</Label><Input name="duration_hours" type="number" defaultValue={editing?.duration_hours ?? 168} required /></div>
+                <div><Label>Duração (minutos)</Label><Input name="duration_minutes" type="number" min={1} defaultValue={editing?.duration_minutes ?? 10080} required /></div>
+
               </div>
               <div><Label>URL do vídeo da chama (opcional)</Label><Input name="video_url" type="url" defaultValue={editing?.video_url ?? ""} placeholder="https://.../chama.mp4" /></div>
               <div><Label>Ordem de exibição</Label><Input name="display_order" type="number" defaultValue={editing?.display_order ?? 0} /></div>
@@ -117,7 +122,7 @@ function Page() {
               <tr key={c.id}>
                 <td className="p-4 font-medium">{c.name}</td>
                 <td className="p-4 text-primary font-serif">{formatBRL(c.price_cents)}</td>
-                <td className="p-4">{Math.round(c.duration_hours / 24)} dias</td>
+                <td className="p-4">{c.duration_minutes >= 1440 ? `${Math.round(c.duration_minutes / 1440)} dias` : c.duration_minutes >= 60 ? `${Math.round(c.duration_minutes / 60)} h` : `${c.duration_minutes} min`}</td>
                 <td className="p-4"><Switch checked={c.active} onCheckedChange={() => toggleActive(c)} /></td>
                 <td className="p-4 text-right space-x-1">
                   <Button variant="ghost" size="icon" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
