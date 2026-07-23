@@ -249,6 +249,7 @@ function Page() {
             <tr>
               <th className="p-4 text-left">Homenageado</th>
               <th className="p-4 text-left">Foto</th>
+              <th className="p-4 text-left">Idade</th>
               <th className="p-4 text-left">Vela</th>
               <th className="p-4 text-left">Início</th>
               <th className="p-4 text-left">Encerra</th>
@@ -258,7 +259,7 @@ function Page() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {data?.length === 0 && <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
+            {data?.length === 0 && <tr><td colSpan={9} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
             {data?.map((t) => {
               const ended = new Date(t.ends_at).getTime() <= Date.now();
               return (
@@ -271,6 +272,14 @@ function Page() {
                       onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "tributes"] })}
                     />
                   </td>
+                  <td className="p-4">
+                    <TributeAgeCell
+                      tributeId={t.id}
+                      age={(t as any).tribute_age ?? null}
+                      onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "tributes"] })}
+                    />
+                  </td>
+
                   <td className="p-4">{t.candle?.name}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.starts_at).toLocaleDateString("pt-BR")}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.ends_at).toLocaleString("pt-BR")}</td>
