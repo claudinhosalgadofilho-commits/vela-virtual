@@ -175,7 +175,8 @@ function Page() {
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <span>
                 Pagamento seguro pelo <strong>Checkout do Mercado Pago</strong>.
-                Na próxima tela você escolhe entre <strong>PIX ou cartão de crédito/débito</strong>.
+                Escolha entre <strong>PIX ou cartão</strong> em uma nova aba — esta página acompanha
+                a confirmação e leva você direto para a homenagem.
               </span>
             </div>
 
@@ -186,13 +187,13 @@ function Page() {
               className="mt-6 w-full rounded-full bg-primary text-base hover:bg-primary/90"
             >
               {processing ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirecionando...</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Abrindo Mercado Pago...</>
               ) : (
                 <>Ir para o Mercado Pago <ExternalLink className="ml-2 h-4 w-4" /></>
               )}
             </Button>
             <p className="mt-2 text-center text-[11px] text-muted-foreground">
-              Você será levado ao ambiente oficial do Mercado Pago. <ArrowRight className="inline h-3 w-3 -mt-0.5" />
+              Abre em uma nova aba. Esta tela aguarda a confirmação. <ArrowRight className="inline h-3 w-3 -mt-0.5" />
             </p>
           </form>
 
