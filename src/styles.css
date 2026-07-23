@@ -233,12 +233,55 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
   border-radius: 50%;
 }
 
-/* Extinguished state */
-.candle-scene.extinguished .flame,
-.candle-scene.extinguished .candle-halo { display: none; }
+/* Extinguished state — apagar suave */
+.candle-scene .flame,
+.candle-scene .candle-halo {
+  transition: opacity 900ms ease-out;
+}
+.candle-scene.extinguished .flame {
+  animation: flame-puff 1100ms ease-out forwards;
+  pointer-events: none;
+}
+.candle-scene.extinguished .candle-halo {
+  animation: halo-fade 900ms ease-out forwards;
+  pointer-events: none;
+}
 .candle-scene.extinguished .wick {
   background: linear-gradient(#1a1208, #0a0704);
+  transition: background 900ms ease-out;
 }
+@keyframes flame-puff {
+  0%   { opacity: 1; transform: rotate(0deg) scaleY(1) translateY(0); filter: blur(0); }
+  35%  { opacity: 0.9; transform: rotate(0deg) scaleY(0.6) translateY(4px); }
+  70%  { opacity: 0.35; transform: rotate(0deg) scaleY(0.25) translateY(10px); filter: blur(2px); }
+  100% { opacity: 0; transform: rotate(0deg) scaleY(0.05) translateY(14px); filter: blur(4px); }
+}
+@keyframes halo-fade {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.85); }
+}
+/* Fio de fumaça sobe brevemente */
+.candle-scene.extinguished .wick::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 10px;
+  height: 60px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 90%, rgba(220,220,220,0.55) 0%, rgba(200,200,200,0.15) 55%, transparent 80%);
+  filter: blur(3px);
+  opacity: 0;
+  animation: smoke-rise 1600ms ease-out 250ms forwards;
+  pointer-events: none;
+}
+.candle-scene .wick { position: relative; }
+@keyframes smoke-rise {
+  0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.6); }
+  30%  { opacity: 0.7; }
+  100% { opacity: 0; transform: translate(-50%, -60px) scale(1.4); }
+}
+
 
 /* ============ ALTAR ============ */
 .altar {
