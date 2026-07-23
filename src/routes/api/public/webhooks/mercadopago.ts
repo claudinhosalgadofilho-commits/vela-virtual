@@ -113,7 +113,7 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
             await log({ status_code: 401, result: "stale_signature", signature_ok: false, raw_body: body, headers: headerObj });
             return new Response("stale_signature", { status: 401 });
           }
-          const manifest = `id:${dataId};request-id:${xReqId};ts:${ts};`;
+          const manifest = `id:${String(dataId).toLowerCase()};request-id:${xReqId};ts:${ts};`;
           const expected = createHmac("sha256", secret).update(manifest).digest("hex");
           const a = Buffer.from(expected);
           const b = Buffer.from(v1);
