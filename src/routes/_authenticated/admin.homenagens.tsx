@@ -84,6 +84,59 @@ function TributePhotoCell({
   );
 }
 
+/**
+ * Célula editável de idade do homenageado (inline).
+ * Salva no blur ou ao pressionar Enter. Aceita 0-130 anos ou vazio.
+ */
+function TributeAgeCell({
+  tributeId,
+  age,
+  onChanged,
+}: {
+  tributeId: string;
+  age: number | null;
+  onChanged: () => void;
+}) {
+  const [value, setValue] = useState<string>(age?.toString() ?? "");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => { setValue(age?.toString() ?? ""); }, [age]);
+
+  async function commit() {
+    const trimmed = value.trim();
+    const next = trimmed === "" ? null : Number(trimmed);
+    if (next !== null && (!Number.isInteger(next) || next < 0 || next > 130)) {
+      toast.error("Idade deve ser um número entre 0 e 130");
+      setValue(age?.toString() ?? "");
+      return;
+    }
+    if (next === age) return;
+    setBusy(true);
+    const { error } = await supabase.from("tributes").update({ tribute_age: next }).eq("id", tributeId);
+    setBusy(false);
+    if (error) { toast.error(error.message); setValue(age?.toString() ?? ""); return; }
+    toast.success("Idade atualizada");
+    onChanged();
+  }
+
+  return (
+    <input
+      type="number"
+      min={0}
+      max={130}
+      value={value}
+      disabled={busy}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur(); }}
+      placeholder="—"
+      className="w-16 rounded border border-border bg-background px-2 py-1 text-sm"
+      aria-label="Idade do homenageado"
+    />
+  );
+}
+
+
 export const Route = createFileRoute("/_authenticated/admin/homenagens")({
   component: Page,
 });
@@ -196,6 +249,7 @@ function Page() {
             <tr>
               <th className="p-4 text-left">Homenageado</th>
               <th className="p-4 text-left">Foto</th>
+              <th className="p-4 text-left">Idade</th>
               <th className="p-4 text-left">Vela</th>
               <th className="p-4 text-left">Início</th>
               <th className="p-4 text-left">Encerra</th>
@@ -205,7 +259,7 @@ function Page() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {data?.length === 0 && <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
+            {data?.length === 0 && <tr><td colSpan={9} className="p-8 text-center text-muted-foreground">Nenhuma homenagem ainda.</td></tr>}
             {data?.map((t) => {
               const ended = new Date(t.ends_at).getTime() <= Date.now();
               return (
@@ -218,6 +272,14 @@ function Page() {
                       onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "tributes"] })}
                     />
                   </td>
+                  <td className="p-4">
+                    <TributeAgeCell
+                      tributeId={t.id}
+                      age={(t as any).tribute_age ?? null}
+                      onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "tributes"] })}
+                    />
+                  </td>
+
                   <td className="p-4">{t.candle?.name}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.starts_at).toLocaleDateString("pt-BR")}</td>
                   <td className="p-4 text-muted-foreground">{new Date(t.ends_at).toLocaleString("pt-BR")}</td>
