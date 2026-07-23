@@ -220,7 +220,11 @@ function Page() {
                   Compartilhar homenagem
                 </div>
                 <div className="mt-3 flex justify-center rounded-lg bg-white p-3">
-                  <QRCodeSVG value={shareUrl} size={160} level="M" />
+                  {shareUrl ? (
+                    <QRCodeSVG value={shareUrl} size={160} level="M" includeMargin={false} />
+                  ) : (
+                    <div className="h-40 w-40 animate-pulse rounded bg-muted" />
+                  )}
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
                   Aponte a câmera para abrir esta página no celular.
