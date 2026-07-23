@@ -122,7 +122,7 @@ function Page() {
               <tr key={c.id}>
                 <td className="p-4 font-medium">{c.name}</td>
                 <td className="p-4 text-primary font-serif">{formatBRL(c.price_cents)}</td>
-                <td className="p-4">{Math.round(c.duration_hours / 24)} dias</td>
+                <td className="p-4">{c.duration_minutes >= 1440 ? `${Math.round(c.duration_minutes / 1440)} dias` : c.duration_minutes >= 60 ? `${Math.round(c.duration_minutes / 60)} h` : `${c.duration_minutes} min`}</td>
                 <td className="p-4"><Switch checked={c.active} onCheckedChange={() => toggleActive(c)} /></td>
                 <td className="p-4 text-right space-x-1">
                   <Button variant="ghost" size="icon" onClick={() => { setEditing(c); setOpen(true); }}><Pencil className="h-4 w-4" /></Button>
