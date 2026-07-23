@@ -5,8 +5,84 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, ExternalLink, Trash2 } from "lucide-react";
+import { AlertTriangle, ExternalLink, ImagePlus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+
+function TributePhotoCell({
+  tributeId,
+  photoPath,
+  onChanged,
+}: {
+  tributeId: string;
+  photoPath: string | null;
+  onChanged: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!photoPath) { setPreview(null); return; }
+    if (photoPath.startsWith("http")) { setPreview(photoPath); return; }
+    supabase.storage.from("tribute-photos").createSignedUrl(photoPath, 3600).then(({ data }) => {
+      if (!cancelled) setPreview(data?.signedUrl ?? null);
+    });
+    return () => { cancelled = true; };
+  }, [photoPath]);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error("Máximo 5MB"); return; }
+    setBusy(true);
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `${tributeId}/photo-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("tribute-photos")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) { toast.error(upErr.message); setBusy(false); return; }
+    const { error: dbErr } = await supabase
+      .from("tributes")
+      .update({ tribute_photo_url: path })
+      .eq("id", tributeId);
+    if (dbErr) { toast.error(dbErr.message); setBusy(false); return; }
+    toast.success("Foto atualizada");
+    setBusy(false);
+    onChanged();
+  }
+
+  async function handleRemove() {
+    if (!photoPath) return;
+    setBusy(true);
+    if (!photoPath.startsWith("http")) {
+      await supabase.storage.from("tribute-photos").remove([photoPath]);
+    }
+    const { error } = await supabase.from("tributes").update({ tribute_photo_url: null }).eq("id", tributeId);
+    if (error) toast.error(error.message);
+    else { toast.success("Foto removida"); onChanged(); }
+    setBusy(false);
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleFile} />
+      {preview ? (
+        <img src={preview} alt="" className="h-10 w-10 rounded object-cover border border-border" />
+      ) : (
+        <div className="h-10 w-10 rounded bg-secondary/50 border border-border" />
+      )}
+      <Button variant="ghost" size="icon" disabled={busy} onClick={() => inputRef.current?.click()} title="Enviar foto">
+        <ImagePlus className="h-4 w-4" />
+      </Button>
+      {photoPath && (
+        <Button variant="ghost" size="icon" disabled={busy} onClick={handleRemove} title="Remover foto">
+          <X className="h-4 w-4 text-destructive" />
+        </Button>
+      )}
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/admin/homenagens")({
   component: Page,
