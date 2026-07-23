@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,28 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/admin/homenagens")({
   component: Page,
 });
+
+function Countdown({ endsAt, litAt }: { endsAt: string; litAt: string | null }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (!litAt) return <span className="text-muted-foreground">Não acesa</span>;
+
+  const diff = new Date(endsAt).getTime() - now;
+  if (diff <= 0) return <span className="text-muted-foreground">Encerrada</span>;
+
+  const s = Math.floor(diff / 1000);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const label = d > 0 ? `${d}d ${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(h)}:${pad(m)}:${pad(sec)}`;
+  return <span className="font-mono tabular-nums text-primary">{label}</span>;
+}
 
 function Page() {
   const qc = useQueryClient();
