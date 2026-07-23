@@ -11,6 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Music2, VolumeX, Flame } from "lucide-react";
 import { CondolencesBook } from "@/components/CondolencesBook";
 import { LightCandleDialog } from "@/components/LightCandleDialog";
+import { TributePhoto } from "@/components/TributePhoto";
+import { LatestCondolencePopup } from "@/components/LatestCondolencePopup";
+import { QRCodeSVG } from "qrcode.react";
+import { QrCode } from "lucide-react";
 
 export const Route = createFileRoute("/homenagem/$id")({
   component: Page,
@@ -158,39 +162,63 @@ function Page() {
             <p className="mt-2 text-sm text-muted-foreground">Homenagem acesa em {dateStr}</p>
           </header>
 
-          {/* ALTAR – oratório com vela e nome dourado abaixo */}
-          <div className="mt-10 md:mt-14">
-            <Altar
-              name={data.tribute_name}
-              extinguished={!showFlame}
-              videoUrl={showFlame ? data.candle?.video_url : null}
-              burnProgress={burnProgress}
-            />
+          {/* ALTAR – oratório com vela ao centro, foto à esquerda, popup + QR à direita */}
+          <div className="mt-10 md:mt-14 grid gap-8 md:gap-6 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center">
+            {/* Coluna esquerda: foto emoldurada */}
+            <div className="order-1 md:order-none">
+              <TributePhoto photoPath={(data as any).tribute_photo_url} name={data.tribute_name} />
+            </div>
 
-            {!expired && !lit && (
-              <div className="mt-10 flex flex-col items-center gap-3">
-                <Button
-                  size="lg"
-                  onClick={handleLight}
-                  disabled={lighting}
-                  className="rounded-full bg-gold text-gold-foreground hover:bg-gold/90 shadow-glow px-8"
-                >
-                  <Flame className="mr-2 h-5 w-5" />
-                  {lighting ? "Acendendo..." : "Acender a vela"}
-                </Button>
-                <p className="text-xs text-muted-foreground">
-                  Ao acender, a vela permanecerá acesa por {(() => {
-                    const m = (data.candle as any)?.duration_minutes ?? ((data.candle?.duration_hours ?? 24) * 60);
-                    if (m >= 1440) return `${Math.round(m / 1440)} dias`;
-                    if (m >= 60) return `${Math.round(m / 60)} horas`;
-                    return `${m} minutos`;
-                  })()}.
+            {/* Coluna central: altar e vela */}
+            <div className="order-2 md:order-none">
+              <Altar
+                name={data.tribute_name}
+                extinguished={!showFlame}
+                videoUrl={showFlame ? data.candle?.video_url : null}
+                burnProgress={burnProgress}
+              />
 
+              {!expired && !lit && (
+                <div className="mt-10 flex flex-col items-center gap-3">
+                  <Button
+                    size="lg"
+                    onClick={handleLight}
+                    disabled={lighting}
+                    className="rounded-full bg-gold text-gold-foreground hover:bg-gold/90 shadow-glow px-8"
+                  >
+                    <Flame className="mr-2 h-5 w-5" />
+                    {lighting ? "Acendendo..." : "Acender a vela"}
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Ao acender, a vela permanecerá acesa por {(() => {
+                      const m = (data.candle as any)?.duration_minutes ?? ((data.candle?.duration_hours ?? 24) * 60);
+                      if (m >= 1440) return `${Math.round(m / 1440)} dias`;
+                      if (m >= 60) return `${Math.round(m / 60)} horas`;
+                      return `${m} minutos`;
+                    })()}.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Coluna direita: última homenagem (popup em tempo real) + QR code */}
+            <div className="order-3 md:order-none flex flex-col gap-4 mx-auto w-full max-w-[280px]">
+              <LatestCondolencePopup tributeId={data.id} />
+              <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur p-4 shadow-soft text-center">
+                <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-gold">
+                  <QrCode className="h-3.5 w-3.5" aria-hidden />
+                  Assine no celular
+                </div>
+                <div className="mt-3 flex justify-center rounded-lg bg-white p-3">
+                  <QRCodeSVG value={`${shareUrl}#condolences-heading`} size={140} level="M" />
+                </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Aponte a câmera para deixar uma mensagem.
                 </p>
               </div>
-            )}
-
+            </div>
           </div>
+
 
 
           {/* Estado / contador */}
