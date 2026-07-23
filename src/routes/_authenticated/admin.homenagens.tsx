@@ -96,6 +96,9 @@ function Page() {
     },
   });
 
+  useEndingAlerts(data as TributeRow[] | undefined);
+
+
   async function remove(id: string) {
     if (!confirm("Excluir esta homenagem?")) return;
     const { error } = await supabase.from("tributes").delete().eq("id", id);
