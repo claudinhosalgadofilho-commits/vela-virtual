@@ -6,6 +6,7 @@ interface AltarProps {
   videoUrl?: string | null;
   size?: "sm" | "md";
   className?: string;
+  burnProgress?: number;
 }
 
 /**
