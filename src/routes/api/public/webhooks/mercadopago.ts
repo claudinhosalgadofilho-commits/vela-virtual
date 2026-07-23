@@ -66,9 +66,13 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
         }
 
         const secret = cfg?.mp_webhook_secret?.trim();
+        const resource = String((body as { resource?: string })?.resource ?? "");
+        const resourceId = resource ? resource.split("/").filter(Boolean).pop() : null;
         const dataId =
           (body as { data?: { id?: string | number } })?.data?.id ??
+          resourceId ??
           url.searchParams.get("data.id") ??
+          url.searchParams.get("resource")?.split("/").filter(Boolean).pop() ??
           url.searchParams.get("id") ??
           "";
 
@@ -108,7 +112,9 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
           (body as { type?: string; topic?: string }).type ??
           (body as { topic?: string }).topic ??
           url.searchParams.get("type") ??
-          url.searchParams.get("topic");
+          url.searchParams.get("topic") ??
+          (resource.includes("merchant_orders") ? "merchant_order" : null) ??
+          (resource.includes("payments") ? "payment" : null);
         const paymentId = String(dataId || "");
 
         if (type !== "payment" && type !== "merchant_order") {
