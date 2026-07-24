@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Heart, Link2 } from "lucide-react";
+import { CondolenceLikeButton } from "./CondolenceLikeButton";
 
 /**
  * Livro de condolências público.
@@ -30,6 +31,7 @@ type Condolence = {
   author_name: string;
   message: string;
   created_at: string;
+  like_count: number;
 };
 
 export function CondolencesBook({ tributeId, disabled = false }: CondolencesBookProps) {
@@ -45,7 +47,7 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
     queryFn: async (): Promise<Condolence[]> => {
       const { data, error } = await supabase
         .from("condolences")
-        .select("id, author_name, message, created_at")
+        .select("id, author_name, message, created_at, like_count")
         .eq("tribute_id", tributeId)
         .eq("approved", true)
         .order("created_at", { ascending: false });
@@ -121,6 +123,23 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
             }, 4000);
           }
           qc.invalidateQueries({ queryKey: ["condolences", tributeId] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "condolences",
+          filter: `tribute_id=eq.${tributeId}`,
+        },
+        (payload) => {
+          const updated = payload.new as { id: string; like_count: number };
+          qc.setQueryData<Condolence[]>(["condolences", tributeId], (prev) =>
+            prev?.map((c) =>
+              c.id === updated.id ? { ...c, like_count: updated.like_count } : c,
+            ),
+          );
         },
       )
       .subscribe();
@@ -249,9 +268,13 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
               <p className="font-serif text-base italic text-foreground">
                 &ldquo;{c.message}&rdquo;
               </p>
-              <footer className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+              <footer className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                 <span className="font-medium text-foreground/80">— {c.author_name}</span>
                 <div className="flex items-center gap-2">
+                  <CondolenceLikeButton
+                    condolenceId={c.id}
+                    initialCount={c.like_count ?? 0}
+                  />
                   <time dateTime={c.created_at}>
                     {new Date(c.created_at).toLocaleDateString("pt-BR", {
                       day: "2-digit",
