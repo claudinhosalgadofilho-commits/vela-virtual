@@ -12,7 +12,9 @@
     "prestart": "node -e \"require('fs').existsSync('.output/server/index.mjs')||process.exit(1)\" || npm run build",
     "start": "node .output/server/index.mjs",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "engines": {
     "node": ">=22.11.0"
