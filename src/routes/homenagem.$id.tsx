@@ -277,6 +277,11 @@ function Page() {
 
           {/* Ações */}
           <div className="mt-14 flex flex-col items-center gap-6">
+            <TributeLikeButton
+              tributeId={data.id}
+              initialCount={(data as any).like_count ?? 0}
+            />
+
             <div className="text-center">
               <p className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Compartilhar homenagem</p>
               <ShareButtons url={shareUrl} title={`Homenagem em memória de ${data.tribute_name}`} />
