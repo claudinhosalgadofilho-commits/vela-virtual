@@ -31,6 +31,7 @@ type Condolence = {
   author_name: string;
   message: string;
   created_at: string;
+  like_count: number;
 };
 
 export function CondolencesBook({ tributeId, disabled = false }: CondolencesBookProps) {
