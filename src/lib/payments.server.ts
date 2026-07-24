@@ -200,12 +200,12 @@ export async function fetchOrderDetails(data: OrderStatusInput) {
       "id, status, amount_cents, payment_method, tribute_name, customer_name, customer_email, pix_qr_code, pix_qr_base64, mp_payment_id, created_at, paid_at, candle_id, renewal_tribute_id",
     )
     .eq("id", order.id)
-    .maybeSingle<{ id: string; status: OrderStatus; renewal_tribute_id: string | null; candle_id: string }>();
+    .maybeSingle();
   if (!fullOrder) return { found: false as const };
 
   const tribute_id =
     fullOrder.status === "paid"
-      ? fullOrder.renewal_tribute_id ?? (await findTributeId(fullOrder.id))
+      ? (fullOrder as { renewal_tribute_id: string | null }).renewal_tribute_id ?? (await findTributeId(fullOrder.id))
       : null;
   const { data: candle } = await supabaseAdmin
     .from("candles")
