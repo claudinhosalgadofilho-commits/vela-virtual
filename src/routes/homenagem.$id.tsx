@@ -246,11 +246,22 @@ function Page() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   Que a memória permaneça acesa em nossos corações.
                 </p>
+                <Button
+                  size="lg"
+                  onClick={() => setRenewOpen(true)}
+                  className="mt-6 rounded-full bg-gold text-gold-foreground hover:bg-gold/90 shadow-glow px-8"
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Prorrogar homenagem
+                </Button>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Mantém a mesma homenagem — apenas renova o tempo.
+                </p>
               </div>
             ) : lit ? (
               <>
                 <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">Tempo restante</p>
-                <CountdownTimer endsAt={data.ends_at} onExpire={() => setExpired(true)} />
+                <CountdownTimer endsAt={data.ends_at} onExpire={() => setNow(Date.now())} />
               </>
             ) : null}
           </div>
