@@ -738,6 +738,7 @@ export async function createRenewalPayment(data: CreateRenewalInput) {
     method: "checkout" as const,
     init_point: payload.init_point as string,
     sandbox_init_point: payload.sandbox_init_point as string,
+    reused: false as const,
   };
 }
 
