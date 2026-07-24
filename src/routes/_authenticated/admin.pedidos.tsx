@@ -75,6 +75,7 @@ type OrderRow = {
   payment_method: string;
   external_payment_id: string | null;
   candle_id: string;
+  renewal_tribute_id: string | null;
   candle: { name: string; slug: string } | null;
 };
 
@@ -246,7 +247,7 @@ function Page() {
     if (!list.length) return toast.error("Nada para exportar");
     const header = [
       "Data", "Cliente", "Email", "Telefone", "Homenageado",
-      "Vela", "Valor (BRL)", "Pagamento", "Status", "ID Externo", "ID",
+      "Vela", "Valor (BRL)", "Pagamento", "Status", "Tipo", "ID Externo", "ID",
     ];
     const csvRows = list.map((o) => [
       new Date(o.created_at).toLocaleString("pt-BR"),
@@ -258,6 +259,7 @@ function Page() {
       (o.amount_cents / 100).toFixed(2).replace(".", ","),
       o.payment_method,
       statusLabel[o.status],
+      o.renewal_tribute_id ? "Renovação" : "Original",
       o.external_payment_id ?? "",
       o.id,
     ]);
@@ -438,7 +440,16 @@ function Page() {
                     {o.customer_name}<br />
                     <span className="text-xs text-muted-foreground">{o.customer_email}</span>
                   </td>
-                  <td className="p-4">{o.tribute_name}</td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span>{o.tribute_name}</span>
+                      {o.renewal_tribute_id && (
+                        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary text-[10px] uppercase tracking-wider">
+                          Renovação
+                        </Badge>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-4">{o.candle?.name}</td>
                   <td className="p-4 text-primary font-serif">{formatBRL(o.amount_cents)}</td>
                   <td className="p-4" onClick={(e) => e.stopPropagation()}>
@@ -505,9 +516,16 @@ function Page() {
 
               <div className="mt-6 space-y-6">
                 <div className="flex items-center justify-between">
-                  <Badge className={statusColor[selected.status] + " capitalize text-sm px-3 py-1"}>
-                    {statusLabel[selected.status]}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={statusColor[selected.status] + " capitalize text-sm px-3 py-1"}>
+                      {statusLabel[selected.status]}
+                    </Badge>
+                    {selected.renewal_tribute_id && (
+                      <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary text-xs uppercase tracking-wider">
+                        Renovação
+                      </Badge>
+                    )}
+                  </div>
                   <span className="font-serif text-2xl text-primary">
                     {formatBRL(selected.amount_cents)}
                   </span>
