@@ -268,9 +268,13 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
               <p className="font-serif text-base italic text-foreground">
                 &ldquo;{c.message}&rdquo;
               </p>
-              <footer className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+              <footer className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                 <span className="font-medium text-foreground/80">— {c.author_name}</span>
                 <div className="flex items-center gap-2">
+                  <CondolenceLikeButton
+                    condolenceId={c.id}
+                    initialCount={c.like_count ?? 0}
+                  />
                   <time dateTime={c.created_at}>
                     {new Date(c.created_at).toLocaleDateString("pt-BR", {
                       day: "2-digit",
