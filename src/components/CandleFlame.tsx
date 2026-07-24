@@ -45,10 +45,13 @@ export function CandleFlame({
     const h = Math.max(70, Math.round(baseH * (0.2 + 0.8 * p)));
     const w = Math.max(60, Math.round(baseW * (0.6 + 0.4 * p)));
     return (
-      <div className={cn("inline-block relative", className)} style={{ width: baseW * scale, height: baseH * scale }}>
+      <div
+        className={cn("relative", className)}
+        style={{ width: baseW * scale, height: baseH * scale, display: "flex", alignItems: "flex-end", justifyContent: "center", lineHeight: 0 }}
+      >
         <div
-          className="candle-scene absolute left-1/2 bottom-0 -translate-x-1/2"
-          style={{ transform: `translateX(-50%) scale(${scale})`, transformOrigin: "bottom center" }}
+          className="candle-scene"
+          style={{ transform: `scale(${scale})`, transformOrigin: "bottom center" }}
         >
           <div className="candle-halo" style={{ opacity: 0.4 + 0.6 * p }} />
           <video
