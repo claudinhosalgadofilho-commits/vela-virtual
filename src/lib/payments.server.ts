@@ -425,7 +425,7 @@ async function loadOrder(orderId: string): Promise<OrderRow | null> {
   const { data } = await supabaseAdmin
     .from("orders")
     .select(
-      "id, status, candle_id, tribute_name, tribute_message, tribute_photo_url, tribute_birth_date, tribute_death_date, mp_payment_id, mp_preference_id, paid_at",
+      "id, status, candle_id, tribute_name, tribute_message, tribute_photo_url, tribute_birth_date, tribute_death_date, mp_payment_id, mp_preference_id, paid_at, renewal_tribute_id",
     )
     .eq("id", orderId)
     .maybeSingle<OrderRow>();
