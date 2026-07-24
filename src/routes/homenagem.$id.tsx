@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Music2, VolumeX, Flame } from "lucide-react";
 import { CondolencesBook } from "@/components/CondolencesBook";
 import { LightCandleDialog } from "@/components/LightCandleDialog";
+import { RenewTributeDialog } from "@/components/RenewTributeDialog";
 import { TributePhoto } from "@/components/TributePhoto";
 import { LatestCondolencePopup } from "@/components/LatestCondolencePopup";
 import { QRCodeSVG } from "qrcode.react";
-import { QrCode } from "lucide-react";
+import { QrCode, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/homenagem/$id")({
   component: Page,
@@ -61,9 +62,9 @@ export const Route = createFileRoute("/homenagem/$id")({
 
 function Page() {
   const { id } = Route.useParams();
-  const [expired, setExpired] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
   const [plansOpen, setPlansOpen] = useState(false);
+  const [renewOpen, setRenewOpen] = useState(false);
   const [lighting, setLighting] = useState(false);
 
   const { data, isLoading, refetch } = useQuery({
@@ -80,7 +81,6 @@ function Page() {
     },
   });
 
-  const lit = Boolean((data as any)?.lit_at);
   const [shareUrl, setShareUrl] = useState("");
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -94,15 +94,15 @@ function Page() {
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    if (data) {
-      const ended = new Date(data.ends_at).getTime() <= Date.now();
-      setExpired(ended);
-    }
-  }, [data]);
+  // Derivamos `expired` sincronamente do payload para evitar flash da chama
+  // ao recarregar uma homenagem que já terminou (bug: vela reacendia no F5).
+  const endsAtMs = data ? new Date(data.ends_at).getTime() : null;
+  const expired = endsAtMs != null && endsAtMs <= now;
+  const lit = Boolean((data as any)?.lit_at) && !expired;
 
   const burnProgress = (() => {
     if (!data || !(data as any).lit_at) return 1;
+    if (expired) return 0;
     const start = new Date((data as any).lit_at).getTime();
     const end = new Date(data.ends_at).getTime();
     if (!(end > start)) return 0;
@@ -246,11 +246,22 @@ function Page() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   Que a memória permaneça acesa em nossos corações.
                 </p>
+                <Button
+                  size="lg"
+                  onClick={() => setRenewOpen(true)}
+                  className="mt-6 rounded-full bg-gold text-gold-foreground hover:bg-gold/90 shadow-glow px-8"
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Prorrogar homenagem
+                </Button>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Mantém a mesma homenagem — apenas renova o tempo.
+                </p>
               </div>
             ) : lit ? (
               <>
                 <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">Tempo restante</p>
-                <CountdownTimer endsAt={data.ends_at} onExpire={() => setExpired(true)} />
+                <CountdownTimer endsAt={data.ends_at} onExpire={() => setNow(Date.now())} />
               </>
             ) : null}
           </div>
@@ -293,6 +304,13 @@ function Page() {
         </article>
       </div>
       <LightCandleDialog open={plansOpen} onOpenChange={setPlansOpen} />
+      <RenewTributeDialog
+        open={renewOpen}
+        onOpenChange={setRenewOpen}
+        tributeId={data.id}
+        tributeName={data.tribute_name}
+      />
+
     </SiteShell>
   );
 }
