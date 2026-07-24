@@ -37,10 +37,12 @@ test.describe("Página de homenagem", () => {
     ).toBeVisible();
   });
 
-  test("expirada/inexistente mostra estado apropriado", async ({ page }) => {
-    await page.goto("/homenagem/00000000-0000-0000-0000-000000000000");
+  test("id inexistente mostra estado 'Homenagem não encontrada'", async ({ page }) => {
+    await page.goto("/homenagem/00000000-0000-0000-0000-000000000000", {
+      waitUntil: "networkidle",
+    });
     await expect(
-      page.getByText(/n[ãa]o encontrada|encerrada|expirad/i),
+      page.getByRole("heading", { name: /Homenagem n[ãa]o encontrada/i }),
     ).toBeVisible({ timeout: 10_000 });
   });
 });
