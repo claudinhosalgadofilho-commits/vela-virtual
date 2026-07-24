@@ -117,9 +117,10 @@ function Page() {
                   </span>
                 )}
 
-                <div className="flex h-56 items-end justify-center">
+                <div className="flex h-56 items-end justify-center overflow-hidden">
                   <CandleFlame size="sm" />
                 </div>
+
 
 
                 <h3 className="mt-4 font-serif text-2xl text-foreground text-center">
