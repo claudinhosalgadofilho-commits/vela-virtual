@@ -62,9 +62,9 @@ export const Route = createFileRoute("/homenagem/$id")({
 
 function Page() {
   const { id } = Route.useParams();
-  const [expired, setExpired] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
   const [plansOpen, setPlansOpen] = useState(false);
+  const [renewOpen, setRenewOpen] = useState(false);
   const [lighting, setLighting] = useState(false);
 
   const { data, isLoading, refetch } = useQuery({
@@ -81,7 +81,6 @@ function Page() {
     },
   });
 
-  const lit = Boolean((data as any)?.lit_at);
   const [shareUrl, setShareUrl] = useState("");
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -95,15 +94,15 @@ function Page() {
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    if (data) {
-      const ended = new Date(data.ends_at).getTime() <= Date.now();
-      setExpired(ended);
-    }
-  }, [data]);
+  // Derivamos `expired` sincronamente do payload para evitar flash da chama
+  // ao recarregar uma homenagem que já terminou (bug: vela reacendia no F5).
+  const endsAtMs = data ? new Date(data.ends_at).getTime() : null;
+  const expired = endsAtMs != null && endsAtMs <= now;
+  const lit = Boolean((data as any)?.lit_at) && !expired;
 
   const burnProgress = (() => {
     if (!data || !(data as any).lit_at) return 1;
+    if (expired) return 0;
     const start = new Date((data as any).lit_at).getTime();
     const end = new Date(data.ends_at).getTime();
     if (!(end > start)) return 0;
