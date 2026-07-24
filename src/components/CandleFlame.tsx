@@ -30,8 +30,10 @@ export function CandleFlame({
   const wrapperStyle: React.CSSProperties = {
     width: nominalW * scale,
     height: nominalH * scale,
-    display: "inline-block",
+    display: "block",
     position: "relative",
+    verticalAlign: "bottom",
+    lineHeight: 0,
   };
 
 
