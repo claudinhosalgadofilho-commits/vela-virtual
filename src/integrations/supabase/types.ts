@@ -92,6 +92,7 @@ export type Database = {
           author_name: string
           created_at: string
           id: string
+          like_count: number
           message: string
           tribute_id: string
           updated_at: string
@@ -101,6 +102,7 @@ export type Database = {
           author_name: string
           created_at?: string
           id?: string
+          like_count?: number
           message: string
           tribute_id: string
           updated_at?: string
@@ -110,6 +112,7 @@ export type Database = {
           author_name?: string
           created_at?: string
           id?: string
+          like_count?: number
           message?: string
           tribute_id?: string
           updated_at?: string
@@ -453,6 +456,10 @@ export type Database = {
     }
     Functions: {
       cleanup_stale_pending_orders: { Args: never; Returns: number }
+      decrement_condolence_like: {
+        Args: { _condolence_id: string }
+        Returns: number
+      }
       decrement_tribute_like: { Args: { _tribute_id: string }; Returns: number }
       has_role: {
         Args: {
@@ -460,6 +467,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_condolence_like: {
+        Args: { _condolence_id: string }
+        Returns: number
       }
       increment_tribute_like: { Args: { _tribute_id: string }; Returns: number }
       light_tribute: { Args: { _tribute_id: string }; Returns: string }
