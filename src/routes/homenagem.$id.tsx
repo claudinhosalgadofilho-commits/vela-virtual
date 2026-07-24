@@ -14,6 +14,7 @@ import { LightCandleDialog } from "@/components/LightCandleDialog";
 import { RenewTributeDialog } from "@/components/RenewTributeDialog";
 import { TributePhoto } from "@/components/TributePhoto";
 import { LatestCondolencePopup } from "@/components/LatestCondolencePopup";
+import { TributeLikeButton } from "@/components/TributeLikeButton";
 import { QRCodeSVG } from "qrcode.react";
 import { QrCode, RefreshCw } from "lucide-react";
 
