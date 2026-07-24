@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Music2, VolumeX, Flame } from "lucide-react";
 import { CondolencesBook } from "@/components/CondolencesBook";
 import { LightCandleDialog } from "@/components/LightCandleDialog";
+import { RenewTributeDialog } from "@/components/RenewTributeDialog";
 import { TributePhoto } from "@/components/TributePhoto";
 import { LatestCondolencePopup } from "@/components/LatestCondolencePopup";
 import { QRCodeSVG } from "qrcode.react";
-import { QrCode } from "lucide-react";
+import { QrCode, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/homenagem/$id")({
   component: Page,
