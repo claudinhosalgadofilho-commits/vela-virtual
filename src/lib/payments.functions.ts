@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createOrderInput, orderStatusInput, uploadPhotoInput } from "./payments.schemas";
+import { createOrderInput, createRenewalInput, orderStatusInput, uploadPhotoInput } from "./payments.schemas";
 import {
   createOrderPayment,
+  createRenewalPayment,
   fetchOrderDetails,
   fetchOrderStatus,
   storeTributePhoto,
@@ -14,6 +15,10 @@ export const uploadTributePhoto = createServerFn({ method: "POST" })
 export const createOrderAndPayment = createServerFn({ method: "POST" })
   .inputValidator((raw) => createOrderInput.parse(raw))
   .handler(async ({ data }) => createOrderPayment(data));
+
+export const createRenewalOrder = createServerFn({ method: "POST" })
+  .inputValidator((raw) => createRenewalInput.parse(raw))
+  .handler(async ({ data }) => createRenewalPayment(data));
 
 export const getOrderStatus = createServerFn({ method: "GET" })
   .inputValidator((raw) => orderStatusInput.parse(raw))
