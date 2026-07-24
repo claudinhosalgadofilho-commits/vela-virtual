@@ -304,6 +304,13 @@ function Page() {
         </article>
       </div>
       <LightCandleDialog open={plansOpen} onOpenChange={setPlansOpen} />
+      <RenewTributeDialog
+        open={renewOpen}
+        onOpenChange={setRenewOpen}
+        tributeId={data.id}
+        tributeName={data.tribute_name}
+      />
+
     </SiteShell>
   );
 }
