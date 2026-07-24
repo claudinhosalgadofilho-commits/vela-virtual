@@ -71,10 +71,10 @@ export function CandleFlame({
   const flameScale = 0.7 + 0.3 * p;
 
   return (
-    <div className={cn("inline-block relative", className)} style={wrapperStyle}>
+    <div className={cn("relative", className)} style={wrapperStyle}>
       <div
-        className={cn("candle-scene absolute left-1/2 bottom-0", extinguished && "extinguished")}
-        style={{ transform: `translateX(-50%) scale(${scale})`, transformOrigin: "bottom center" }}
+        className={cn("candle-scene", extinguished && "extinguished")}
+        style={{ transform: `scale(${scale})`, transformOrigin: "bottom center" }}
         aria-label={extinguished ? "Vela apagada" : "Vela acesa"}
       >
         <div className="candle-halo" style={{ opacity: extinguished ? 0 : 0.4 + 0.6 * p }} />
