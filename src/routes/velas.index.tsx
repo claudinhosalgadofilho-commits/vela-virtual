@@ -117,13 +117,11 @@ function Page() {
                   </span>
                 )}
 
-                <div className="flex h-56 items-end justify-center overflow-hidden">
+                <div className="relative z-0 flex h-64 items-end justify-center overflow-hidden">
                   <CandleFlame size="sm" />
                 </div>
 
-
-
-                <h3 className="mt-4 font-serif text-2xl text-foreground text-center">
+                <h3 className="relative z-10 mt-6 font-serif text-2xl text-foreground text-center">
                   {c.name}
                 </h3>
                 <div className="mt-1 flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
