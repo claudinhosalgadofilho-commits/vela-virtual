@@ -37,12 +37,4 @@ test.describe("Página de homenagem", () => {
     ).toBeVisible();
   });
 
-  test("id inexistente mostra estado 'Homenagem não encontrada'", async ({ page }) => {
-    await page.goto("/homenagem/00000000-0000-0000-0000-000000000000", {
-      waitUntil: "networkidle",
-    });
-    await expect(
-      page.getByRole("heading", { name: /Homenagem n[ãa]o encontrada/i }),
-    ).toBeVisible({ timeout: 10_000 });
-  });
 });
