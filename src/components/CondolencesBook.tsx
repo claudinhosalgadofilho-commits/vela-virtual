@@ -125,6 +125,23 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
           qc.invalidateQueries({ queryKey: ["condolences", tributeId] });
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "condolences",
+          filter: `tribute_id=eq.${tributeId}`,
+        },
+        (payload) => {
+          const updated = payload.new as { id: string; like_count: number };
+          qc.setQueryData<Condolence[]>(["condolences", tributeId], (prev) =>
+            prev?.map((c) =>
+              c.id === updated.id ? { ...c, like_count: updated.like_count } : c,
+            ),
+          );
+        },
+      )
       .subscribe();
 
 
