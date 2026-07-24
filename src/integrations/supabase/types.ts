@@ -140,6 +140,7 @@ export type Database = {
           payment_method: string
           pix_qr_base64: string | null
           pix_qr_code: string | null
+          renewal_tribute_id: string | null
           status: Database["public"]["Enums"]["order_status"]
           tribute_birth_date: string | null
           tribute_death_date: string | null
@@ -163,6 +164,7 @@ export type Database = {
           payment_method?: string
           pix_qr_base64?: string | null
           pix_qr_code?: string | null
+          renewal_tribute_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           tribute_birth_date?: string | null
           tribute_death_date?: string | null
@@ -186,6 +188,7 @@ export type Database = {
           payment_method?: string
           pix_qr_base64?: string | null
           pix_qr_code?: string | null
+          renewal_tribute_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           tribute_birth_date?: string | null
           tribute_death_date?: string | null
@@ -200,6 +203,13 @@ export type Database = {
             columns: ["candle_id"]
             isOneToOne: false
             referencedRelation: "candles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_renewal_tribute_id_fkey"
+            columns: ["renewal_tribute_id"]
+            isOneToOne: false
+            referencedRelation: "tributes"
             referencedColumns: ["id"]
           },
         ]
