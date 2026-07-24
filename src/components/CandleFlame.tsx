@@ -41,21 +41,23 @@ export function CandleFlame({
     const h = Math.max(70, Math.round(baseH * (0.2 + 0.8 * p)));
     const w = Math.max(60, Math.round(baseW * (0.6 + 0.4 * p)));
     return (
-      <div
-        className={cn("candle-scene relative", className)}
-        style={{ transform: `scale(${scale})`, transformOrigin: "bottom center" }}
-      >
-        <div className="candle-halo" style={{ opacity: 0.4 + 0.6 * p }} />
-        <video
-          className="relative z-10 rounded-lg transition-all duration-1000 ease-linear"
-          src={videoUrl}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          style={{ width: w, height: h, objectFit: "cover" }}
-        />
+      <div className={cn("inline-block relative", className)} style={{ width: baseW * scale, height: baseH * scale }}>
+        <div
+          className="candle-scene absolute left-1/2 bottom-0 -translate-x-1/2"
+          style={{ transform: `translateX(-50%) scale(${scale})`, transformOrigin: "bottom center" }}
+        >
+          <div className="candle-halo" style={{ opacity: 0.4 + 0.6 * p }} />
+          <video
+            className="relative z-10 rounded-lg transition-all duration-1000 ease-linear"
+            src={videoUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            style={{ width: w, height: h, objectFit: "cover" }}
+          />
+        </div>
       </div>
     );
   }
@@ -65,21 +67,24 @@ export function CandleFlame({
   const flameScale = 0.7 + 0.3 * p;
 
   return (
-    <div
-      className={cn("candle-scene", extinguished && "extinguished", className)}
-      style={{ transform: `scale(${scale})`, transformOrigin: "bottom center" }}
-      aria-label={extinguished ? "Vela apagada" : "Vela acesa"}
-    >
-      <div className="candle-halo" style={{ opacity: extinguished ? 0 : 0.4 + 0.6 * p }} />
+    <div className={cn("inline-block relative", className)} style={wrapperStyle}>
       <div
-        className="flame transition-transform duration-1000 ease-linear"
-        style={extinguished ? undefined : { transform: `scale(${flameScale})`, transformOrigin: "50% 100%" }}
-      />
-      <div className="wick" />
-      <div
-        className="candle-body transition-[height] duration-1000 ease-linear"
-        style={{ height: bodyH }}
-      />
+        className={cn("candle-scene absolute left-1/2 bottom-0", extinguished && "extinguished")}
+        style={{ transform: `translateX(-50%) scale(${scale})`, transformOrigin: "bottom center" }}
+        aria-label={extinguished ? "Vela apagada" : "Vela acesa"}
+      >
+        <div className="candle-halo" style={{ opacity: extinguished ? 0 : 0.4 + 0.6 * p }} />
+        <div
+          className="flame transition-transform duration-1000 ease-linear"
+          style={extinguished ? undefined : { transform: `scale(${flameScale})`, transformOrigin: "50% 100%" }}
+        />
+        <div className="wick" />
+        <div
+          className="candle-body transition-[height] duration-1000 ease-linear"
+          style={{ height: bodyH }}
+        />
+      </div>
     </div>
   );
 }
+
