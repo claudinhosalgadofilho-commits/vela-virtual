@@ -631,6 +631,35 @@ export async function createRenewalPayment(data: CreateRenewalInput) {
   if (!customerEmail) throw new Error("Informe o email para receber a confirmação.");
   if (!customerName) customerName = "Homenagem";
 
+  // Anti-duplicidade: reutiliza uma prorrogação pendente recente para a
+  // mesma homenagem + plano (janela de 30 min). Evita cobrar duas vezes se
+  // o visitante clicar em "Prorrogar" repetidas vezes.
+  const dedupeWindowIso = new Date(Date.now() - 30 * 60_000).toISOString();
+  const { data: existing } = await supabaseAdmin
+    .from("orders")
+    .select("id, mp_preference_id")
+    .eq("status", "pending")
+    .eq("renewal_tribute_id", tribute.id)
+    .eq("candle_id", candle.id)
+    .gte("created_at", dedupeWindowIso)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string; mp_preference_id: string | null }>();
+
+  if (existing?.mp_preference_id) {
+    const reused = await fetchExistingPreference(accessToken, existing.mp_preference_id);
+    if (reused) {
+      return {
+        order_id: existing.id,
+        tribute_id: tribute.id,
+        method: "checkout" as const,
+        init_point: reused.init_point,
+        sandbox_init_point: reused.sandbox_init_point,
+        reused: true as const,
+      };
+    }
+  }
+
   const { data: order, error: orderErr } = await supabaseAdmin
     .from("orders")
     .insert({
