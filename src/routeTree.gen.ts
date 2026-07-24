@@ -24,6 +24,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminWebhooksRouteImport } from './routes/_authenticated/admin.webhooks'
 import { Route as AuthenticatedAdminVelasRouteImport } from './routes/_authenticated/admin.velas'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
+import { Route as AuthenticatedAdminStorybookRouteImport } from './routes/_authenticated/admin.storybook'
 import { Route as AuthenticatedAdminPedidosRouteImport } from './routes/_authenticated/admin.pedidos'
 import { Route as AuthenticatedAdminHomenagensRouteImport } from './routes/_authenticated/admin.homenagens'
 import { Route as AuthenticatedAdminConfiguracoesRouteImport } from './routes/_authenticated/admin.configuracoes'
@@ -106,6 +107,12 @@ const AuthenticatedAdminUsuariosRoute =
     path: '/usuarios',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminStorybookRoute =
+  AuthenticatedAdminStorybookRouteImport.update({
+    id: '/storybook',
+    path: '/storybook',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPedidosRoute =
   AuthenticatedAdminPedidosRouteImport.update({
     id: '/pedidos',
@@ -145,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/admin/storybook': typeof AuthenticatedAdminStorybookRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/velas': typeof AuthenticatedAdminVelasRoute
   '/admin/webhooks': typeof AuthenticatedAdminWebhooksRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/admin/storybook': typeof AuthenticatedAdminStorybookRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/velas': typeof AuthenticatedAdminVelasRoute
   '/admin/webhooks': typeof AuthenticatedAdminWebhooksRoute
@@ -186,6 +195,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/configuracoes': typeof AuthenticatedAdminConfiguracoesRoute
   '/_authenticated/admin/homenagens': typeof AuthenticatedAdminHomenagensRoute
   '/_authenticated/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
+  '/_authenticated/admin/storybook': typeof AuthenticatedAdminStorybookRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/velas': typeof AuthenticatedAdminVelasRoute
   '/_authenticated/admin/webhooks': typeof AuthenticatedAdminWebhooksRoute
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/homenagens'
     | '/admin/pedidos'
+    | '/admin/storybook'
     | '/admin/usuarios'
     | '/admin/velas'
     | '/admin/webhooks'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/homenagens'
     | '/admin/pedidos'
+    | '/admin/storybook'
     | '/admin/usuarios'
     | '/admin/velas'
     | '/admin/webhooks'
@@ -248,6 +260,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/configuracoes'
     | '/_authenticated/admin/homenagens'
     | '/_authenticated/admin/pedidos'
+    | '/_authenticated/admin/storybook'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/velas'
     | '/_authenticated/admin/webhooks'
@@ -375,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/storybook': {
+      id: '/_authenticated/admin/storybook'
+      path: '/storybook'
+      fullPath: '/admin/storybook'
+      preLoaderRoute: typeof AuthenticatedAdminStorybookRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/pedidos': {
       id: '/_authenticated/admin/pedidos'
       path: '/pedidos'
@@ -410,6 +430,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminConfiguracoesRoute: typeof AuthenticatedAdminConfiguracoesRoute
   AuthenticatedAdminHomenagensRoute: typeof AuthenticatedAdminHomenagensRoute
   AuthenticatedAdminPedidosRoute: typeof AuthenticatedAdminPedidosRoute
+  AuthenticatedAdminStorybookRoute: typeof AuthenticatedAdminStorybookRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVelasRoute: typeof AuthenticatedAdminVelasRoute
   AuthenticatedAdminWebhooksRoute: typeof AuthenticatedAdminWebhooksRoute
@@ -420,6 +441,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminConfiguracoesRoute: AuthenticatedAdminConfiguracoesRoute,
   AuthenticatedAdminHomenagensRoute: AuthenticatedAdminHomenagensRoute,
   AuthenticatedAdminPedidosRoute: AuthenticatedAdminPedidosRoute,
+  AuthenticatedAdminStorybookRoute: AuthenticatedAdminStorybookRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminVelasRoute: AuthenticatedAdminVelasRoute,
   AuthenticatedAdminWebhooksRoute: AuthenticatedAdminWebhooksRoute,
