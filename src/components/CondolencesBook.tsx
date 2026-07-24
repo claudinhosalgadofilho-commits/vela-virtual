@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Heart, Link2 } from "lucide-react";
+import { CondolenceLikeButton } from "./CondolenceLikeButton";
 
 /**
  * Livro de condolências público.
