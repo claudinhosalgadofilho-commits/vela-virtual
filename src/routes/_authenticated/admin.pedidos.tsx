@@ -247,7 +247,7 @@ function Page() {
     if (!list.length) return toast.error("Nada para exportar");
     const header = [
       "Data", "Cliente", "Email", "Telefone", "Homenageado",
-      "Vela", "Valor (BRL)", "Pagamento", "Status", "ID Externo", "ID",
+      "Vela", "Valor (BRL)", "Pagamento", "Status", "Tipo", "ID Externo", "ID",
     ];
     const csvRows = list.map((o) => [
       new Date(o.created_at).toLocaleString("pt-BR"),
@@ -259,6 +259,7 @@ function Page() {
       (o.amount_cents / 100).toFixed(2).replace(".", ","),
       o.payment_method,
       statusLabel[o.status],
+      o.renewal_tribute_id ? "Renovação" : "Original",
       o.external_payment_id ?? "",
       o.id,
     ]);
