@@ -47,7 +47,7 @@ export function CondolencesBook({ tributeId, disabled = false }: CondolencesBook
     queryFn: async (): Promise<Condolence[]> => {
       const { data, error } = await supabase
         .from("condolences")
-        .select("id, author_name, message, created_at")
+        .select("id, author_name, message, created_at, like_count")
         .eq("tribute_id", tributeId)
         .eq("approved", true)
         .order("created_at", { ascending: false });
