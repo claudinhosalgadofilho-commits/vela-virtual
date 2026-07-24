@@ -182,7 +182,10 @@ export async function createOrderPayment(data: CreateOrderInput) {
 export async function fetchOrderStatus(data: OrderStatusInput) {
   const order = await syncAndLoadOrder(data);
   if (!order) return { status: "not_found" as const, tribute_id: null };
-  const tribute_id = order.status === "paid" ? await findTributeId(order.id) : null;
+  const tribute_id =
+    order.status === "paid"
+      ? order.renewal_tribute_id ?? (await findTributeId(order.id))
+      : null;
   return { status: order.status, tribute_id };
 }
 
@@ -194,13 +197,16 @@ export async function fetchOrderDetails(data: OrderStatusInput) {
   const { data: fullOrder } = await supabaseAdmin
     .from("orders")
     .select(
-      "id, status, amount_cents, payment_method, tribute_name, customer_name, customer_email, pix_qr_code, pix_qr_base64, mp_payment_id, created_at, paid_at, candle_id",
+      "id, status, amount_cents, payment_method, tribute_name, customer_name, customer_email, pix_qr_code, pix_qr_base64, mp_payment_id, created_at, paid_at, candle_id, renewal_tribute_id",
     )
     .eq("id", order.id)
-    .maybeSingle();
+    .maybeSingle<{ id: string; status: OrderStatus; renewal_tribute_id: string | null; candle_id: string }>();
   if (!fullOrder) return { found: false as const };
 
-  const tribute_id = fullOrder.status === "paid" ? await findTributeId(fullOrder.id) : null;
+  const tribute_id =
+    fullOrder.status === "paid"
+      ? fullOrder.renewal_tribute_id ?? (await findTributeId(fullOrder.id))
+      : null;
   const { data: candle } = await supabaseAdmin
     .from("candles")
     .select("name, slug")
