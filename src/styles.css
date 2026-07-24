@@ -140,11 +140,12 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.01e
 }
 .candle-halo {
   position: absolute;
-  inset: -80px;
+  inset: -40px;
   background: radial-gradient(circle at center 30%, rgb(255 200 120 / 0.22), transparent 60%);
   pointer-events: none;
   animation: halo-pulse 4s ease-in-out infinite;
 }
+
 @keyframes halo-pulse {
   0%, 100% { opacity: 0.7; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.05); }
