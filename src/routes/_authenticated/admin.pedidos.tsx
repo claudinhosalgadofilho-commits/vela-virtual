@@ -439,7 +439,16 @@ function Page() {
                     {o.customer_name}<br />
                     <span className="text-xs text-muted-foreground">{o.customer_email}</span>
                   </td>
-                  <td className="p-4">{o.tribute_name}</td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span>{o.tribute_name}</span>
+                      {o.renewal_tribute_id && (
+                        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary text-[10px] uppercase tracking-wider">
+                          Renovação
+                        </Badge>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-4">{o.candle?.name}</td>
                   <td className="p-4 text-primary font-serif">{formatBRL(o.amount_cents)}</td>
                   <td className="p-4" onClick={(e) => e.stopPropagation()}>
