@@ -1,4 +1,4 @@
-import type { CreateOrderInput, OrderStatusInput, UploadPhotoInput } from "./payments.schemas";
+import type { CreateOrderInput, CreateRenewalInput, OrderStatusInput, UploadPhotoInput } from "./payments.schemas";
 
 type OrderStatus = "paid" | "cancelled" | "refunded" | "pending";
 
@@ -14,6 +14,7 @@ type OrderRow = {
   mp_payment_id: string | null;
   mp_preference_id: string | null;
   paid_at?: string | null;
+  renewal_tribute_id?: string | null;
 };
 
 type MercadoPagoPayment = {
