@@ -13,6 +13,13 @@ export const createOrderInput = z.object({
   payment_method: z.enum(["checkout"]).default("checkout").optional(),
 });
 
+export const createRenewalInput = z.object({
+  tribute_id: z.string().uuid(),
+  candle_id: z.string().uuid(),
+  customer_name: z.string().trim().min(2).max(100).optional().nullable(),
+  customer_email: z.string().trim().email().max(255).optional().nullable(),
+});
+
 export const uploadPhotoInput = z.object({
   filename: z.string().trim().min(1).max(120),
   content_type: z.string().trim().regex(/^image\/(jpeg|jpg|png|webp)$/i),
