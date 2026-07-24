@@ -515,9 +515,16 @@ function Page() {
 
               <div className="mt-6 space-y-6">
                 <div className="flex items-center justify-between">
-                  <Badge className={statusColor[selected.status] + " capitalize text-sm px-3 py-1"}>
-                    {statusLabel[selected.status]}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={statusColor[selected.status] + " capitalize text-sm px-3 py-1"}>
+                      {statusLabel[selected.status]}
+                    </Badge>
+                    {selected.renewal_tribute_id && (
+                      <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary text-xs uppercase tracking-wider">
+                        Renovação
+                      </Badge>
+                    )}
+                  </div>
                   <span className="font-serif text-2xl text-primary">
                     {formatBRL(selected.amount_cents)}
                   </span>
