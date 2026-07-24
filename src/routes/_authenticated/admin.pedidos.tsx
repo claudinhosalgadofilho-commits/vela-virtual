@@ -75,6 +75,7 @@ type OrderRow = {
   payment_method: string;
   external_payment_id: string | null;
   candle_id: string;
+  renewal_tribute_id: string | null;
   candle: { name: string; slug: string } | null;
 };
 
