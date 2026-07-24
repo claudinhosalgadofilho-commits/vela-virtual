@@ -95,6 +95,36 @@ export async function createOrderPayment(data: CreateOrderInput) {
     .maybeSingle();
   if (candleErr || !candle || !candle.active) throw new Error("Vela indisponível");
 
+  // Anti-duplicidade: reutiliza um pedido pendente recente do mesmo cliente
+  // para a mesma vela/homenagem (janela de 30 min). Evita cobrar duas vezes
+  // se o visitante clicar em "Pagar" repetidas vezes ou reabrir o checkout.
+  const dedupeWindowIso = new Date(Date.now() - 30 * 60_000).toISOString();
+  const { data: existing } = await supabaseAdmin
+    .from("orders")
+    .select("id, mp_preference_id")
+    .eq("status", "pending")
+    .eq("candle_id", candle.id)
+    .eq("customer_email", data.customer_email)
+    .eq("tribute_name", data.tribute_name)
+    .is("renewal_tribute_id", null)
+    .gte("created_at", dedupeWindowIso)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string; mp_preference_id: string | null }>();
+
+  if (existing?.mp_preference_id) {
+    const reused = await fetchExistingPreference(accessToken, existing.mp_preference_id);
+    if (reused) {
+      return {
+        order_id: existing.id,
+        method: "checkout" as const,
+        init_point: reused.init_point,
+        sandbox_init_point: reused.sandbox_init_point,
+        reused: true as const,
+      };
+    }
+  }
+
   const { data: order, error: orderErr } = await supabaseAdmin
     .from("orders")
     .insert({
@@ -176,8 +206,35 @@ export async function createOrderPayment(data: CreateOrderInput) {
     method: "checkout" as const,
     init_point: payload.init_point as string,
     sandbox_init_point: payload.sandbox_init_point as string,
+    reused: false as const,
   };
 }
+
+async function fetchExistingPreference(
+  accessToken: string,
+  preferenceId: string,
+): Promise<{ init_point: string; sandbox_init_point: string } | null> {
+  try {
+    const resp = await fetch(
+      `https://api.mercadopago.com/checkout/preferences/${encodeURIComponent(preferenceId)}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+    if (!resp.ok) return null;
+    const payload = (await resp.json()) as {
+      init_point?: string;
+      sandbox_init_point?: string;
+    };
+    if (!payload.init_point && !payload.sandbox_init_point) return null;
+    return {
+      init_point: payload.init_point ?? "",
+      sandbox_init_point: payload.sandbox_init_point ?? "",
+    };
+  } catch (error) {
+    console.error("[MP preference reuse] fetch failed", error);
+    return null;
+  }
+}
+
 
 export async function fetchOrderStatus(data: OrderStatusInput) {
   const order = await syncAndLoadOrder(data);
@@ -574,6 +631,35 @@ export async function createRenewalPayment(data: CreateRenewalInput) {
   if (!customerEmail) throw new Error("Informe o email para receber a confirmação.");
   if (!customerName) customerName = "Homenagem";
 
+  // Anti-duplicidade: reutiliza uma prorrogação pendente recente para a
+  // mesma homenagem + plano (janela de 30 min). Evita cobrar duas vezes se
+  // o visitante clicar em "Prorrogar" repetidas vezes.
+  const dedupeWindowIso = new Date(Date.now() - 30 * 60_000).toISOString();
+  const { data: existing } = await supabaseAdmin
+    .from("orders")
+    .select("id, mp_preference_id")
+    .eq("status", "pending")
+    .eq("renewal_tribute_id", tribute.id)
+    .eq("candle_id", candle.id)
+    .gte("created_at", dedupeWindowIso)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string; mp_preference_id: string | null }>();
+
+  if (existing?.mp_preference_id) {
+    const reused = await fetchExistingPreference(accessToken, existing.mp_preference_id);
+    if (reused) {
+      return {
+        order_id: existing.id,
+        tribute_id: tribute.id,
+        method: "checkout" as const,
+        init_point: reused.init_point,
+        sandbox_init_point: reused.sandbox_init_point,
+        reused: true as const,
+      };
+    }
+  }
+
   const { data: order, error: orderErr } = await supabaseAdmin
     .from("orders")
     .insert({
@@ -652,6 +738,7 @@ export async function createRenewalPayment(data: CreateRenewalInput) {
     method: "checkout" as const,
     init_point: payload.init_point as string,
     sandbox_init_point: payload.sandbox_init_point as string,
+    reused: false as const,
   };
 }
 
