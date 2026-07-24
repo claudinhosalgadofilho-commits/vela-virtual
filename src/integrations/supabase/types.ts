@@ -302,6 +302,7 @@ export type Database = {
           created_at: string
           ends_at: string
           id: string
+          like_count: number
           lit_at: string | null
           order_id: string | null
           starts_at: string
@@ -320,6 +321,7 @@ export type Database = {
           created_at?: string
           ends_at: string
           id?: string
+          like_count?: number
           lit_at?: string | null
           order_id?: string | null
           starts_at?: string
@@ -338,6 +340,7 @@ export type Database = {
           created_at?: string
           ends_at?: string
           id?: string
+          like_count?: number
           lit_at?: string | null
           order_id?: string | null
           starts_at?: string
@@ -450,6 +453,7 @@ export type Database = {
     }
     Functions: {
       cleanup_stale_pending_orders: { Args: never; Returns: number }
+      decrement_tribute_like: { Args: { _tribute_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -457,6 +461,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_tribute_like: { Args: { _tribute_id: string }; Returns: number }
       light_tribute: { Args: { _tribute_id: string }; Returns: string }
     }
     Enums: {
