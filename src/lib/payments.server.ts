@@ -453,10 +453,46 @@ async function findOrderIdByPreferenceId(preferenceId: string): Promise<string |
 }
 
 async function ensureTributeForOrder(order: OrderRow): Promise<string | null> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  // Renovação: em vez de criar nova homenagem, estende a existente.
+  if (order.renewal_tribute_id) {
+    const { data: existing } = await supabaseAdmin
+      .from("tributes")
+      .select("id, ends_at, lit_at")
+      .eq("id", order.renewal_tribute_id)
+      .maybeSingle<{ id: string; ends_at: string; lit_at: string | null }>();
+    if (!existing) return null;
+
+    const { data: candle } = await supabaseAdmin
+      .from("candles")
+      .select("duration_hours, duration_minutes")
+      .eq("id", order.candle_id)
+      .maybeSingle<{ duration_hours: number; duration_minutes: number | null }>();
+    const minutes = candle?.duration_minutes ?? (candle?.duration_hours ?? 24 * 7) * 60;
+    const base = Math.max(Date.now(), new Date(existing.ends_at).getTime());
+    const newEnds = new Date(base + minutes * 60_000).toISOString();
+
+    const patch: Record<string, unknown> = { ends_at: newEnds, active: true };
+    // Se estava apagada/expirada, reacende agora para o novo período.
+    if (!existing.lit_at || new Date(existing.ends_at).getTime() <= Date.now()) {
+      patch.lit_at = new Date().toISOString();
+    }
+
+    const { error } = await supabaseAdmin
+      .from("tributes")
+      .update(patch as never)
+      .eq("id", existing.id);
+    if (error) {
+      console.error("[MP sync] tribute renewal failed", error);
+      return existing.id;
+    }
+    return existing.id;
+  }
+
   const existing = await findTributeId(order.id);
   if (existing) return existing;
 
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: candle } = await supabaseAdmin
     .from("candles")
     .select("duration_hours, duration_minutes")
@@ -487,6 +523,130 @@ async function ensureTributeForOrder(order: OrderRow): Promise<string | null> {
     return null;
   }
   return tribute?.id ?? null;
+}
+
+export async function createRenewalPayment(data: CreateRenewalInput) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const accessToken = await loadMercadoPagoAccessToken();
+  if (!accessToken) {
+    throw new Error("Mercado Pago não configurado. Configure o Access Token em Admin → Configurações.");
+  }
+
+  const { data: tribute } = await supabaseAdmin
+    .from("tributes")
+    .select("id, tribute_name, tribute_message, order_id, active")
+    .eq("id", data.tribute_id)
+    .maybeSingle<{
+      id: string;
+      tribute_name: string;
+      tribute_message: string | null;
+      order_id: string | null;
+      active: boolean;
+    }>();
+  if (!tribute || !tribute.active) throw new Error("Homenagem indisponível para prorrogação");
+
+  const { data: candle } = await supabaseAdmin
+    .from("candles")
+    .select("id, name, price_cents, active")
+    .eq("id", data.candle_id)
+    .maybeSingle();
+  if (!candle || !candle.active) throw new Error("Plano indisponível");
+
+  // Recupera dados do cliente do pedido original quando o front não enviar.
+  let customerName = data.customer_name?.trim() || "";
+  let customerEmail = data.customer_email?.trim() || "";
+  if ((!customerName || !customerEmail) && tribute.order_id) {
+    const { data: original } = await supabaseAdmin
+      .from("orders")
+      .select("customer_name, customer_email")
+      .eq("id", tribute.order_id)
+      .maybeSingle<{ customer_name: string; customer_email: string }>();
+    customerName = customerName || original?.customer_name || "Homenagem";
+    customerEmail = customerEmail || original?.customer_email || "";
+  }
+  if (!customerEmail) throw new Error("Informe o email para receber a confirmação.");
+  if (!customerName) customerName = "Homenagem";
+
+  const { data: order, error: orderErr } = await supabaseAdmin
+    .from("orders")
+    .insert({
+      candle_id: candle.id,
+      customer_name: customerName,
+      customer_email: customerEmail,
+      tribute_name: tribute.tribute_name,
+      tribute_message: tribute.tribute_message,
+      amount_cents: candle.price_cents,
+      payment_method: "checkout",
+      status: "pending",
+      renewal_tribute_id: tribute.id,
+    } as never)
+    .select("id")
+    .single();
+  if (orderErr || !order) throw new Error("Falha ao criar pedido de prorrogação");
+
+  const amountBRL = Number((candle.price_cents / 100).toFixed(2));
+  // Retorno vai direto para a página da homenagem que já está sendo prorrogada.
+  const pendingReturnUrl = `${getSiteUrl()}/homenagem/${tribute.id}?order=${order.id}`;
+
+  const preferencePayload = {
+    items: [
+      {
+        id: candle.id,
+        title: `Prorrogação — Vela ${candle.name}`,
+        description: `Prorrogação da homenagem a ${tribute.tribute_name}`,
+        category_id: "services",
+        quantity: 1,
+        currency_id: "BRL",
+        unit_price: amountBRL,
+      },
+    ],
+    payer: { email: customerEmail, name: customerName },
+    external_reference: order.id,
+    notification_url: buildNotificationUrl(),
+    statement_descriptor: "VELA VIRTUAL",
+    binary_mode: false,
+    payment_methods: {
+      excluded_payment_types: [{ id: "atm" }, { id: "ticket" }],
+      excluded_payment_methods: [{ id: "bolbradesco" }, { id: "pec" }],
+      installments: 12,
+      default_installments: 1,
+    },
+    back_urls: {
+      success: pendingReturnUrl,
+      failure: pendingReturnUrl,
+      pending: pendingReturnUrl,
+    },
+    auto_return: "approved",
+  };
+
+  const resp = await fetch("https://api.mercadopago.com/checkout/preferences", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      "X-Idempotency-Key": `order-${order.id}`,
+    },
+    body: JSON.stringify(preferencePayload),
+  });
+  const payload = await resp.json();
+  if (!resp.ok) {
+    console.error("[MP preference renewal]", payload);
+    throw new Error(payload?.message ?? "Falha ao criar preferência de pagamento");
+  }
+
+  await supabaseAdmin
+    .from("orders")
+    .update({ mp_preference_id: String(payload.id) } as never)
+    .eq("id", order.id);
+
+  return {
+    order_id: order.id,
+    tribute_id: tribute.id,
+    method: "checkout" as const,
+    init_point: payload.init_point as string,
+    sandbox_init_point: payload.sandbox_init_point as string,
+  };
 }
 
 async function loadMercadoPagoAccessToken(): Promise<string | null> {
