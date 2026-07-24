@@ -36,5 +36,6 @@ export const orderStatusInput = z.object({
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderInput>;
+export type CreateRenewalInput = z.infer<typeof createRenewalInput>;
 export type UploadPhotoInput = z.infer<typeof uploadPhotoInput>;
 export type OrderStatusInput = z.infer<typeof orderStatusInput>;
