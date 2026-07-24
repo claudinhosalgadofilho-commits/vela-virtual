@@ -17,6 +17,9 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 900 },
+    launchOptions: process.env.PW_CHROME_PATH
+      ? { executablePath: process.env.PW_CHROME_PATH }
+      : undefined,
   },
   projects: [
     {
