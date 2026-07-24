@@ -23,6 +23,17 @@ export function CandleFlame({
 }: CandleFlameProps) {
   const scale = size === "sm" ? 0.55 : size === "md" ? 0.8 : 1;
   const p = Math.max(0, Math.min(1, burnProgress));
+  // Dimensões nominais (não escaladas) do conjunto vela + chama + pavio
+  const nominalH = 90 + 14 + 260; // flame + wick + body
+  const nominalW = 90;
+  // Reserva o espaço real ocupado após o transform:scale para não invadir textos ao redor
+  const wrapperStyle: React.CSSProperties = {
+    width: nominalW * scale,
+    height: nominalH * scale,
+    display: "inline-block",
+    position: "relative",
+  };
+
 
   if (videoUrl && !extinguished) {
     const baseH = 360;
